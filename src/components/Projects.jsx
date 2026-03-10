@@ -7,7 +7,7 @@ const projects = [
     title: 'Central Jual Emas (Concept Project)',
     desc:
       'Landing page konsep untuk layanan jual emas dengan fokus edukasi dan konversi. ' +
-      'Dibangun sebagai solo developer dengan bantuan AI.',
+      'A conversion-focused landing page with pricing insights and clear CTAs.',
     stack: 'HTML, CSS, JavaScript, React, Vite, REST API',
     highlights: [
       'Kalkulator estimasi harga emas',
@@ -27,7 +27,7 @@ const projects = [
     title: 'For My Queen Cell (Client Project)',
     desc:
       'Website bucin bertema romantis untuk "HTS", berisi pesan personal, mood switch, dan alur cerita hangat. ' +
-      'Dibuat untuk pengalaman mobile yang lembut dengan interaksi ringan.',
+      'A soft, mobile-first experience with playful interactions.',
     stack: 'HTML, CSS, JavaScript, React (UMD)',
     highlights: [
       'Hero dengan pesan personal + toggle pesan',

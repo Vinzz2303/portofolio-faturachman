@@ -11,6 +11,8 @@
   </defs>
   <rect width="960" height="540" rx="28" fill="url(#g1)"/>
   <rect x="72" y="84" width="260" height="160" rx="18" fill="url(#gold)" fill-opacity="0.9"/>
+  <text x="92" y="130" fill="#1E1407" font-family="Manrope, Segoe UI, sans-serif" font-size="18" font-weight="700">Central Jual Emas</text>
+  <text x="92" y="158" fill="#3B2A12" font-family="Manrope, Segoe UI, sans-serif" font-size="13">Landing Page Concept</text>
   <rect x="360" y="110" width="520" height="18" rx="9" fill="#2E3646"/>
   <rect x="360" y="150" width="420" height="14" rx="7" fill="#2A3141"/>
   <rect x="360" y="190" width="300" height="14" rx="7" fill="#252B3A"/>
