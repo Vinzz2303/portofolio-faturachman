@@ -3,11 +3,12 @@ import React from 'react'
 const projects = [
   {
     id: 1,
+    cover: '/projects/central-emas.svg',
     title: 'Central Jual Emas (Concept Project)',
     desc:
-      'Landing page konsep untuk layanan jual emas dengan fokus edukasi & konversi. ' +
-      'Built as a solo developer (AI-assisted).',
-    stack: 'HTML, CSS, JavaScript, React, Vite, API',
+      'Landing page konsep untuk layanan jual emas dengan fokus edukasi dan konversi. ' +
+      'Dibangun sebagai solo developer dengan bantuan AI.',
+    stack: 'HTML, CSS, JavaScript, React, Vite, REST API',
     highlights: [
       'Kalkulator estimasi harga emas',
       'Harga emas otomatis via API (XAUSD/world data)',
@@ -22,18 +23,22 @@ const projects = [
   },
   {
     id: 2,
+    cover: '/projects/queen-cell.svg',
     title: 'For My Queen Cell (Client Project)',
     desc:
-      'Landing page bertema romantis untuk hadiah digital dengan tone personal dan alur cerita yang hangat. ' +
-      'Fokus pada pengalaman mobile dan visual yang lembut.',
-    stack: 'HTML, CSS, JavaScript',
+      'Website bucin bertema romantis untuk "HTS", berisi pesan personal, mood switch, dan alur cerita hangat. ' +
+      'Dibuat untuk pengalaman mobile yang lembut dengan interaksi ringan.',
+    stack: 'HTML, CSS, JavaScript, React (UMD)',
     highlights: [
-      'Hero dengan pesan personal dan visual dominan',
-      'Section cerita singkat + call-to-action'
+      'Hero dengan pesan personal + toggle pesan',
+      'Mood switch untuk ganti suasana',
+      'Timeline perjalanan kecil + audio player',
+      'Floating hearts animation'
     ],
     note: 'Project client: copy dan konten disesuaikan kebutuhan pemesan.',
     links: [
-      { label: 'Demo', href: 'https://formyqueencell.netlify.app/' }
+      { label: 'Demo', href: 'https://formyqueencell.netlify.app/' },
+      { label: 'Repo', href: 'https://github.com/Vinzz2303/buatcelyn' }
     ]
   }
 ]
@@ -45,6 +50,9 @@ export default function Projects({ sectionId }){
       <div className="grid">
         {projects.map(p => (
           <article key={p.id} className="card">
+            <div className="card-cover">
+              <img src={p.cover} alt={`${p.title} cover`} loading="lazy" decoding="async" />
+            </div>
             <div className="card-body">
               <h3>{p.title}</h3>
               <p>{p.desc}</p>

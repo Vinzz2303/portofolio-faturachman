@@ -24,7 +24,10 @@ export default function Hero({ sectionId }){
         </div>
         <div className="hero-aside">
           <div className="hero-photo">
-            <img src="/profile.png" alt="Faturachman Al kahfi" decoding="async" fetchpriority="high" />
+            <picture>
+              <source srcSet="/profile.webp" type="image/webp" />
+              <img src="/profile.png" alt="Faturachman Al kahfi" decoding="async" fetchpriority="high" />
+            </picture>
           </div>
           <div className="hero-panel">
             <h3>Signature</h3>

@@ -1,0 +1,33 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B0D12"/>
+      <stop offset="1" stop-color="#121826"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(220 120) rotate(35) scale(380 240)">
+      <stop stop-color="#D6B26B" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#D6B26B" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(980 70) rotate(25) scale(320 220)">
+      <stop stop-color="#8FBFBA" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#8FBFBA" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+  <rect x="64" y="64" width="1072" height="502" rx="28" fill="#111827" fill-opacity="0.7" stroke="#2A3345"/>
+  <text x="120" y="240" fill="#E5E7EB" font-family="Times New Roman, serif" font-size="58" font-weight="600">
+    Faturachman Al kahfi
+  </text>
+  <text x="120" y="300" fill="#D6B26B" font-family="Manrope, Segoe UI, sans-serif" font-size="22" font-weight="600" letter-spacing="2">
+    FRONTEND DEVELOPER
+  </text>
+  <text x="120" y="360" fill="#A7B0BF" font-family="Manrope, Segoe UI, sans-serif" font-size="22">
+    Landing page premium. UI conversion. React + Vite.
+  </text>
+  <rect x="120" y="410" width="180" height="42" rx="21" fill="#D6B26B"/>
+  <text x="150" y="438" fill="#1C140A" font-family="Manrope, Segoe UI, sans-serif" font-size="18" font-weight="600">
+    Portfolio
+  </text>
+</svg>
