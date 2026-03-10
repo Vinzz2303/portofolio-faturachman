@@ -1,18 +1,18 @@
-export default async (req) => {
-  if (req.method !== 'POST') {
-    return new Response('Method Not Allowed', { status: 405 })
+exports.handler = async (event) => {
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: 'Method Not Allowed' }
   }
 
   const apiKey = process.env.GROQ_API_KEY
   if (!apiKey) {
-    return new Response('Missing GROQ_API_KEY', { status: 500 })
+    return { statusCode: 500, body: 'Missing GROQ_API_KEY' }
   }
 
   let body = {}
   try {
-    body = await req.json()
+    body = JSON.parse(event.body || '{}')
   } catch {
-    return new Response('Invalid JSON', { status: 400 })
+    return { statusCode: 400, body: 'Invalid JSON' }
   }
 
   const messages = body?.messages || []
@@ -31,8 +31,9 @@ export default async (req) => {
   })
 
   const text = await groqRes.text()
-  return new Response(text, {
-    status: groqRes.status,
-    headers: { 'Content-Type': 'application/json' }
-  })
+  return {
+    statusCode: groqRes.status,
+    headers: { 'Content-Type': 'application/json' },
+    body: text
+  }
 }

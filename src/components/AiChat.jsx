@@ -60,7 +60,7 @@ export default function AiChat() {
       setError(
         provider === 'local'
           ? 'Local AI tidak aktif. Jalankan Ollama di laptop kamu untuk demo.'
-          : 'Groq AI error. Pastikan GROQ_API_KEY sudah diset di Netlify.'
+          : err?.message || 'Groq AI error. Pastikan GROQ_API_KEY sudah diset di Netlify.'
       )
     } finally {
       setLoading(false)
