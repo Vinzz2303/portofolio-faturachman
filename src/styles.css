@@ -22,7 +22,10 @@ body{
   color:var(--text);
   line-height:1.6;
   min-height:100vh;
+  -webkit-text-size-adjust:100%;
 }
+img{max-width:100%;height:auto}
+body{overflow-x:hidden}
 *{scroll-behavior:smooth}
 @media (prefers-reduced-motion: reduce){
   *{scroll-behavior:auto}
@@ -86,6 +89,8 @@ p{margin:0 0 1rem}
   align-items:center;
   justify-content:space-between;
   padding:1rem 2rem;
+  gap:1rem;
+  flex-wrap:wrap;
 }
 .brand{
   font-weight:700;
@@ -99,6 +104,12 @@ nav a{
   text-decoration:none;
   font-size:0.95rem;
   transition:color 0.2s ease;
+  white-space:nowrap;
+}
+nav{
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.4rem 0.8rem;
 }
 nav a:hover{color:var(--text)}
 .hero{padding:6rem 0 4rem}
@@ -230,6 +241,7 @@ nav a:hover{color:var(--text)}
   border:1px solid var(--line);
   border-radius:16px;
   padding:1.2rem;
+  width:100%;
 }
 .ai-messages{
   max-height:320px;
@@ -286,9 +298,17 @@ nav a:hover{color:var(--text)}
 @media (max-width:900px){
   .hero-inner{grid-template-columns:1fr}
   .hero-aside{align-items:flex-start}
+  .nav-inner{padding:0.8rem 1.5rem}
 }
 @media (max-width:600px){
   .hero{padding:4rem 0 2rem}
   h1{font-size:2.2rem}
+  .container{padding:2rem 1.2rem}
   .nav-inner{padding:0.7rem 1rem}
+  nav a{margin-left:0}
+  .hero-cta{flex-direction:column;align-items:flex-start}
+  .ai-input{flex-direction:column}
+  .ai-input button{width:100%}
+  .hero-photo{width:130px;height:130px}
+  .hero-panel{width:100%}
 }
