@@ -17,6 +17,8 @@ exports.handler = async (event) => {
 
   const messages = body?.messages || []
 
+  const model = process.env.GROQ_MODEL || 'llama-3.1-8b-instant'
+
   const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -24,7 +26,7 @@ exports.handler = async (event) => {
       Authorization: `Bearer ${apiKey}`
     },
     body: JSON.stringify({
-      model: 'llama3-8b-8192',
+      model,
       messages,
       temperature: 0.6
     })
