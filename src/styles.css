@@ -23,6 +23,7 @@ body{
   line-height:1.6;
   min-height:100vh;
   -webkit-text-size-adjust:100%;
+  text-rendering:optimizeLegibility;
 }
 img{max-width:100%;height:auto}
 body{overflow-x:hidden}
@@ -156,13 +157,16 @@ nav a:hover{color:var(--text)}
   text-decoration:none;
   font-weight:600;
   box-shadow:0 12px 24px rgba(0,0,0,0.35);
+  transition:transform 0.2s ease, box-shadow 0.2s ease;
 }
+.btn:hover{transform:translateY(-1px);box-shadow:0 16px 30px rgba(0,0,0,0.4)}
 .btn.secondary{
   background:transparent;
   color:var(--text);
   border:1px solid var(--line);
   box-shadow:none;
 }
+.btn.secondary:hover{background:rgba(255,255,255,0.04)}
 .hero-aside{
   display:flex;
   flex-direction:column;
@@ -182,7 +186,9 @@ nav a:hover{color:var(--text)}
   border:1px solid var(--line);
   padding:1rem 1.2rem;
   border-radius:14px;
+  transition:transform 0.2s ease, border-color 0.2s ease;
 }
+.hero-panel:hover{transform:translateY(-2px);border-color:rgba(214,178,107,0.4)}
 .hero-list{margin:0;padding-left:1.1rem;color:var(--muted)}
 .about,.projects,.contact,.ai{padding:5rem 0}
 .value-grid{
@@ -220,6 +226,12 @@ nav a:hover{color:var(--text)}
   border-radius:14px;
   box-shadow:0 20px 40px rgba(0,0,0,0.2);
   overflow-wrap:break-word;
+  transition:transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.card:hover{
+  transform:translateY(-3px);
+  border-color:rgba(214,178,107,0.3);
+  box-shadow:0 24px 48px rgba(0,0,0,0.28);
 }
 .card-meta{color:var(--muted);margin:0.6rem 0}
 .card-list{margin:0.6rem 0 0 1.2rem;color:#cbd5e1}
@@ -232,7 +244,9 @@ nav a:hover{color:var(--text)}
   border:1px solid var(--accent);
   color:var(--accent);
   text-decoration:none;
+  transition:background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
+.btn-outline:hover{background:var(--accent-soft);color:var(--text);transform:translateY(-1px)}
 .social-links{
   margin-top:1rem;
   display:flex;
@@ -261,7 +275,9 @@ nav a:hover{color:var(--text)}
   border-radius:16px;
   padding:1.2rem;
   width:100%;
+  transition:border-color 0.2s ease, box-shadow 0.2s ease;
 }
+.ai-box:focus-within{border-color:rgba(214,178,107,0.35);box-shadow:0 18px 32px rgba(0,0,0,0.24)}
 .ai-messages{
   max-height:320px;
   overflow:auto;

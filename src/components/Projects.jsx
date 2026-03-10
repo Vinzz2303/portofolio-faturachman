@@ -19,6 +19,22 @@ const projects = [
       { label: 'Admin', href: 'https://central-jual-emas.netlify.app/admin.html' },
       { label: 'Repo', href: 'https://github.com/Vinzz2303/central-jual-emas' }
     ]
+  },
+  {
+    id: 2,
+    title: 'For My Queen Cell (Client Project)',
+    desc:
+      'Landing page bertema romantis untuk hadiah digital dengan tone personal dan alur cerita yang hangat. ' +
+      'Fokus pada pengalaman mobile dan visual yang lembut.',
+    stack: 'HTML, CSS, JavaScript',
+    highlights: [
+      'Hero dengan pesan personal dan visual dominan',
+      'Section cerita singkat + call-to-action'
+    ],
+    note: 'Project client: copy dan konten disesuaikan kebutuhan pemesan.',
+    links: [
+      { label: 'Demo', href: 'https://formyqueencell.netlify.app/' }
+    ]
   }
 ]
 

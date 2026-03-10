@@ -1,5 +1,4 @@
 import React from 'react'
-import profileImg from '../assets/profile.png'
 
 export default function Hero({ sectionId }){
   return (
@@ -25,7 +24,7 @@ export default function Hero({ sectionId }){
         </div>
         <div className="hero-aside">
           <div className="hero-photo">
-            <img src={profileImg} alt="Faturachman Al kahfi" />
+            <img src="/profile.png" alt="Faturachman Al kahfi" decoding="async" fetchpriority="high" />
           </div>
           <div className="hero-panel">
             <h3>Signature</h3>
