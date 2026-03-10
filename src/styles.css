@@ -244,6 +244,32 @@ nav a:hover{color:var(--text)}
   display:block;
 }
 .card-body{display:flex;flex-direction:column;gap:0.6rem}
+.case-study{
+  margin-top:0.4rem;
+  display:flex;
+  flex-direction:column;
+  gap:0.4rem;
+  padding:0.6rem 0.7rem;
+  border-radius:12px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+}
+.case-row{
+  display:flex;
+  gap:0.5rem;
+  align-items:flex-start;
+}
+.case-label{
+  min-width:72px;
+  font-size:0.8rem;
+  color:var(--accent);
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+.case-text{
+  color:var(--muted);
+  font-size:0.95rem;
+}
 .card:hover{
   transform:translateY(-3px);
   border-color:rgba(214,178,107,0.3);
