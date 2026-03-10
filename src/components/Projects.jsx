@@ -22,9 +22,9 @@ const projects = [
   }
 ]
 
-export default function Projects(){
+export default function Projects({ sectionId }){
   return (
-    <section id="projects" className="projects container">
+    <section id={sectionId} className="projects container reveal">
       <h2>Projects</h2>
       <div className="grid">
         {projects.map(p => (

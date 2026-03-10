@@ -4,7 +4,7 @@ const SYSTEM_PROMPT =
   'You are a helpful AI assistant for Faturachman Al kahfi portfolio website. ' +
   'Answer briefly, friendly, and focus on skills, projects, and services.'
 
-export default function AiChat() {
+export default function AiChat({ sectionId }) {
   const [provider, setProvider] = useState('groq')
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -68,7 +68,7 @@ export default function AiChat() {
   }
 
   return (
-    <section id="ai" className="ai container">
+    <section id={sectionId} className="ai container reveal">
       <h2>AI Assistant</h2>
       <p className="ai-sub">
         Pilih mode: <strong>Local (Ollama)</strong> untuk demo pribadi, atau <strong>Groq</strong> untuk publik.

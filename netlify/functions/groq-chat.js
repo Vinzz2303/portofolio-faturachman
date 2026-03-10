@@ -19,6 +19,8 @@ exports.handler = async (event) => {
 
   const model = process.env.GROQ_MODEL || 'llama-3.1-8b-instant'
 
+  console.log('groq model:', model)
+
   const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -35,7 +37,7 @@ exports.handler = async (event) => {
   const text = await groqRes.text()
   return {
     statusCode: groqRes.status,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-Groq-Model': model },
     body: text
   }
 }

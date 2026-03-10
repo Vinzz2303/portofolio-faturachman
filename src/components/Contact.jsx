@@ -1,8 +1,8 @@
 import React from 'react'
 
-export default function Contact(){
+export default function Contact({ sectionId }){
   return (
-    <section id="contact" className="contact container">
+    <section id={sectionId} className="contact container reveal">
       <h2>Contact</h2>
       <p>
         Butuh landing page atau UI yang rapi? Kirim email aja.
