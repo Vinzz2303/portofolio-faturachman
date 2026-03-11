@@ -20,6 +20,9 @@ export default function Hero({ sectionId }){
           <div className="hero-cta">
             <a className="btn" href="#projects">View my projects</a>
             <a className="btn secondary" href="#contact">Quick consultation</a>
+            <a className="btn secondary" href="/faturachman-alkahfi-resume.pdf" target="_blank" rel="noreferrer">
+              Download resume
+            </a>
           </div>
         </div>
         <div className="hero-aside">
