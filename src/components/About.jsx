@@ -5,24 +5,24 @@ export default function About({ sectionId }){
     <section id={sectionId} className="about container reveal">
       <h2>About Me</h2>
       <p className="lead">
-        Saya fokus ngulik landing page bisnis dan dashboard sederhana biar user langsung paham.
+        I focus on business landing pages and lightweight dashboards so users understand the value fast.
         I turn ideas into clean UI with React, Vite, HTML, CSS, and JavaScript.
       </p>
       <div className="value-grid">
         <div className="value-card">
           <div className="eyebrow">Strategy</div>
-          <h3>Struktur yang terarah</h3>
-          <p>Bangun alur konten yang jelas agar visitor cepat mengerti nilai produk.</p>
+          <h3>Clear structure</h3>
+          <p>Shape content flow so visitors instantly grasp your value.</p>
         </div>
         <div className="value-card">
           <div className="eyebrow">Design</div>
-          <h3>Visual premium</h3>
-          <p>Konsisten secara tipografi, warna, dan jarak untuk nuansa luxury.</p>
+          <h3>Premium visuals</h3>
+          <p>Consistent typography, color, and spacing for a luxury feel.</p>
         </div>
         <div className="value-card">
           <div className="eyebrow">Build</div>
-          <h3>Eksekusi cepat</h3>
-          <p>Komponen ringan, responsif, dan siap diintegrasi dengan data.</p>
+          <h3>Fast execution</h3>
+          <p>Lightweight components, responsive layouts, and data-ready builds.</p>
         </div>
       </div>
       <div className="skills">

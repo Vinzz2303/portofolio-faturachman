@@ -8,7 +8,7 @@ export default function Hero({ sectionId }){
           <div className="eyebrow">Frontend Developer</div>
           <h1>Faturachman Al kahfi</h1>
           <p className="lead">
-            Frontend dev yang fokus bikin landing page bisnis yang terlihat premium, jelas arahnya, dan siap konversi.
+            Frontend developer focused on premium business landing pages with clear direction and conversion-ready flows.
             I build fast, responsive UI with React and modern web tech.
           </p>
           <div className="hero-badges">
@@ -18,8 +18,8 @@ export default function Hero({ sectionId }){
             <span className="badge">Clean UX</span>
           </div>
           <div className="hero-cta">
-            <a className="btn" href="#projects">Lihat projek saya</a>
-            <a className="btn secondary" href="#contact">Konsultasi cepat</a>
+            <a className="btn" href="#projects">View my projects</a>
+            <a className="btn secondary" href="#contact">Quick consultation</a>
           </div>
         </div>
         <div className="hero-aside">
@@ -32,9 +32,9 @@ export default function Hero({ sectionId }){
           <div className="hero-panel">
             <h3>Signature</h3>
             <ul className="hero-list">
-              <li>Layout rapi, elegan, dan konsisten.</li>
-              <li>CTA jelas dan fokus pada konversi.</li>
-              <li>Loading cepat dengan UI ringan.</li>
+              <li>Clean, elegant, consistent layouts.</li>
+              <li>Clear CTAs that drive conversion.</li>
+              <li>Fast loading with lightweight UI.</li>
             </ul>
           </div>
           <div className="hero-panel">

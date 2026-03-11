@@ -6,20 +6,20 @@ const projects = [
     cover: '/projects/central-emas.png',
     title: 'Central Jual Emas (Concept Project)',
     desc:
-      'Landing page konsep untuk layanan jual emas dengan fokus edukasi dan konversi. ' +
-      'A conversion-focused landing page with pricing insights and clear CTAs.',
+      'Concept landing page for a gold selling service focused on education and conversion. ' +
+      'Conversion-focused with pricing insights and clear CTAs.',
     stack: 'HTML, CSS, JavaScript, React, Vite, REST API',
     highlights: [
-      'Kalkulator estimasi harga emas',
-      'Harga emas otomatis via API (XAUSD/world data)',
-      'CTA WhatsApp, testimoni, FAQ, lokasi'
+      'Gold price estimation calculator',
+      'Auto gold price via API (XAUSD/world data)',
+      'WhatsApp CTA, testimonials, FAQ, locations'
     ],
     caseStudy: [
-      { label: 'Problem', text: 'Pengunjung butuh estimasi cepat dan rasa aman saat menjual emas.' },
-      { label: 'Solution', text: 'Buat kalkulator harga otomatis + CTA WhatsApp yang jelas.' },
-      { label: 'Result', text: 'Alur lebih ringkas dan fokus ke konversi.' }
+      { label: 'Problem', text: 'Visitors need quick estimates and trust when selling gold.' },
+      { label: 'Solution', text: 'Auto pricing calculator plus clear WhatsApp CTA.' },
+      { label: 'Result', text: 'A shorter flow focused on conversion.' }
     ],
-    note: 'Data pelanggan/cabang/testimoni memakai mock data untuk kebutuhan desain.',
+    note: 'Customer/branch/testimonial data uses mock content for design purposes.',
     links: [
       { label: 'Demo', href: 'https://central-jual-emas.netlify.app/' },
       { label: 'Admin', href: 'https://central-jual-emas.netlify.app/admin.html' },
@@ -31,21 +31,21 @@ const projects = [
     cover: '/projects/queen-cell.png',
     title: 'For My Queen Cell (Client Project)',
     desc:
-      'Website bucin bertema romantis untuk "HTS", berisi pesan personal, mood switch, dan alur cerita hangat. ' +
+      'Romantic themed website for "HTS" with personal messages, mood switch, and warm storytelling. ' +
       'A soft, mobile-first experience with playful interactions.',
     stack: 'HTML, CSS, JavaScript, React (UMD)',
     highlights: [
-      'Hero dengan pesan personal + toggle pesan',
-      'Mood switch untuk ganti suasana',
-      'Timeline perjalanan kecil + audio player',
+      'Hero with personal message + message toggle',
+      'Mood switch to change the vibe',
+      'Story timeline + audio player',
       'Floating hearts animation'
     ],
     caseStudy: [
-      { label: 'Problem', text: 'Klien ingin hadiah digital yang personal dan terasa hangat.' },
-      { label: 'Solution', text: 'Storytelling lembut dengan mood switch + audio.' },
-      { label: 'Result', text: 'Experience terasa intimate dan berkesan di mobile.' }
+      { label: 'Problem', text: 'Client wanted a personal, warm digital gift.' },
+      { label: 'Solution', text: 'Soft storytelling with mood switch and audio.' },
+      { label: 'Result', text: 'An intimate, memorable mobile experience.' }
     ],
-    note: 'Project client: copy dan konten disesuaikan kebutuhan pemesan.',
+    note: 'Client project: copy and content customized to the request.',
     links: [
       { label: 'Demo', href: 'https://formyqueencell.netlify.app/' },
       { label: 'Repo', href: 'https://github.com/Vinzz2303/buatcelyn' }

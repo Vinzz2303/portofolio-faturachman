@@ -10,7 +10,7 @@ export default function AiChat({ sectionId }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'Halo! Tanyakan apa saja tentang project atau skill saya.' }
+    { role: 'assistant', content: 'Hi! Ask me anything about my projects or skills.' }
   ])
 
   const sendMessage = async () => {
@@ -59,8 +59,8 @@ export default function AiChat({ sectionId }) {
     } catch (err) {
       setError(
         provider === 'local'
-          ? 'Local AI tidak aktif. Jalankan Ollama di laptop kamu untuk demo.'
-          : err?.message || 'Groq AI error. Pastikan GROQ_API_KEY sudah diset di Netlify.'
+          ? 'Local AI is not running. Start Ollama on your laptop for the demo.'
+          : err?.message || 'Groq AI error. Make sure GROQ_API_KEY is set in Netlify.'
       )
     } finally {
       setLoading(false)
@@ -71,7 +71,7 @@ export default function AiChat({ sectionId }) {
     <section id={sectionId} className="ai container reveal">
       <h2>AI Assistant</h2>
       <p className="ai-sub">
-        Pilih mode: <strong>Local (Ollama)</strong> untuk demo pribadi, atau <strong>Groq</strong> untuk publik.
+        Choose mode: <strong>Local (Ollama)</strong> for private demo, or <strong>Groq</strong> for public use.
       </p>
 
       <div className="ai-toggle">
@@ -103,7 +103,7 @@ export default function AiChat({ sectionId }) {
         <div className="ai-input">
           <input
             type="text"
-            placeholder="Tanya tentang project, skill, atau services..."
+            placeholder="Ask about projects, skills, or services..."
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => (e.key === 'Enter' ? sendMessage() : null)}

@@ -5,23 +5,23 @@ export default function Contact({ sectionId }){
     <section id={sectionId} className="contact container reveal">
       <h2>Contact</h2>
       <p>
-        Butuh landing page atau UI yang rapi? Kirim email aja.
+        Need a clean landing page or UI? Send me an email.
         Reach out anytime: <a href="mailto:faturachmanalkahfi7@gmail.com">faturachmanalkahfi7@gmail.com</a>
       </p>
       <div className="faq">
         <h3>FAQ</h3>
         <div className="faq-grid">
           <div className="faq-item">
-            <h4>Berapa lama pengerjaan?</h4>
-            <p>Biasanya 3–10 hari tergantung scope dan revisi.</p>
+            <h4>How long does it take?</h4>
+            <p>Usually 3-10 days depending on scope and revisions.</p>
           </div>
           <div className="faq-item">
-            <h4>Bisa desain dari nol?</h4>
-            <p>Bisa. Kamu cukup kasih brief dan referensi, sisanya saya rapikan.</p>
+            <h4>Can you design from scratch?</h4>
+            <p>Yes. Share your brief and references, I will handle the rest.</p>
           </div>
           <div className="faq-item">
-            <h4>Bisa maintenance setelah launch?</h4>
-            <p>Bisa. Termasuk update konten kecil dan perbaikan minor.</p>
+            <h4>Do you offer maintenance after launch?</h4>
+            <p>Yes. It includes small content updates and minor fixes.</p>
           </div>
         </div>
       </div>
