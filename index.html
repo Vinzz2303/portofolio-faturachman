@@ -50,7 +50,19 @@
         "inLanguage": "en"
       }
     </script>
-    <script defer data-domain="portofolio-faturachmanalkahfi.netlify.app" src="https://plausible.io/js/script.js"></script>
+    <script>
+      if (
+        location.hostname !== 'localhost' &&
+        location.hostname !== '127.0.0.1' &&
+        location.hostname !== ''
+      ) {
+        const plausible = document.createElement('script')
+        plausible.defer = true
+        plausible.dataset.domain = 'portofolio-faturachmanalkahfi.netlify.app'
+        plausible.src = 'https://plausible.io/js/script.js'
+        document.head.appendChild(plausible)
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { API_URL } from '../utils/api'
 
 export default function ResetPassword() {
   const location = useLocation()
@@ -19,7 +20,7 @@ export default function ResetPassword() {
     setLoading(true)
     setError('')
     try {
-      const res = await fetch('/api/auth/reset', {
+      const res = await fetch(`${API_URL}/api/auth/reset`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, token, password })

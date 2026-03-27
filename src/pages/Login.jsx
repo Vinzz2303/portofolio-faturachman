@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { API_URL } from '../utils/api'
 
 const STORAGE_KEY = 'lifeos-auth'
 
@@ -17,7 +18,7 @@ export default function Login() {
     setLoading(true)
     setError('')
     try {
-      const res = await fetch('/api/login', {
+      const res = await fetch(`${API_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), password })
@@ -31,8 +32,7 @@ export default function Login() {
       window.localStorage.setItem('lifeOS_token', data?.token || '')
       window.localStorage.setItem('lifeOS_user', data?.user?.fullname || email.trim())
       window.dispatchEvent(new Event('lifeos-auth'))
-      const nextPath = location.state?.from || '/dashboard'
-      navigate(nextPath, { replace: true })
+      navigate('/dashboard', { replace: true })
     } catch (err) {
       setError(err?.message || 'Login gagal')
     } finally {

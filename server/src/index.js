@@ -24,6 +24,260 @@ app.use((req, res, next) => {
   next();
 });
 
+const sp500Cache = {
+  data: null,
+  timestamp: 0
+};
+const sp500IntradayCache = {
+  data: null,
+  timestamp: 0,
+  interval: "5min"
+};
+const xauCache = {
+  data: null,
+  timestamp: 0
+};
+const xauIntradayCache = {
+  data: null,
+  timestamp: 0,
+  interval: "5min"
+};
+const lastGood = {
+  sp500Daily: null,
+  sp500Intraday: null,
+  xauDaily: null,
+  xauIntraday: null
+};
+
+const isAlphaPremium = process.env.ALPHAVANTAGE_PREMIUM === "true";
+const metalpriceKey = process.env.METALPRICE_API_KEY || "";
+const metalpriceBaseUrl = "https://api.metalpriceapi.com/v1";
+
+const toDateString = value => value.toISOString().slice(0, 10);
+const toMidnight = value => new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
+
+const fetchSp500Series = async days => {
+  const apiKey = process.env.ALPHAVANTAGE_API_KEY;
+  if (!apiKey) {
+    throw new Error("ALPHAVANTAGE_API_KEY missing");
+  }
+
+  const cacheTtlMs = Number(process.env.MARKET_CACHE_TTL_MS || 60 * 60 * 1000);
+  const now = Date.now();
+  if (sp500Cache.data && now - sp500Cache.timestamp < cacheTtlMs) {
+    return sp500Cache.data.slice(-days);
+  }
+
+  const url =
+    "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=SPY&outputsize=compact&apikey=" +
+    apiKey;
+
+  const response = await axios.get(url, { timeout: 12000 });
+  const series = response?.data?.["Time Series (Daily)"];
+  if (!series) {
+    const note = response?.data?.Note || response?.data?.["Error Message"];
+    throw new Error(note || "Failed to load market data");
+  }
+
+  const points = Object.keys(series)
+    .map(date => {
+      const open = Number(series[date]?.["1. open"] || 0);
+      const high = Number(series[date]?.["2. high"] || 0);
+      const low = Number(series[date]?.["3. low"] || 0);
+      const close = Number(series[date]?.["4. close"] || 0);
+      return {
+        time: date,
+        open,
+        high,
+        low,
+        close
+      };
+    })
+    .filter(point => point.open && point.high && point.low && point.close)
+    .sort((a, b) => a.time.localeCompare(b.time));
+
+  sp500Cache.data = points;
+  sp500Cache.timestamp = now;
+  lastGood.sp500Daily = points;
+  return points.slice(-days);
+};
+
+const fetchSp500Intraday = async (interval, points) => {
+  const apiKey = process.env.ALPHAVANTAGE_API_KEY;
+  if (!apiKey) {
+    throw new Error("ALPHAVANTAGE_API_KEY missing");
+  }
+
+  const cacheTtlMs = Number(process.env.MARKET_CACHE_TTL_MS || 60 * 60 * 1000);
+  const now = Date.now();
+  if (
+    sp500IntradayCache.data &&
+    sp500IntradayCache.interval === interval &&
+    now - sp500IntradayCache.timestamp < cacheTtlMs
+  ) {
+    return sp500IntradayCache.data.slice(-points);
+  }
+
+  const url =
+    "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=SPY&interval=" +
+    interval +
+    "&outputsize=compact&apikey=" +
+    apiKey;
+
+  const response = await axios.get(url, { timeout: 12000 });
+  const series = response?.data?.[`Time Series (${interval})`];
+  if (!series) {
+    const note = response?.data?.Note || response?.data?.["Error Message"];
+    throw new Error(note || "Failed to load market data");
+  }
+
+  const pointsData = Object.keys(series)
+    .map(date => {
+      const open = Number(series[date]?.["1. open"] || 0);
+      const high = Number(series[date]?.["2. high"] || 0);
+      const low = Number(series[date]?.["3. low"] || 0);
+      const close = Number(series[date]?.["4. close"] || 0);
+      return {
+        time: Math.floor(new Date(date).getTime() / 1000),
+        open,
+        high,
+        low,
+        close
+      };
+    })
+    .filter(point => point.open && point.high && point.low && point.close)
+    .sort((a, b) => a.time - b.time);
+
+  sp500IntradayCache.data = pointsData;
+  sp500IntradayCache.timestamp = now;
+  sp500IntradayCache.interval = interval;
+  lastGood.sp500Intraday = pointsData;
+  return pointsData.slice(-points);
+};
+
+const fetchXauDaily = async days => {
+  if (!metalpriceKey) {
+    const err = new Error("METALPRICE_API_KEY missing");
+    err.code = "XAU_UNAVAILABLE";
+    throw err;
+  }
+
+  const cacheTtlMs = Number(process.env.MARKET_CACHE_TTL_MS || 60 * 60 * 1000);
+  const now = Date.now();
+  if (xauCache.data && now - xauCache.timestamp < cacheTtlMs) {
+    return xauCache.data.slice(-days);
+  }
+
+  const end = toMidnight(new Date());
+  const start = toMidnight(new Date(end.getTime() - (days - 1) * 86400000));
+
+  const response = await axios.get(`${metalpriceBaseUrl}/timeframe`, {
+    params: {
+      api_key: metalpriceKey,
+      base: "USD",
+      currencies: "XAU",
+      start_date: toDateString(start),
+      end_date: toDateString(end)
+    },
+    timeout: 12000
+  });
+
+  const rates = response?.data?.rates;
+  if (!rates) {
+    const message = response?.data?.error?.info || response?.data?.error || "MetalpriceAPI error";
+    const err = new Error(message);
+    err.code = "XAU_UNAVAILABLE";
+    throw err;
+  }
+
+  const points = Object.keys(rates)
+    .map(date => {
+      const daily = rates[date] || {};
+      const usdXau = Number(daily.USDXAU || 0);
+      const xau = Number(daily.XAU || 0);
+      const close = usdXau || (xau ? 1 / xau : 0);
+      if (!close) return null;
+      return {
+        time: date,
+        open: close,
+        high: close,
+        low: close,
+        close
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.time.localeCompare(b.time));
+
+  xauCache.data = points;
+  xauCache.timestamp = now;
+  lastGood.xauDaily = points;
+  return points.slice(-days);
+};
+
+const fetchXauIntraday = async (interval, points) => {
+  if (!metalpriceKey) {
+    const err = new Error("METALPRICE_API_KEY missing");
+    err.code = "XAU_UNAVAILABLE";
+    throw err;
+  }
+
+  const cacheTtlMs = Number(process.env.MARKET_CACHE_TTL_MS || 60 * 60 * 1000);
+  const now = Date.now();
+  if (
+    xauIntradayCache.data &&
+    xauIntradayCache.interval === interval &&
+    now - xauIntradayCache.timestamp < cacheTtlMs
+  ) {
+    return xauIntradayCache.data.slice(-points);
+  }
+
+  const end = toMidnight(new Date());
+  const start = toMidnight(new Date(end.getTime() - 86400000));
+
+  const response = await axios.get(`${metalpriceBaseUrl}/hourly`, {
+    params: {
+      api_key: metalpriceKey,
+      base: "USD",
+      currency: "XAU",
+      start_date: toDateString(start),
+      end_date: toDateString(end)
+    },
+    timeout: 12000
+  });
+
+  const hourlyRates = response?.data?.rates;
+  if (!Array.isArray(hourlyRates)) {
+    const message = response?.data?.error?.info || response?.data?.error || "MetalpriceAPI error";
+    const err = new Error(message);
+    err.code = "XAU_UNAVAILABLE";
+    throw err;
+  }
+
+  const pointsData = hourlyRates
+    .map(entry => {
+      const rate = entry?.rates || {};
+      const usdXau = Number(rate.USDXAU || 0);
+      const xau = Number(rate.XAU || 0);
+      const close = usdXau || (xau ? 1 / xau : 0);
+      if (!close) return null;
+      return {
+        time: Number(entry.timestamp),
+        open: close,
+        high: close,
+        low: close,
+        close
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.time - b.time);
+
+  xauIntradayCache.data = pointsData;
+  xauIntradayCache.timestamp = now;
+  xauIntradayCache.interval = interval;
+  lastGood.xauIntraday = pointsData;
+  return pointsData.slice(-points);
+};
+
 const parsePayload = req => {
   if (typeof req.body === "string") {
     try {
@@ -216,6 +470,102 @@ app.get("/api/investment-summary", authMiddleware, async (req, res) => {
         "Maaf, layanan sedang tidak tersedia. Coba lagi beberapa saat.",
       error: err?.message || "Unknown error",
     });
+  }
+});
+
+app.get("/api/market/sp500", authMiddleware, async (req, res) => {
+  try {
+    const days = Math.min(Math.max(Number(req.query.days || 30), 7), 120);
+    const data = await fetchSp500Series(days);
+    res.status(200).json({ data });
+  } catch (err) {
+    res.status(503).json({
+      error: err?.message || "Market data unavailable"
+    });
+  }
+});
+
+app.get("/api/market/sp500/intraday", authMiddleware, async (req, res) => {
+  try {
+    const interval = req.query.interval || "5min";
+    const points = Math.min(Math.max(Number(req.query.points || 200), 50), 400);
+    if (!isAlphaPremium) {
+      const fallback = await fetchSp500Series(7);
+      return res.status(200).json({ data: fallback, fallback: "daily" });
+    }
+    const data = await fetchSp500Intraday(interval, points);
+    res.status(200).json({ data, interval });
+  } catch (err) {
+    console.error("SP500_INTRADAY_ERROR", err?.message || err);
+    try {
+      const fallback = await fetchSp500Series(30);
+      res.status(200).json({ data: fallback, fallback: "daily" });
+    } catch (fallbackErr) {
+      if (lastGood.sp500Intraday) {
+        return res.status(200).json({ data: lastGood.sp500Intraday, fallback: "cached" });
+      }
+      if (lastGood.sp500Daily) {
+        return res.status(200).json({ data: lastGood.sp500Daily, fallback: "cached-daily" });
+      }
+      console.error("SP500_FALLBACK_ERROR", fallbackErr?.message || fallbackErr);
+      res.status(503).json({
+        error: err?.message || fallbackErr?.message || "Market data unavailable"
+      });
+    }
+  }
+});
+
+app.get("/api/market/xau", authMiddleware, async (req, res) => {
+  try {
+    const days = Math.min(Math.max(Number(req.query.days || 30), 7), 120);
+    const data = await fetchXauDaily(days);
+    res.status(200).json({ data });
+  } catch (err) {
+    if (err?.code === "XAU_UNAVAILABLE") {
+      return res.status(200).json({
+        data: [],
+        note: "XAU daily candles require a supported provider or premium access."
+      });
+    }
+    res.status(503).json({
+      error: err?.message || "Market data unavailable"
+    });
+  }
+});
+
+app.get("/api/market/xau/intraday", authMiddleware, async (req, res) => {
+  try {
+    const interval = req.query.interval || "5min";
+    const points = Math.min(Math.max(Number(req.query.points || 200), 50), 400);
+    if (!isAlphaPremium) {
+      const fallback = await fetchXauDaily(7);
+      return res.status(200).json({ data: fallback, fallback: "daily" });
+    }
+    const data = await fetchXauIntraday(interval, points);
+    res.status(200).json({ data, interval });
+  } catch (err) {
+    console.error("XAU_INTRADAY_ERROR", err?.message || err);
+    try {
+      const fallback = await fetchXauDaily(30);
+      res.status(200).json({ data: fallback, fallback: "daily" });
+    } catch (fallbackErr) {
+      if (err?.code === "XAU_UNAVAILABLE" || fallbackErr?.code === "XAU_UNAVAILABLE") {
+        return res.status(200).json({
+          data: [],
+          note: "XAU intraday candles require a supported provider or premium access."
+        });
+      }
+      if (lastGood.xauIntraday) {
+        return res.status(200).json({ data: lastGood.xauIntraday, fallback: "cached" });
+      }
+      if (lastGood.xauDaily) {
+        return res.status(200).json({ data: lastGood.xauDaily, fallback: "cached-daily" });
+      }
+      console.error("XAU_FALLBACK_ERROR", fallbackErr?.message || fallbackErr);
+      res.status(503).json({
+        error: err?.message || fallbackErr?.message || "Market data unavailable"
+      });
+    }
   }
 });
 

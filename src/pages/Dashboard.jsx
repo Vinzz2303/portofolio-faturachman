@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import AiChat from '../components/AiChat'
 import MarketDashboard from '../components/MarketDashboard'
+import { API_URL } from '../utils/api'
 
 const initialState = {
   summary: '',
@@ -9,11 +10,11 @@ const initialState = {
   error: ''
 }
 
-const formatShortDate = value => {
-  if (!value) return ''
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return value
-  return date.toLocaleDateString('id-ID', { month: 'short', day: 'numeric' })
+const formatSummary = summary => {
+  if (!summary) return []
+  const cleaned = summary.replace(/\*\*/g, '').replace(/\s+/g, ' ').trim()
+  const sentences = cleaned.split(/(?<=[.!?])\s+/).filter(Boolean)
+  return sentences.slice(0, 6)
 }
 
 export default function Dashboard() {
@@ -24,7 +25,7 @@ export default function Dashboard() {
     setState(prev => ({ ...prev, loading: true, error: '' }))
 
     const token = window.localStorage.getItem('lifeOS_token')
-    fetch('/api/investment-summary', {
+    fetch(`${API_URL}/api/investment-summary`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     })
       .then(async res => {
@@ -60,23 +61,15 @@ export default function Dashboard() {
 
   const marketProps = useMemo(() => {
     const antam = state.meta?.instruments?.ANTAM
-    const sp500 = state.meta?.instruments?.SP500
 
     const antamData =
       antam && !antam.error
         ? { price: antam.latestPrice, change: antam.delta, updatedAt: antam.latestDate }
         : undefined
-
-    const sp500Data =
-      sp500 && !sp500.error
-        ? [
-            { date: formatShortDate(sp500.previousDate), value: sp500.previousPrice },
-            { date: formatShortDate(sp500.latestDate), value: sp500.latestPrice }
-          ]
-        : undefined
-
-    return { antam: antamData, sp500: sp500Data }
+    return { antam: antamData, sp500: [] }
   }, [state.meta])
+
+  const summaryItems = useMemo(() => formatSummary(state.summary), [state.summary])
 
   return (
     <section className="container dashboard-shell">
@@ -89,14 +82,26 @@ export default function Dashboard() {
       </div>
 
       <div className="dashboard-grid">
-        <div className="card">
+        <div className="card dashboard-card dashboard-summary">
           <h3>Ringkasan Investasi</h3>
           {state.loading && <p className="card-note">Memuat ringkasan...</p>}
           {state.error && <p className="card-note warn">{state.error}</p>}
-          {!state.loading && !state.error && <p className="card-note">{state.summary}</p>}
+          {!state.loading && !state.error && (
+            <>
+              {summaryItems.length ? (
+                <ul className="summary-list">
+                  {summaryItems.map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="card-note summary-text">Ringkasan belum tersedia.</p>
+              )}
+            </>
+          )}
         </div>
 
-        <div className="card">
+        <div className="card dashboard-card">
           <AiChat
             summary={state.summary}
             meta={state.meta}

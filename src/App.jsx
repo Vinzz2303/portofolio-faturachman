@@ -7,6 +7,7 @@ import Projects from './components/Projects'
 import AiChat from './components/AiChat'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
+import ScrollToHash from './components/ScrollToHash'
 import Dashboard from './pages/Dashboard'
 import LifeOS from './pages/LifeOS'
 import Login from './pages/Login'
@@ -57,6 +58,7 @@ export default function App() {
   return (
     <div className="app">
       <Navbar />
+      <ScrollToHash />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route
