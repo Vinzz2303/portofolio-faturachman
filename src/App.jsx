@@ -1,4 +1,5 @@
 import React from 'react'
+import { Route, Routes } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import About from './components/About'
@@ -6,6 +7,13 @@ import Projects from './components/Projects'
 import AiChat from './components/AiChat'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
+import Dashboard from './pages/Dashboard'
+import LifeOS from './pages/LifeOS'
+import Login from './pages/Login'
+import Signup from './pages/Signup'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
+import ProtectedRoute from './pages/ProtectedRoute'
 
 const sections = [
   'hero',
@@ -15,7 +23,7 @@ const sections = [
   'contact'
 ]
 
-export default function App() {
+function HomePage() {
   React.useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const elements = document.querySelectorAll('.reveal')
@@ -35,15 +43,44 @@ export default function App() {
   }, [])
 
   return (
+    <main>
+      <Hero sectionId={sections[0]} />
+      <About sectionId={sections[1]} />
+      <Projects sectionId={sections[2]} />
+      <AiChat sectionId={sections[3]} />
+      <Contact sectionId={sections[4]} />
+    </main>
+  )
+}
+
+export default function App() {
+  return (
     <div className="app">
       <Navbar />
-      <main>
-        <Hero sectionId={sections[0]} />
-        <About sectionId={sections[1]} />
-        <Projects sectionId={sections[2]} />
-        <AiChat sectionId={sections[3]} />
-        <Contact sectionId={sections[4]} />
-      </main>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/lifeos"
+          element={
+            <ProtectedRoute>
+              <LifeOS />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot" element={<ForgotPassword />} />
+        <Route path="/reset" element={<ResetPassword />} />
+        <Route path="*" element={<HomePage />} />
+      </Routes>
       <Footer />
     </div>
   )
