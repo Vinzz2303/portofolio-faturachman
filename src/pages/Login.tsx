@@ -31,6 +31,7 @@ export default function Login() {
       window.localStorage.setItem(STORAGE_KEY, 'true')
       window.localStorage.setItem('lifeOS_token', data?.token || '')
       window.localStorage.setItem('lifeOS_user', data?.user?.fullname || email.trim())
+      window.localStorage.setItem('lifeOS_user_email', data?.user?.email || email.trim())
       window.dispatchEvent(new Event('lifeos-auth'))
       navigate('/dashboard', { replace: true })
     } catch (err) {

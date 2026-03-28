@@ -65,6 +65,11 @@ export type LoginResponse = {
   }
 }
 
+export type LocalUserProfile = {
+  fullname: string
+  email: string
+}
+
 export type ProtectedRouteProps = {
   children: ReactNode
 }

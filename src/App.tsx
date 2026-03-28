@@ -15,6 +15,7 @@ import Signup from './pages/Signup'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import ProtectedRoute from './pages/ProtectedRoute'
+import Profile from './pages/Profile'
 
 const sections = ['hero', 'about', 'projects', 'ai', 'contact'] as const
 
@@ -75,6 +76,14 @@ export default function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot" element={<ForgotPassword />} />
         <Route path="/reset" element={<ResetPassword />} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<HomePage />} />
       </Routes>
       <Footer />

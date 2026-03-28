@@ -36,6 +36,7 @@ export const clearAuth = () => {
   try {
     window.localStorage.removeItem(STORAGE_KEY)
     window.localStorage.removeItem('lifeOS_user')
+    window.localStorage.removeItem('lifeOS_user_email')
     window.localStorage.removeItem('lifeOS_token')
     window.dispatchEvent(new Event('lifeos-auth'))
   } catch (error) {
