@@ -113,6 +113,30 @@ const parsePayload = <T>(req: Request): T => {
   return ((req.body || {}) as T)
 }
 
+const getErrorMessage = (error: unknown, fallback: string): string => {
+  if (error instanceof Error && error.message.trim()) {
+    return error.message
+  }
+
+  if (typeof error === 'object' && error) {
+    const maybeSqlMessage = Reflect.get(error, 'sqlMessage')
+    if (typeof maybeSqlMessage === 'string' && maybeSqlMessage.trim()) {
+      return maybeSqlMessage
+    }
+
+    const maybeCode = Reflect.get(error, 'code')
+    if (typeof maybeCode === 'string' && maybeCode.trim()) {
+      return maybeCode
+    }
+  }
+
+  return fallback
+}
+
+const logError = (label: string, error: unknown) => {
+  console.error(label, error)
+}
+
 const toDateString = (value: Date) => value.toISOString().slice(0, 10)
 
 const fetchSp500Series = async (days: number): Promise<MarketPoint[]> => {
@@ -292,9 +316,10 @@ app.post('/api/signup', async (req, res) => {
       [fullname, email, hash]
     )
 
-    return res.status(201).json({ id: result.insertId, fullname, email })
+      return res.status(201).json({ id: result.insertId, fullname, email })
   } catch (error) {
-    return res.status(500).json({ error: error instanceof Error ? error.message : 'Signup error' })
+    logError('SIGNUP_ERROR', error)
+    return res.status(500).json({ error: getErrorMessage(error, 'Signup error') })
   }
 })
 
@@ -326,12 +351,13 @@ app.post('/api/login', async (req, res) => {
       { expiresIn: '12h' }
     )
 
-    return res.status(200).json({
-      token,
-      user: { id: user.id, fullname: user.fullname, email: user.email }
-    })
+      return res.status(200).json({
+        token,
+        user: { id: user.id, fullname: user.fullname, email: user.email }
+      })
   } catch (error) {
-    return res.status(500).json({ error: error instanceof Error ? error.message : 'Auth error' })
+    logError('LOGIN_ERROR', error)
+    return res.status(500).json({ error: getErrorMessage(error, 'Auth error') })
   }
 })
 
