@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import type { AiMessage, InvestmentMeta, SectionProps } from '../types'
+import { API_URL } from '../utils/api'
 
 const SYSTEM_PROMPT =
   'You are a helpful AI assistant for Faturachman Al kahfi portfolio website. ' +
@@ -136,7 +137,7 @@ export default function AiChat({
       const url =
         provider === 'local'
           ? 'http://localhost:11434/api/generate'
-          : '/.netlify/functions/groq-chat'
+          : `${API_URL}/api/ai-chat`
 
       const body =
         provider === 'local'
@@ -151,7 +152,7 @@ export default function AiChat({
                 .join('\n'),
               stream: false
             }
-          : { messages: nextMessages }
+          : { messages: nextMessages, summary, meta }
 
       const res = await fetch(url, {
         method: 'POST',
@@ -181,7 +182,7 @@ export default function AiChat({
           ? 'Local AI is not running. Start Ollama on your laptop for the demo.'
           : err instanceof Error
             ? err.message
-            : 'Groq AI error. Make sure GROQ_API_KEY is set in Netlify.'
+            : 'Groq AI error. Make sure GROQ_API_KEY is set on the VPS backend.'
       )
     } finally {
       setLoading(false)

@@ -493,7 +493,7 @@ const sendGroq = async (messages: AiMessage[]) => {
   }
 }
 
-app.post('/api/ai-chat', authMiddleware, async (req, res) => {
+app.post('/api/ai-chat', async (req, res) => {
   try {
     const payload = parsePayload<AiChatBody>(req)
     const { messages, summary, meta } = payload
@@ -515,7 +515,7 @@ app.post('/api/ai-chat', authMiddleware, async (req, res) => {
   }
 })
 
-app.get('/api/ai-chat', authMiddleware, (_req, res) => {
+app.get('/api/ai-chat', (_req, res) => {
   res.status(200).json({ status: 'ok' })
 })
 

@@ -57,12 +57,15 @@ export default function LifeOS() {
 
   useEffect(() => {
     let active = true
+    const controller = new AbortController()
+    const timeoutId = window.setTimeout(() => controller.abort(), 15000)
     setLoading(true)
     setError('')
 
     const token = window.localStorage.getItem('lifeOS_token')
     void fetch(`${API_URL}/api/investment-summary`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {}
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      signal: controller.signal
     })
       .then(async (res) => {
         if (!res.ok) {
@@ -79,12 +82,20 @@ export default function LifeOS() {
       })
       .catch((err: unknown) => {
         if (!active) return
-        setError(err instanceof Error ? err.message : 'Gagal mengambil data')
+        setError(
+          err instanceof Error && err.name === 'AbortError'
+            ? 'Request timeout. Cek backend VPS, database, atau API key market.'
+            : err instanceof Error
+              ? err.message
+              : 'Gagal mengambil data'
+        )
         setLoading(false)
       })
 
     return () => {
       active = false
+      window.clearTimeout(timeoutId)
+      controller.abort()
     }
   }, [])
 
