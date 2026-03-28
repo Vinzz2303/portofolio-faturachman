@@ -7,7 +7,7 @@ export default function ForgotPassword() {
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!email.trim()) return
     setLoading(true)
@@ -24,7 +24,7 @@ export default function ForgotPassword() {
       }
       setDone(true)
     } catch (err) {
-      setError(err?.message || 'Request gagal')
+      setError(err instanceof Error ? err.message : 'Request gagal')
     } finally {
       setLoading(false)
     }

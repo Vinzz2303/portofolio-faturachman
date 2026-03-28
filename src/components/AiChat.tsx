@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import type { AiMessage, InvestmentMeta, SectionProps } from '../types'
 
 const SYSTEM_PROMPT =
   'You are a helpful AI assistant for Faturachman Al kahfi portfolio website. ' +
@@ -8,10 +9,32 @@ const DATA_PROMPT =
   'Kamu adalah AI Financial Analyst untuk Fatur LifeOS. ' +
   'Jawab singkat, profesional, dan jelas. Fokus pada data yang diberikan.'
 
-const buildDataContext = (summary, meta) => {
+type AiProvider = 'local' | 'groq'
+
+type AiChatProps = Partial<SectionProps> & {
+  summary?: string
+  meta?: InvestmentMeta | null
+  variant?: 'section' | 'panel'
+  disabled?: boolean
+}
+
+type GroqResponse = {
+  choices?: Array<{
+    message?: {
+      content?: string
+    }
+  }>
+}
+
+type OllamaResponse = {
+  response?: string
+}
+
+const buildDataContext = (summary?: string, meta?: InvestmentMeta | null) => {
   const antam = meta?.instruments?.ANTAM
   const sp500 = meta?.instruments?.SP500
-  const parts = []
+  const parts: string[] = []
+
   if (summary) parts.push(`Ringkasan: ${summary}`)
   if (antam && !antam.error) {
     parts.push(
@@ -23,18 +46,28 @@ const buildDataContext = (summary, meta) => {
       `S&P 500 terbaru ${sp500.latestPrice} (delta ${sp500.delta}) pada ${sp500.latestDate}.`
     )
   }
+
   return parts.join(' ')
 }
 
-export default function AiChat({ sectionId, summary, meta, variant }) {
-  const defaultProvider = summary || meta ? 'local' : 'groq'
-  const [provider, setProvider] = useState(defaultProvider)
+const defaultMessages: AiMessage[] = [
+  { role: 'assistant', content: 'Hi! Ask me anything about my projects or skills.' }
+]
+
+export default function AiChat({
+  sectionId,
+  summary,
+  meta,
+  variant = 'section',
+  disabled = false
+}: AiChatProps) {
+  const defaultProvider: AiProvider = summary || meta ? 'local' : 'groq'
+  const [provider, setProvider] = useState<AiProvider>(defaultProvider)
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'Hi! Ask me anything about my projects or skills.' }
-  ])
+  const [messages, setMessages] = useState<AiMessage[]>(defaultMessages)
+
   const storageKey = `lifeos_chat_${provider}`
   const dataContext = useMemo(() => buildDataContext(summary, meta), [summary, meta])
   const isDataChat = Boolean(summary || meta)
@@ -48,34 +81,54 @@ export default function AiChat({ sectionId, summary, meta, variant }) {
   useEffect(() => {
     try {
       const saved = window.localStorage.getItem(storageKey)
-      if (!saved) return
-      const parsed = JSON.parse(saved)
-      if (Array.isArray(parsed) && parsed.length) {
-        setMessages(parsed)
+      if (!saved) {
+        setMessages(defaultMessages)
+        return
       }
-    } catch (err) {
-      // ignore
+
+      const parsed = JSON.parse(saved) as unknown
+      if (!Array.isArray(parsed) || !parsed.length) {
+        setMessages(defaultMessages)
+        return
+      }
+
+      const validMessages = parsed.filter(
+        (message): message is AiMessage =>
+          Boolean(message) &&
+          typeof message === 'object' &&
+          'role' in message &&
+          'content' in message &&
+          typeof message.role === 'string' &&
+          typeof message.content === 'string'
+      )
+
+      setMessages(validMessages.length ? validMessages : defaultMessages)
+    } catch {
+      setMessages(defaultMessages)
     }
   }, [storageKey])
 
   useEffect(() => {
     try {
       window.localStorage.setItem(storageKey, JSON.stringify(messages))
-    } catch (err) {
-      // ignore
+    } catch {
+      // Ignore storage write errors.
     }
   }, [messages, storageKey])
 
   const sendMessage = async () => {
     const text = input.trim()
-    if (!text || loading) return
+    if (!text || loading || disabled) return
+
     setError('')
     setInput('')
-    const nextMessages = [
+
+    const nextMessages: AiMessage[] = [
       { role: 'system', content: isDataChat ? DATA_PROMPT : SYSTEM_PROMPT },
       ...messages,
       { role: 'user', content: text }
     ]
+
     setMessages(prev => [...prev, { role: 'user', content: text }])
     setLoading(true)
 
@@ -92,7 +145,7 @@ export default function AiChat({ sectionId, summary, meta, variant }) {
               prompt: [
                 `system: ${isDataChat ? DATA_PROMPT : SYSTEM_PROMPT}`,
                 dataContext ? `context: ${dataContext}` : '',
-                nextMessages.map(m => `${m.role}: ${m.content}`).join('\n')
+                nextMessages.map(message => `${message.role}: ${message.content}`).join('\n')
               ]
                 .filter(Boolean)
                 .join('\n'),
@@ -107,23 +160,28 @@ export default function AiChat({ sectionId, summary, meta, variant }) {
       })
 
       if (!res.ok) {
-        const text = await res.text()
-        throw new Error(text || 'Request failed')
+        const responseText = await res.text()
+        throw new Error(responseText || 'Request failed')
       }
 
-      const data = await res.json()
+      const data = (await res.json()) as OllamaResponse | GroqResponse
       const reply =
         provider === 'local'
-          ? data?.response
-          : data?.choices?.[0]?.message?.content
+          ? (data as OllamaResponse).response
+          : (data as GroqResponse).choices?.[0]?.message?.content
 
-      if (!reply) throw new Error('No reply from AI')
+      if (!reply) {
+        throw new Error('No reply from AI')
+      }
+
       setMessages(prev => [...prev, { role: 'assistant', content: reply }])
     } catch (err) {
       setError(
         provider === 'local'
           ? 'Local AI is not running. Start Ollama on your laptop for the demo.'
-          : err?.message || 'Groq AI error. Make sure GROQ_API_KEY is set in Netlify.'
+          : err instanceof Error
+            ? err.message
+            : 'Groq AI error. Make sure GROQ_API_KEY is set in Netlify.'
       )
     } finally {
       setLoading(false)
@@ -136,11 +194,13 @@ export default function AiChat({ sectionId, summary, meta, variant }) {
         <>
           <h2>AI Assistant</h2>
           <p className="ai-sub">
-            Choose mode: <strong>Local (Ollama)</strong> for private demo, or <strong>Groq</strong> for public use.
+            Choose mode: <strong>Local (Ollama)</strong> for private demo, or{' '}
+            <strong>Groq</strong> for public use.
           </p>
           <div className="ai-toggle">
             <button
               className={provider === 'groq' ? 'active' : ''}
+              disabled={disabled}
               onClick={() => setProvider('groq')}
               type="button"
             >
@@ -148,6 +208,7 @@ export default function AiChat({ sectionId, summary, meta, variant }) {
             </button>
             <button
               className={provider === 'local' ? 'active' : ''}
+              disabled={disabled}
               onClick={() => setProvider('local')}
               type="button"
             >
@@ -162,14 +223,15 @@ export default function AiChat({ sectionId, summary, meta, variant }) {
           <div className="ai-panel-head">
             <h3>AI Assistant</h3>
             <p className="ai-panel-sub">
-              Tanyakan ringkasan investasi, strategi, atau pergerakan XAU/USD & S&amp;P 500.
+              Tanyakan ringkasan investasi, strategi, atau pergerakan XAU/USD &amp; S&amp;P
+              500.
             </p>
           </div>
         )}
         <div className="ai-messages">
-          {messages.map((m, i) => (
-            <div key={i} className={`ai-msg ${m.role}`}>
-              <span>{m.content}</span>
+          {messages.map((message, index) => (
+            <div key={`${message.role}-${index}`} className={`ai-msg ${message.role}`}>
+              <span>{message.content}</span>
             </div>
           ))}
         </div>
@@ -177,12 +239,21 @@ export default function AiChat({ sectionId, summary, meta, variant }) {
         <div className="ai-input">
           <input
             type="text"
-            placeholder={isDataChat ? 'Tanya tentang ringkasan investasi...' : 'Ask about projects, skills, or services...'}
+            placeholder={
+              isDataChat
+                ? 'Tanya tentang ringkasan investasi...'
+                : 'Ask about projects, skills, or services...'
+            }
             value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => (e.key === 'Enter' ? sendMessage() : null)}
+            onChange={(event) => setInput(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                void sendMessage()
+              }
+            }}
+            disabled={disabled || loading}
           />
-          <button type="button" onClick={sendMessage} disabled={loading}>
+          <button type="button" onClick={() => void sendMessage()} disabled={disabled || loading}>
             {loading ? 'Thinking...' : 'Send'}
           </button>
         </div>

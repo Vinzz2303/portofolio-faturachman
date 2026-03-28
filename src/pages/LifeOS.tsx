@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { API_URL } from '../utils/api'
+import type { InstrumentSummary, InvestmentMeta, InvestmentSummaryResponse } from '../types'
 
 const defaultHealth = {
   sleep: '7.5h',
@@ -23,18 +24,22 @@ const currencyUsd = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 2
 })
 
-const buildInsight = (name, antam, sp500) => {
+const buildInsight = (
+  name: string,
+  antam?: InstrumentSummary,
+  sp500?: InstrumentSummary
+) => {
   if (!antam || antam.error || !sp500 || sp500.error) {
     return `Halo ${name}, data keuangan belum lengkap. Fokuskan hari ini pada tidur yang cukup dan progress task utama.`
   }
 
-  const antamTrend = antam.delta >= 0 ? 'naik' : 'turun'
-  const spTrend = sp500.delta >= 0 ? 'naik' : 'turun'
+  const antamTrend = (antam.delta ?? 0) >= 0 ? 'naik' : 'turun'
+  const spTrend = (sp500.delta ?? 0) >= 0 ? 'naik' : 'turun'
 
   return `Halo ${name}, emas spot (XAU/USD) sedang ${antamTrend} dan S&P 500 ${spTrend}. Tidurmu belum ideal semalam, jadi batasi kopi dan jaga ritme fokus agar keputusan finansial tetap tenang.`
 }
 
-const buildExecutiveBrief = summary => {
+const buildExecutiveBrief = (summary: string) => {
   if (!summary) return 'Ringkasan akan tampil setelah data tersedia.'
   const cleaned = summary.replace(/\*\*/g, '').replace(/\s+/g, ' ').trim()
   const sentences = cleaned.split(/(?<=[.!?])\s+/)
@@ -45,7 +50,7 @@ const buildExecutiveBrief = summary => {
 
 export default function LifeOS() {
   const [summary, setSummary] = useState('')
-  const [meta, setMeta] = useState(null)
+  const [meta, setMeta] = useState<InvestmentMeta | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [expanded, setExpanded] = useState(false)
@@ -56,25 +61,25 @@ export default function LifeOS() {
     setError('')
 
     const token = window.localStorage.getItem('lifeOS_token')
-    fetch(`${API_URL}/api/investment-summary`, {
+    void fetch(`${API_URL}/api/investment-summary`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     })
-      .then(async res => {
+      .then(async (res) => {
         if (!res.ok) {
           const text = await res.text()
           throw new Error(text || 'Request failed')
         }
-        return res.json()
+        return (await res.json()) as InvestmentSummaryResponse
       })
-      .then(data => {
+      .then((data) => {
         if (!active) return
-        setSummary(data?.summary || '')
-        setMeta(data?.meta || null)
+        setSummary(data.summary || '')
+        setMeta(data.meta || null)
         setLoading(false)
       })
-      .catch(err => {
+      .catch((err: unknown) => {
         if (!active) return
-        setError(err?.message || 'Gagal mengambil data')
+        setError(err instanceof Error ? err.message : 'Gagal mengambil data')
         setLoading(false)
       })
 
@@ -83,10 +88,7 @@ export default function LifeOS() {
     }
   }, [])
 
-  const userName = useMemo(
-    () => window.localStorage.getItem('lifeOS_user') || 'Fatur',
-    []
-  )
+  const userName = useMemo(() => window.localStorage.getItem('lifeOS_user') || 'Fatur', [])
 
   const antam = meta?.instruments?.ANTAM
   const sp500 = meta?.instruments?.SP500
@@ -105,7 +107,8 @@ export default function LifeOS() {
           <div className="eyebrow">Executive Life OS</div>
           <h2>LifeOS Control Room</h2>
           <p className="lead">
-            Ringkasan holistik yang memadukan kesehatan, produktivitas, dan finansial dalam satu tempat.
+            Ringkasan holistik yang memadukan kesehatan, produktivitas, dan finansial dalam satu
+            tempat.
           </p>
         </div>
 
@@ -168,7 +171,11 @@ export default function LifeOS() {
             <div className="lifeos-card premium-card">
               <h3>AI Executive Assistant</h3>
               <div className="ai-summary-card bg-zinc-900 p-8 rounded-2xl border border-zinc-800 shadow-lg">
-                <p className={`ai-summary-text leading-relaxed text-zinc-300 ${expanded ? '' : 'clamped'}`}>
+                <p
+                  className={`ai-summary-text leading-relaxed text-zinc-300 ${
+                    expanded ? '' : 'clamped'
+                  }`}
+                >
                   {expanded ? cleanedSummary || executiveBrief : executiveBrief}
                 </p>
                 {cleanedSummary && cleanedSummary.length > 240 && (
@@ -181,9 +188,7 @@ export default function LifeOS() {
                   </button>
                 )}
               </div>
-              <div className="lifeos-insight">
-                {insight}
-              </div>
+              <div className="lifeos-insight">{insight}</div>
             </div>
           </aside>
         </div>

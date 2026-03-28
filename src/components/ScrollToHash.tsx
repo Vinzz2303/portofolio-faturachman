@@ -14,11 +14,11 @@ export default function ScrollToHash() {
     const target = document.getElementById(id)
     if (!target) return
 
-    const timer = setTimeout(() => {
+    const timer = window.setTimeout(() => {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, 50)
 
-    return () => clearTimeout(timer)
+    return () => window.clearTimeout(timer)
   }, [location])
 
   return null

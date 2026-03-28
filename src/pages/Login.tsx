@@ -1,18 +1,18 @@
 import React, { useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { API_URL } from '../utils/api'
+import type { LoginResponse } from '../types'
 
 const STORAGE_KEY = 'lifeos-auth'
 
 export default function Login() {
   const navigate = useNavigate()
-  const location = useLocation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!email.trim() || !password) return
     setLoading(true)
@@ -24,17 +24,17 @@ export default function Login() {
         body: JSON.stringify({ email: email.trim(), password })
       })
       if (!res.ok) {
-        const text = await res.text()
-        throw new Error(text || 'Login gagal')
+        const errorData = (await res.json()) as { error?: string }
+        throw new Error(errorData.error || 'Login gagal')
       }
-      const data = await res.json()
+      const data = (await res.json()) as LoginResponse
       window.localStorage.setItem(STORAGE_KEY, 'true')
       window.localStorage.setItem('lifeOS_token', data?.token || '')
       window.localStorage.setItem('lifeOS_user', data?.user?.fullname || email.trim())
       window.dispatchEvent(new Event('lifeos-auth'))
       navigate('/dashboard', { replace: true })
     } catch (err) {
-      setError(err?.message || 'Login gagal')
+      setError(err instanceof Error ? err.message : 'Login gagal')
     } finally {
       setLoading(false)
     }

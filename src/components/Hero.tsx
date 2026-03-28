@@ -1,6 +1,7 @@
 import React from 'react'
+import type { SectionProps } from '../types'
 
-export default function Hero({ sectionId }){
+export default function Hero({ sectionId }: SectionProps) {
   return (
     <section id={sectionId} className="hero container reveal">
       <div className="hero-inner">
@@ -29,7 +30,7 @@ export default function Hero({ sectionId }){
           <div className="hero-photo">
             <picture>
               <source srcSet="/profile.webp" type="image/webp" />
-              <img src="/profile.png" alt="Faturachman Al kahfi" decoding="async" fetchpriority="high" />
+              <img src="/profile.png" alt="Faturachman Al kahfi" decoding="async" fetchPriority="high" />
             </picture>
           </div>
           <div className="hero-panel">

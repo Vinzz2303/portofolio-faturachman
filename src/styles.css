@@ -159,6 +159,9 @@ nav a:hover{color:var(--text)}
   background:rgba(214,178,107,0.12);
   color:var(--accent);
   font-weight:600;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:0.95rem;
 }
 .nav-cta:hover{
   color:var(--text);
@@ -186,8 +189,20 @@ nav a:hover{color:var(--text)}
   z-index:10;
 }
 .nav-dropdown:hover .nav-dropdown-menu,
-.nav-dropdown:focus-within .nav-dropdown-menu{
+.nav-dropdown:focus-within .nav-dropdown-menu,
+.nav-dropdown-menu.show{
   display:flex;
+}
+
+/* Accessibility - Focus Visible Indicator */
+a:focus-visible, 
+button:focus-visible, 
+input:focus-visible, 
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 4px;
 }
 .nav-dropdown-menu a{
   margin-left:0;
@@ -273,7 +288,11 @@ nav a:hover{color:var(--text)}
 }
 .hero-panel:hover{transform:translateY(-2px);border-color:rgba(214,178,107,0.4)}
 .hero-list{margin:0;padding-left:1.1rem;color:var(--muted)}
-.about,.projects,.contact,.ai{padding:5rem 0}
+.about,.projects,.contact,.ai{
+  padding:5rem 0;
+  content-visibility:auto;
+  contain-intrinsic-size:1px 900px;
+}
 .value-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
@@ -391,13 +410,47 @@ nav a:hover{color:var(--text)}
   border:1px solid var(--line);
   border-radius:14px;
   padding:1rem 1.1rem;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.faq-item:hover {
+  border-color: rgba(214,178,107,0.3);
+}
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  list-style: none; /* Hide default arrow */
+}
+.faq-item summary::-webkit-details-marker {
+  display: none; /* Hide default arrow in Safari */
+}
+.faq-item summary::after {
+  content: '+';
+  font-size: 1.4rem;
+  color: var(--accent);
+  transition: transform 0.3s ease;
+  line-height: 1;
+}
+.faq-item[open] summary::after {
+  transform: rotate(45deg); /* Turns + into an x */
 }
 .faq-item h4{
-  margin:0 0 0.4rem;
+  margin:0;
   font-size:1rem;
   font-family:"Manrope", "Segoe UI", sans-serif;
+  flex: 1;
 }
-.faq-item p{margin:0;color:var(--muted)}
+.faq-item p{
+  margin: 0.8rem 0 0;
+  color:var(--muted);
+  animation: fadeInDown 0.3s ease forwards;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .ai-sub{color:var(--muted);margin-top:0.6rem}
 .ai-toggle{display:flex;flex-wrap:wrap;gap:0.6rem;margin:1.2rem 0}
 .ai-toggle button{

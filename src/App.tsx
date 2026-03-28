@@ -16,20 +16,14 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import ProtectedRoute from './pages/ProtectedRoute'
 
-const sections = [
-  'hero',
-  'about',
-  'projects',
-  'ai',
-  'contact'
-]
+const sections = ['hero', 'about', 'projects', 'ai', 'contact'] as const
 
 function HomePage() {
   React.useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const elements = document.querySelectorAll('.reveal')
+    const elements = document.querySelectorAll<HTMLElement>('.reveal')
     const observer = new IntersectionObserver(
-      entries => {
+      (entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             entry.target.classList.add('in-view')

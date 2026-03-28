@@ -1,4 +1,19 @@
-exports.handler = async (event) => {
+type HandlerEvent = {
+  httpMethod?: string
+  body?: string | null
+}
+
+type HandlerResponse = {
+  statusCode: number
+  headers?: Record<string, string>
+  body: string
+}
+
+type GroqRequestBody = {
+  messages?: unknown[]
+}
+
+export const handler = async (event: HandlerEvent): Promise<HandlerResponse> => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' }
   }
@@ -8,18 +23,15 @@ exports.handler = async (event) => {
     return { statusCode: 500, body: 'Missing GROQ_API_KEY' }
   }
 
-  let body = {}
+  let body: GroqRequestBody = {}
   try {
-    body = JSON.parse(event.body || '{}')
+    body = JSON.parse(event.body || '{}') as GroqRequestBody
   } catch {
     return { statusCode: 400, body: 'Invalid JSON' }
   }
 
-  const messages = body?.messages || []
-
   const model = process.env.GROQ_MODEL || 'llama-3.1-8b-instant'
-
-  console.log('groq model:', model)
+  const messages = Array.isArray(body.messages) ? body.messages : []
 
   const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',

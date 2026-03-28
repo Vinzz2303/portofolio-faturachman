@@ -1,6 +1,7 @@
 import React from 'react'
+import type { SectionProps } from '../types'
 
-export default function Contact({ sectionId }){
+export default function Contact({ sectionId }: SectionProps) {
   return (
     <section id={sectionId} className="contact container reveal">
       <h2>Contact</h2>

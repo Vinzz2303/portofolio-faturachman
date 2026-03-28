@@ -1,6 +1,7 @@
 import React from 'react'
+import type { SectionProps } from '../types'
 
-export default function About({ sectionId }){
+export default function About({ sectionId }: SectionProps) {
   return (
     <section id={sectionId} className="about container reveal">
       <h2>About Me</h2>

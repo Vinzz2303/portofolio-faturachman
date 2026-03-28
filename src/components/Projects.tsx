@@ -1,6 +1,29 @@
 import React from 'react'
+import type { SectionProps } from '../types'
 
-const projects = [
+type ProjectLink = {
+  label: string
+  href: string
+}
+
+type CaseStudyItem = {
+  label: string
+  text: string
+}
+
+type Project = {
+  id: number
+  cover: string
+  title: string
+  desc: string
+  stack: string
+  highlights: string[]
+  caseStudy: CaseStudyItem[]
+  note: string
+  links: ProjectLink[]
+}
+
+const projects: Project[] = [
   {
     id: 1,
     cover: '/projects/central-emas.png',
@@ -53,38 +76,51 @@ const projects = [
   }
 ]
 
-export default function Projects({ sectionId }){
+export default function Projects({ sectionId }: SectionProps) {
   return (
     <section id={sectionId} className="projects container reveal">
       <h2>Projects</h2>
       <div className="grid">
-        {projects.map(p => (
-          <article key={p.id} className="card">
+        {projects.map(project => (
+          <article key={project.id} className="card">
             <div className="card-cover">
-              <img src={p.cover} alt={`${p.title} cover`} loading="lazy" decoding="async" />
+              <img
+                src={project.cover}
+                alt={`${project.title} cover`}
+                loading="lazy"
+                decoding="async"
+              />
             </div>
             <div className="card-body">
-              <h3>{p.title}</h3>
-              <p>{p.desc}</p>
-              <p className="card-meta"><strong>Stack:</strong> {p.stack}</p>
+              <h3>{project.title}</h3>
+              <p>{project.desc}</p>
+              <p className="card-meta">
+                <strong>Stack:</strong> {project.stack}
+              </p>
               <ul className="card-list">
-                {p.highlights.map((h, i) => (
-                  <li key={i}>{h}</li>
+                {project.highlights.map((highlight) => (
+                  <li key={highlight}>{highlight}</li>
                 ))}
               </ul>
               <div className="case-study">
-                {p.caseStudy.map((item, i) => (
-                  <div key={i} className="case-row">
+                {project.caseStudy.map((item) => (
+                  <div key={item.label} className="case-row">
                     <span className="case-label">{item.label}</span>
                     <span className="case-text">{item.text}</span>
                   </div>
                 ))}
               </div>
-              <p className="card-note">{p.note}</p>
+              <p className="card-note">{project.note}</p>
               <div className="card-links">
-                {p.links.map(l => (
-                  <a key={l.label} className="btn-outline" href={l.href} target="_blank" rel="noreferrer">
-                    {l.label}
+                {project.links.map((link) => (
+                  <a
+                    key={link.label}
+                    className="btn-outline"
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {link.label}
                   </a>
                 ))}
               </div>

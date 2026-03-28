@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
-export default function Navbar(){
+export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [userName, setUserName] = useState('')
   const location = useLocation()

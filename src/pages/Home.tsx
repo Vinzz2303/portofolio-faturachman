@@ -4,7 +4,7 @@ import About from '../components/About'
 import Projects from '../components/Projects'
 import Contact from '../components/Contact'
 
-const sections = ['hero', 'about', 'projects', 'contact']
+const sections = ['hero', 'about', 'projects', 'contact'] as const
 
 export default function Home() {
   return (

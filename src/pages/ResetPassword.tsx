@@ -14,7 +14,7 @@ export default function ResetPassword() {
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!email || !token || !password) return
     setLoading(true)
@@ -30,9 +30,9 @@ export default function ResetPassword() {
         throw new Error(text || 'Reset gagal')
       }
       setDone(true)
-      setTimeout(() => navigate('/login', { replace: true }), 1200)
+      window.setTimeout(() => navigate('/login', { replace: true }), 1200)
     } catch (err) {
-      setError(err?.message || 'Reset gagal')
+      setError(err instanceof Error ? err.message : 'Reset gagal')
     } finally {
       setLoading(false)
     }

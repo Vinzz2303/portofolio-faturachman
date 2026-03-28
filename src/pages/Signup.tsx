@@ -10,7 +10,7 @@ export default function Signup() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!fullname.trim() || !email.trim() || !password) return
     setLoading(true)
@@ -27,7 +27,7 @@ export default function Signup() {
       }
       navigate('/login', { replace: true })
     } catch (err) {
-      setError(err?.message || 'Signup gagal')
+      setError(err instanceof Error ? err.message : 'Signup gagal')
     } finally {
       setLoading(false)
     }
