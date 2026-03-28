@@ -56,6 +56,12 @@ export type AntamCardData = {
   updatedAt: string
 }
 
+export type GoldCardData = {
+  price: number | null
+  change: number
+  updatedAt: string
+}
+
 export type LoginResponse = {
   token?: string
   user?: {

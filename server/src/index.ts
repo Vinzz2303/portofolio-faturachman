@@ -22,6 +22,14 @@ type PricePointRow = RowDataPacket & {
   close: number
 }
 
+type MarketPriceRow = RowDataPacket & {
+  timestamp: Date | string
+  price_open: number | string | null
+  price_high: number | string | null
+  price_low: number | string | null
+  price_close: number | string | null
+}
+
 type UserRow = RowDataPacket & {
   id: number
   fullname: string
@@ -188,6 +196,30 @@ const fetchBtcDaily = async (days: number): Promise<MarketPoint[]> => {
   btcCache.timestamp = now
   lastGood.btcDaily = points
   return points
+}
+
+const fetchMarketSeriesFromDb = async (
+  instrument: string,
+  days: number
+): Promise<MarketPoint[]> => {
+  const [rows] = await pool.query<MarketPriceRow[]>(
+    `SELECT timestamp, price_open, price_high, price_low, price_close
+     FROM market_prices
+     WHERE instrument_name = ?
+       AND DATE(timestamp) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+     ORDER BY timestamp ASC`,
+    [instrument, days]
+  )
+
+  return rows
+    .map((row) => ({
+      time: new Date(row.timestamp).toISOString().slice(0, 10),
+      open: Number(row.price_open ?? row.price_close ?? 0),
+      high: Number(row.price_high ?? row.price_close ?? 0),
+      low: Number(row.price_low ?? row.price_close ?? 0),
+      close: Number(row.price_close ?? 0)
+    }))
+    .filter((point) => point.open && point.high && point.low && point.close)
 }
 
 const mailTransport = () => {
@@ -414,6 +446,21 @@ app.get('/api/market/sp500', authMiddleware, async (req, res) => {
     if (lastGood.sp500Daily) {
       return res.status(200).json({ data: lastGood.sp500Daily, fallback: 'cached' })
     }
+    res.status(503).json({
+      error: error instanceof Error ? error.message : 'Market data unavailable'
+    })
+  }
+})
+
+app.get('/api/market/gold', authMiddleware, async (req, res) => {
+  try {
+    const days = Math.min(Math.max(Number(req.query.days || 30), 7), 120)
+    const data = await fetchMarketSeriesFromDb('XAUUSD', days)
+    res.status(200).json({
+      data,
+      note: data.length ? '' : 'Data candle GOLD (XAU/USD) belum tersedia di database.'
+    })
+  } catch (error) {
     res.status(503).json({
       error: error instanceof Error ? error.message : 'Market data unavailable'
     })

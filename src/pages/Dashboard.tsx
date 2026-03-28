@@ -3,8 +3,8 @@ import AiChat from '../components/AiChat'
 import MarketDashboard from '../components/MarketDashboard'
 import { API_URL } from '../utils/api'
 import type {
-  AntamCardData,
   CandlestickPoint,
+  GoldCardData,
   InvestmentMeta,
   InvestmentSummaryResponse
 } from '../types'
@@ -83,18 +83,18 @@ export default function Dashboard() {
   }, [])
 
   const marketProps = useMemo(() => {
-    const antam = state.meta?.instruments?.ANTAM
+    const gold = state.meta?.instruments?.ANTAM
 
-    const antamData: AntamCardData | undefined =
-      antam && !antam.error
+    const goldData: GoldCardData | undefined =
+      gold && !gold.error
         ? {
-            price: antam.latestPrice ?? null,
-            change: antam.delta ?? 0,
-            updatedAt: antam.latestDate ?? '-'
+            price: gold.latestPrice ?? null,
+            change: gold.delta ?? 0,
+            updatedAt: gold.latestDate ?? '-'
           }
         : undefined
 
-    return { antam: antamData, sp500: [] as CandlestickPoint[] }
+    return { gold: goldData, sp500: [] as CandlestickPoint[] }
   }, [state.meta])
 
   const summaryItems = useMemo(() => formatSummary(state.summary), [state.summary])
@@ -139,7 +139,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <MarketDashboard antam={marketProps.antam} sp500={marketProps.sp500} />
+      <MarketDashboard gold={marketProps.gold} sp500={marketProps.sp500} />
     </section>
   )
 }

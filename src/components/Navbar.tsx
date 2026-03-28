@@ -161,9 +161,8 @@ export default function Navbar() {
           <div className="nav-dropdown nav-account">
             <button className="nav-account-btn" type="button">
               <span className="nav-account-avatar">{initials || 'G'}</span>
-              <span className="nav-account-copy">
-                <strong>{account.authenticated ? greetName || 'Account' : 'Guest'}</strong>
-                <span>{account.authenticated ? account.email || 'LifeOS member' : 'Not signed in'}</span>
+              <span className="nav-account-name">
+                {account.authenticated ? greetName || 'Account' : 'Guest'}
               </span>
             </button>
             <div className="nav-dropdown-menu nav-account-menu" role="menu">
