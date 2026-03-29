@@ -19,3 +19,6 @@ Files added:
 - `src/styles.css`
 
 Customize the texts, links, and projects cards to match your portfolio.
+
+Deployment and VPS progress notes:
+- See [VPS_PROGRESS.md](D:\IdeaJ\portofolio faturachman alkahfi\VPS_PROGRESS.md)
