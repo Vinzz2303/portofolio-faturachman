@@ -25,6 +25,7 @@ type GroqResponse = {
       content?: string
     }
   }>
+  reply?: string
 }
 
 type OllamaResponse = {
@@ -169,7 +170,7 @@ export default function AiChat({
       const reply =
         provider === 'local'
           ? (data as OllamaResponse).response
-          : (data as GroqResponse).choices?.[0]?.message?.content
+          : (data as GroqResponse).reply || (data as GroqResponse).choices?.[0]?.message?.content
 
       if (!reply) {
         throw new Error('No reply from AI')
