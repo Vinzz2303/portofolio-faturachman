@@ -8,6 +8,7 @@ import type { ResultSetHeader, RowDataPacket } from 'mysql2'
 import nodemailer from 'nodemailer'
 import pool from './db'
 import { getInvestmentSummary } from './services/investmentSummary'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import type { AuthTokenPayload, InstrumentSummary, MarketPoint } from './types'
 
 type RequestWithUser = Request & {
@@ -541,35 +542,44 @@ const buildLocalReply = (
   return 'Saya siap membantu analisis data investasi jika ringkasan tersedia.'
 }
 
-const sendGroq = async (messages: AiMessage[]) => {
-  const url = process.env.GROQ_API_URL
-  const apiKey = process.env.GROQ_API_KEY
-  const model = process.env.GROQ_MODEL
-  if (!url || !apiKey || !model) return null
-
-  const normalizedMessages: AiMessage[] = [
-    { role: 'system', content: tingAiSystemPrompt },
-    ...messages
-  ]
-
-  const payload = {
-    model,
-    messages: normalizedMessages,
-    temperature: 0.4
-  }
+const sendGemini = async (messages: AiMessage[]) => {
+  const apiKey = process.env.GEMINI_API_KEY
+  if (!apiKey) return null
 
   try {
-    const response = await axios.post(url, payload, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      timeout: Number(process.env.GROQ_REQUEST_TIMEOUT_MS || 12000)
+    const genAI = new GoogleGenerativeAI(apiKey)
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-pro',
+      systemInstruction: tingAiSystemPrompt
     })
 
-    return (response.data?.choices?.[0]?.message?.content?.trim() as string | undefined) || null
+    const history = messages
+      .filter((m) => m.role !== 'system')
+      .map((m) => ({
+        role: m.role === 'assistant' ? 'model' : m.role,
+        parts: [{ text: m.content }]
+      }))
+
+    const lastMessage = history.pop()
+    if (!lastMessage) return null
+
+    // Gemini requires the history to not have consecutive messages from the same role.
+    const mergedHistory = history.reduce((acc, current) => {
+      if (acc.length > 0 && acc[acc.length - 1].role === current.role) {
+        acc[acc.length - 1].parts[0].text += `\n${current.parts[0].text}`;
+        return acc;
+      }
+      return [...acc, current];
+    }, [] as typeof history);
+
+
+    const chat = model.startChat({ history: mergedHistory })
+    const result = await chat.sendMessage(lastMessage.parts)
+    const response = result.response
+    const text = response.text()
+    return text.trim()
   } catch (error) {
-    console.error('GROQ_ERROR', error)
+    console.error('GEMINI_ERROR', error)
     return null
   }
 }
@@ -581,16 +591,16 @@ app.post('/api/ai-chat', async (req, res) => {
 
     if (!Array.isArray(messages)) {
       const fallback = buildLocalReply([], summary, meta)
-      return res.status(200).json({ reply: fallback, usedGroq: false })
+      return res.status(200).json({ reply: fallback, usedGroq: false, usedGemini: false })
     }
 
-    const groqReply = await sendGroq(messages)
-    if (groqReply) {
-      return res.status(200).json({ reply: groqReply, usedGroq: true })
+    const geminiReply = await sendGemini(messages)
+    if (geminiReply) {
+      return res.status(200).json({ reply: geminiReply, usedGroq: false, usedGemini: true })
     }
 
     const localReply = buildLocalReply(messages, summary, meta)
-    return res.status(200).json({ reply: localReply, usedGroq: false })
+    return res.status(200).json({ reply: localReply, usedGroq: false, usedGemini: false })
   } catch (error) {
     return res.status(500).json({ error: error instanceof Error ? error.message : 'AI error' })
   }

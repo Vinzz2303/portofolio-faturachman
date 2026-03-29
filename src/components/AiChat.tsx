@@ -73,29 +73,13 @@ export default function AiChat({
   variant = 'section',
   disabled = false
 }: AiChatProps) {
-  const defaultProvider: AiProvider = summary || meta ? 'local' : 'groq'
-  const [provider, setProvider] = useState<AiProvider>(defaultProvider)
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [messages, setMessages] = useState<AiMessage[]>(defaultMessages)
 
-  const storageKey = `lifeos_chat_${provider}`
-  const dataContext = useMemo(() => buildDataContext(summary, meta), [summary, meta])
+  const storageKey = 'lifeos_chat_groq' // Hardcoded to groq
   const isDataChat = Boolean(summary || meta)
-  const isPublicChat = !isDataChat
-
-  useEffect(() => {
-    if (isDataChat && provider !== 'local') {
-      setProvider('local')
-    }
-  }, [isDataChat, provider])
-
-  useEffect(() => {
-    if (isPublicChat && provider !== 'groq') {
-      setProvider('groq')
-    }
-  }, [isPublicChat, provider])
 
   useEffect(() => {
     try {
@@ -157,25 +141,8 @@ export default function AiChat({
     setLoading(true)
 
     try {
-      const url =
-        provider === 'local'
-          ? 'http://localhost:11434/api/generate'
-          : `${API_URL}/api/ai-chat`
-
-      const body =
-        provider === 'local'
-          ? {
-              model: 'gemma3:1b',
-              prompt: [
-                `system: ${isDataChat ? DATA_PROMPT : SYSTEM_PROMPT}`,
-                dataContext ? `context: ${dataContext}` : '',
-                nextMessages.map(message => `${message.role}: ${message.content}`).join('\n')
-              ]
-                .filter(Boolean)
-                .join('\n'),
-              stream: false
-            }
-          : { messages: nextMessages, summary, meta }
+      const url = `${API_URL}/api/ai-chat`
+      const body = { messages: nextMessages, summary, meta }
 
       const res = await fetch(url, {
         method: 'POST',
@@ -188,11 +155,8 @@ export default function AiChat({
         throw new Error(responseText || 'Request failed')
       }
 
-      const data = (await res.json()) as OllamaResponse | GroqResponse
-      const reply =
-        provider === 'local'
-          ? (data as OllamaResponse).response
-          : (data as GroqResponse).reply || (data as GroqResponse).choices?.[0]?.message?.content
+      const data = (await res.json()) as GroqResponse
+      const reply = data.reply || data.choices?.[0]?.message?.content
 
       if (!reply) {
         throw new Error('No reply from AI')
@@ -201,11 +165,9 @@ export default function AiChat({
       setMessages(prev => [...prev, { role: 'assistant', content: reply }])
     } catch (err) {
       setError(
-        provider === 'local'
-          ? 'Local AI is not running. Start Ollama on your laptop for the demo.'
-          : err instanceof Error
-            ? err.message
-            : 'Ting AI error. Make sure GROQ_API_KEY is set on the VPS backend.'
+        err instanceof Error
+          ? err.message
+          : 'Ting AI error. Make sure GROQ_API_KEY is set on the VPS backend.'
       )
     } finally {
       setLoading(false)

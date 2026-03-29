@@ -278,3 +278,12 @@ Tonight is successful if all of these are true:
 - dashboard has usable market data for at least `ANTAM` and `SP500`
 - public frontend no longer exposes `Local (Ollama)` mode
 - login is served over `https://`
+
+## Future Tasks
+
+### Implement Interactive `LifeOS` Dashboard
+Redesign the `LifeOS` page to have a clear "Dashboard vs. Assistant" layout, improving UX and interactivity.
+
+- **Phase 1 (Metric Widget):** Replace the current "AI Investment Summary" text block with a "Portfolio Metrics Widget". This widget will display key, glanceable data points like Total Value, Daily Change, and Asset Allocation as structured data (not paragraphs).
+- **Phase 2 (AI Assistant):** Implement the `AiChat` component in the right-hand column, acting as an interactive "Financial Assistant". This component should initialize with a welcome prompt, ready to answer questions about the data shown in the widget.
+- **Phase 3 (Widget Expansion):** Add a "click-to-expand" feature to the Phase 1 widget. When clicked, it will show a detailed view with a historical performance chart and a full breakdown of all assets.
