@@ -41,7 +41,7 @@ export default function ResetPassword() {
   return (
     <section className="container auth-shell">
       <div className="auth-card">
-        <p className="eyebrow">Executive LifeOS</p>
+        <p className="eyebrow">Ting AI</p>
         <h2>Reset Password</h2>
         <p className="lead">
           Buat password baru untuk akun kamu.

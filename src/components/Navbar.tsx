@@ -111,16 +111,16 @@ export default function Navbar() {
           </Link>
           <div className="nav-dropdown">
             <Link className="nav-cta" to={account.authenticated ? '/lifeos' : '/login'} onClick={closeAll}>
-              LifeOS
+              Ting AI
             </Link>
             <div className="nav-dropdown-menu" role="menu">
               {account.authenticated ? (
                 <>
                   <Link to="/lifeos" onClick={closeAll}>
-                    Fatur LifeOS
+                    Ting AI Home
                   </Link>
                   <Link to="/dashboard" onClick={closeAll}>
-                    AI Dashboard
+                    Ting AI Dashboard
                   </Link>
                   <Link to="/profile" onClick={closeAll}>
                     Profile
@@ -179,7 +179,7 @@ export default function Navbar() {
                     Dashboard
                   </Link>
                   <Link to="/lifeos" onClick={closeAll}>
-                    LifeOS
+                    Ting AI
                   </Link>
                   <button type="button" className="nav-menu-action" onClick={handleSwitchAccount}>
                     Switch Account

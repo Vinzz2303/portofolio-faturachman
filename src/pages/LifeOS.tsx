@@ -115,8 +115,8 @@ export default function LifeOS() {
     <section className="lifeos-shell">
       <div className="container">
         <div className="dashboard-header">
-          <div className="eyebrow">Executive Life OS</div>
-          <h2>LifeOS Control Room</h2>
+          <div className="eyebrow">Ting AI Executive</div>
+          <h2>Ting AI Control Room</h2>
           <p className="lead">
             Ringkasan holistik yang memadukan kesehatan, produktivitas, dan finansial dalam satu
             tempat.
@@ -180,7 +180,7 @@ export default function LifeOS() {
 
           <aside className="lifeos-ai">
             <div className="lifeos-card premium-card">
-              <h3>AI Executive Assistant</h3>
+              <h3>Ting AI Executive Assistant</h3>
               <div className="ai-summary-card bg-zinc-900 p-8 rounded-2xl border border-zinc-800 shadow-lg">
                 <p
                   className={`ai-summary-text leading-relaxed text-zinc-300 ${

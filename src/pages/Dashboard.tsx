@@ -102,8 +102,8 @@ export default function Dashboard() {
   return (
     <section className="container dashboard-shell">
       <div className="dashboard-header">
-        <div className="eyebrow">Fatur LifeOS</div>
-        <h2>Investment Dashboard</h2>
+        <div className="eyebrow">Ting AI</div>
+        <h2>Ting AI Dashboard</h2>
         <p className="lead">
           Ringkasan data investasi terbaru dan AI assistant untuk interpretasi cepat.
         </p>

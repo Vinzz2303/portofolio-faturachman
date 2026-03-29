@@ -524,20 +524,34 @@ textarea:focus-visible,
   from { opacity: 0; transform: translateY(-5px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.ai-sub{color:var(--muted);margin-top:0.6rem}
-.ai-toggle{display:flex;flex-wrap:wrap;gap:0.6rem;margin:1.2rem 0}
-.ai-toggle button{
-  background:transparent;
-  border:1px solid var(--line);
-  color:var(--muted);
-  padding:0.45rem 0.9rem;
+.ai-kicker{
+  display:inline-flex;
+  align-items:center;
+  gap:0.4rem;
+  padding:0.35rem 0.75rem;
   border-radius:999px;
-  cursor:pointer;
-}
-.ai-toggle button.active{
-  border-color:var(--accent);
+  border:1px solid rgba(214,178,107,0.2);
+  background:rgba(214,178,107,0.08);
   color:var(--accent);
-  box-shadow:0 0 0 2px rgba(214,178,107,0.15);
+  font-size:0.78rem;
+  font-weight:700;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+}
+.ai-sub{color:var(--muted);margin-top:0.8rem;max-width:60ch}
+.ai-highlights{
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.65rem;
+  margin:1rem 0 1.3rem;
+}
+.ai-highlights span{
+  padding:0.45rem 0.8rem;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03);
+  color:#d7dbe7;
+  font-size:0.88rem;
 }
 .ai-box{
   background:var(--surface);
@@ -555,6 +569,7 @@ textarea:focus-visible,
   flex-direction:column;
   gap:0.8rem;
   padding-right:0.3rem;
+  margin-bottom:0.85rem;
 }
 .ai-msg{
   padding:0.7rem 0.9rem;
@@ -568,6 +583,28 @@ textarea:focus-visible,
   background:rgba(214,178,107,0.12);
 }
 .ai-msg.assistant{align-self:flex-start}
+.ai-prompt-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.65rem;
+  margin-bottom:0.8rem;
+}
+.ai-prompt-chip{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  color:var(--muted);
+  padding:0.55rem 0.8rem;
+  border-radius:999px;
+  cursor:pointer;
+  font-size:0.88rem;
+  transition:border-color 0.2s ease, color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+.ai-prompt-chip:hover{
+  border-color:rgba(214,178,107,0.28);
+  color:var(--text);
+  background:rgba(214,178,107,0.08);
+  transform:translateY(-1px);
+}
 .ai-error{
   color:#ffb4b4;
   background:rgba(255,0,0,0.08);
@@ -727,6 +764,16 @@ textarea:focus-visible,
   }
   .nav-toggle{display:flex}
   .hero-cta{flex-direction:column;align-items:flex-start}
+  .ai-highlights{
+    gap:0.5rem;
+  }
+  .ai-prompt-list{
+    flex-direction:column;
+  }
+  .ai-prompt-chip{
+    width:100%;
+    text-align:left;
+  }
   .ai-input{flex-direction:column}
   .ai-input button{width:100%}
   .hero-photo{width:130px;height:130px}

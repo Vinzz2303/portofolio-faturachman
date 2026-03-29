@@ -7,7 +7,7 @@ const SYSTEM_PROMPT =
   'Answer briefly, friendly, and focus on skills, projects, and services.'
 
 const DATA_PROMPT =
-  'Kamu adalah AI Financial Analyst untuk Fatur LifeOS. ' +
+  'Kamu adalah AI Financial Analyst untuk Ting AI. ' +
   'Jawab singkat, profesional, dan jelas. Fokus pada data yang diberikan.'
 
 type AiProvider = 'local' | 'groq'
@@ -53,7 +53,17 @@ const buildDataContext = (summary?: string, meta?: InvestmentMeta | null) => {
 }
 
 const defaultMessages: AiMessage[] = [
-  { role: 'assistant', content: 'Hi! Ask me anything about my projects or skills.' }
+  {
+    role: 'assistant',
+    content:
+      'Welcome to Ting AI. Ask about selected projects, technical strengths, or how I can help with your next build.'
+  }
+]
+
+const publicPrompts = [
+  'Which project best represents your backend skills?',
+  'What stack do you use most confidently?',
+  'How can you help build an AI-powered product?'
 ]
 
 export default function AiChat({
@@ -73,12 +83,19 @@ export default function AiChat({
   const storageKey = `lifeos_chat_${provider}`
   const dataContext = useMemo(() => buildDataContext(summary, meta), [summary, meta])
   const isDataChat = Boolean(summary || meta)
+  const isPublicChat = !isDataChat
 
   useEffect(() => {
     if (isDataChat && provider !== 'local') {
       setProvider('local')
     }
   }, [isDataChat, provider])
+
+  useEffect(() => {
+    if (isPublicChat && provider !== 'groq') {
+      setProvider('groq')
+    }
+  }, [isPublicChat, provider])
 
   useEffect(() => {
     try {
@@ -117,6 +134,11 @@ export default function AiChat({
       // Ignore storage write errors.
     }
   }, [messages, storageKey])
+
+  const handleQuickPrompt = (prompt: string) => {
+    if (disabled || loading) return
+    setInput(prompt)
+  }
 
   const sendMessage = async () => {
     const text = input.trim()
@@ -183,7 +205,7 @@ export default function AiChat({
           ? 'Local AI is not running. Start Ollama on your laptop for the demo.'
           : err instanceof Error
             ? err.message
-            : 'Groq AI error. Make sure GROQ_API_KEY is set on the VPS backend.'
+            : 'Ting AI error. Make sure GROQ_API_KEY is set on the VPS backend.'
       )
     } finally {
       setLoading(false)
@@ -194,28 +216,16 @@ export default function AiChat({
     <>
       {!isDataChat && (
         <>
-          <h2>AI Assistant</h2>
+          <div className="ai-kicker">Curated Public Demo</div>
+          <h2>Ting AI</h2>
           <p className="ai-sub">
-            Choose mode: <strong>Local (Ollama)</strong> for private demo, or{' '}
-            <strong>Groq</strong> for public use.
+            A public AI layer for quick discovery. Ask about selected work, core strengths, or
+            what kind of build I can lead end-to-end.
           </p>
-          <div className="ai-toggle">
-            <button
-              className={provider === 'groq' ? 'active' : ''}
-              disabled={disabled}
-              onClick={() => setProvider('groq')}
-              type="button"
-            >
-              Groq (Public)
-            </button>
-            <button
-              className={provider === 'local' ? 'active' : ''}
-              disabled={disabled}
-              onClick={() => setProvider('local')}
-              type="button"
-            >
-              Local (Ollama)
-            </button>
+          <div className="ai-highlights" aria-label="Ting AI highlights">
+            <span>Groq-powered</span>
+            <span>Portfolio-aware</span>
+            <span>Fast first impression</span>
           </div>
         </>
       )}
@@ -223,7 +233,7 @@ export default function AiChat({
       <div className="ai-box">
         {variant === 'panel' && (
           <div className="ai-panel-head">
-            <h3>AI Assistant</h3>
+            <h3>Ting AI Dashboard</h3>
             <p className="ai-panel-sub">
               Tanyakan ringkasan investasi, strategi, atau pergerakan XAU/USD &amp; S&amp;P
               500.
@@ -237,6 +247,21 @@ export default function AiChat({
             </div>
           ))}
         </div>
+        {!isDataChat && (
+          <div className="ai-prompt-list">
+            {publicPrompts.map((prompt) => (
+              <button
+                key={prompt}
+                type="button"
+                className="ai-prompt-chip"
+                onClick={() => handleQuickPrompt(prompt)}
+                disabled={disabled || loading}
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+        )}
         {error && <div className="ai-error">{error}</div>}
         <div className="ai-input">
           <input
@@ -244,7 +269,7 @@ export default function AiChat({
             placeholder={
               isDataChat
                 ? 'Tanya tentang ringkasan investasi...'
-                : 'Ask about projects, skills, or services...'
+                : 'Ask Ting AI about projects, strengths, or collaboration...'
             }
             value={input}
             onChange={(event) => setInput(event.target.value)}

@@ -36,7 +36,7 @@ export default function Signup() {
   return (
     <section className="container auth-shell">
       <div className="auth-card">
-        <p className="eyebrow">Executive LifeOS</p>
+        <p className="eyebrow">Ting AI</p>
         <h2>Create Account</h2>
         <p className="lead">Buat akun untuk mengakses dashboard dan AI assistant.</p>
 
@@ -77,7 +77,7 @@ export default function Signup() {
         </form>
 
         {error && <p className="auth-note warn">{error}</p>}
-        <p className="auth-note">Sudah punya akun? Login dari menu LifeOS.</p>
+        <p className="auth-note">Sudah punya akun? Login dari menu Ting AI.</p>
       </div>
     </section>
   )

@@ -2,25 +2,37 @@
 
 ## Current Goal
 
-Run the React frontend, Node backend, and MySQL database fully from the Windows VPS without Netlify.
+Run the portfolio frontend, backend, and database fully from the Windows VPS so the app stays online even when the laptop is off.
 
-## Completed
+## Confirmed Done
 
-- React app migrated to TypeScript.
-- Server code migrated to TypeScript.
-- Frontend build works with `npm run build`.
-- Server build works with `npm run build` inside `server`.
+- Frontend already builds successfully with `npm run build`.
+- Backend already builds successfully with `npm run build` inside `server`.
 - Frontend is served by IIS from `C:\inetpub\wwwroot`.
-- React routes work on IIS via `web.config`.
-- IIS reverse proxy for `/api` is working.
-- Backend runs on port `3001`.
-- Public AI endpoint is routed through VPS backend, not Netlify.
-- MySQL Server is installed on VPS.
-- MySQL service is running as `MySQL96`.
-- Backend can connect to local MySQL on `127.0.0.1`.
-- Database `fatur_life_os` exists in the local MySQL instance.
-- Table `users` exists.
-- Auth backend errors now return readable messages.
+- React routes are handled through IIS rewrite rules.
+- IIS reverse proxy for `/api` is already in place.
+- Public AI chat is routed through the VPS backend, not Netlify.
+- Backend uses environment variables through `dotenv`.
+- MySQL is installed on the VPS and the local database is used by the backend.
+- Auth endpoints, profile flow, and AI endpoints already exist in the backend.
+- PM2 is running the backend process as `lifeos-backend`.
+- Backend AI endpoint `/api/ai-chat` responds correctly on the VPS.
+- Groq integration is working in production and returns `usedGroq: true`.
+- Investment summary endpoint works with authenticated requests.
+- `market_prices` table now exists in the VPS MySQL database.
+- Initial VPS market data for `ANTAM` and `SP500` has been inserted.
+- Frontend branding has been partially updated toward `Ting AI`.
+
+## Important Reality Check
+
+These are the conditions required so the app keeps running when the laptop is off:
+
+- The backend must run on the VPS, not in a local terminal on the laptop.
+- The backend process must be supervised by PM2.
+- PM2 startup must be registered so it comes back after a VPS reboot.
+- IIS must keep serving the built frontend from the VPS filesystem.
+
+If all four are true, the app no longer depends on the laptop being on.
 
 ## Current Paths
 
@@ -31,13 +43,29 @@ Run the React frontend, Node backend, and MySQL database fully from the Windows 
 - Backend folder:
   - `C:\inetpub\wwwroot\portofolio-faturachman\server`
 
-## Current Environment
+## Backend Runtime
 
-Backend `.env` file:
+Backend entrypoint:
+
+`server\dist\index.js`
+
+Useful backend scripts:
+
+```json
+{
+  "build": "tsc -p tsconfig.json",
+  "dev": "tsx src/index.ts",
+  "start": "node dist/index.js"
+}
+```
+
+## Environment Checklist
+
+Backend env file location:
 
 `C:\inetpub\wwwroot\portofolio-faturachman\server\.env`
 
-Expected minimum values:
+Minimum required values:
 
 ```env
 PORT=3001
@@ -45,74 +73,125 @@ DB_HOST=127.0.0.1
 DB_USER=root
 DB_PASSWORD=YOUR_MYSQL_ROOT_PASSWORD
 DB_NAME=fatur_life_os
-JWT_SECRET=lifeos_fatur_2026_secure_auth_key_981273645
+JWT_SECRET=YOUR_JWT_SECRET
 GROQ_API_URL=https://api.groq.com/openai/v1/chat/completions
 GROQ_MODEL=llama-3.1-8b-instant
 GROQ_API_KEY=YOUR_GROQ_API_KEY
 ALPHAVANTAGE_API_KEY=YOUR_ALPHAVANTAGE_API_KEY
 ```
 
-## Remaining Issues
+Optional but recommended:
 
-### 1. AI still returns "No reply from AI"
-
-Likely causes:
-
-- `GROQ_API_KEY` missing or invalid in `server\.env`
-- backend not restarted after env changes
-- Groq API request failing
-
-Check with:
-
-```powershell
-Invoke-WebRequest -Uri "http://127.0.0.1:3001/api/ai-chat" -Method POST -ContentType "application/json" -Body '{"messages":[{"role":"user","content":"halo"}]}' -UseBasicParsing
+```env
+EMAIL_HOST=
+EMAIL_PORT=
+EMAIL_USER=
+EMAIL_PASS=
+EMAIL_FROM=Ting AI <no-reply@tingai.local>
+MARKET_CACHE_TTL_MS=3600000
 ```
 
-### 2. Dashboard market data fails
+## Risks / Gaps To Verify Tonight
 
-Current error:
+### 1. PM2 persistence after reboot still needs explicit confirmation
 
-```text
-Table 'fatur_life_os.market_prices' doesn't exist
-```
+Current state:
 
-This means the market table is still missing in local MySQL.
+- backend is already running under PM2 as `lifeos-backend`
+- manual restart through `pm2 restart lifeos-backend --update-env` works
 
-Create it with:
+Still to verify:
 
-```sql
-USE fatur_life_os;
+- `pm2 save` has been run after the final stable state
+- PM2 startup is registered correctly for Windows VPS boot
+- backend returns automatically after VPS reboot
 
-CREATE TABLE IF NOT EXISTS market_prices (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  symbol VARCHAR(50) NOT NULL,
-  timestamp DATETIME NOT NULL,
-  price_open DECIMAL(18,8) NULL,
-  price_high DECIMAL(18,8) NULL,
-  price_low DECIMAL(18,8) NULL,
-  price_close DECIMAL(18,8) NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
+### 2. Frontend branding and UX are not fully cleaned up yet
 
-After that, insert real data for:
+Current state:
 
-- `XAUUSD`
-- `BTC` or `BTCUSD`
-- `SP500`
+- several visible labels have been changed from `LifeOS` to `Ting AI`
+- some source files on the VPS were edited manually and rebuilt
 
-Without actual rows, charts will still be empty even if the table exists.
+Still to verify:
 
-### 3. Backend process is still manual
+- no public-facing label still shows `LifeOS`
+- dashboard and `/lifeos` pages are visually consistent after hard refresh
+- local repo and VPS repo are aligned so future deploys do not overwrite fixes
 
-Current backend is started manually with:
+### 3. Public frontend should stop exposing Local Ollama mode
 
-```powershell
-cd C:\inetpub\wwwroot\portofolio-faturachman\server
-node .\dist\index.js
-```
+Current state:
 
-This should later be changed to a Windows Service or a process manager so it survives session changes more reliably.
+- Groq works in production through the VPS backend
+- browser console still shows attempts to call `http://localhost:11434/api/generate`
+
+Why this matters:
+
+- `localhost:11434` is invalid for public users
+- it creates noisy CORS errors in browser console
+- it encourages a production path that depends on local infrastructure
+
+Target state:
+
+- frontend public AI uses Groq only
+- `Local (Ollama)` option is removed or hidden from production UI
+
+### 4. HTTPS is still missing
+
+Current state:
+
+- login and auth pages are still served over `http://`
+- browser warns that password fields are on an insecure page
+
+Why this matters:
+
+- user credentials are exposed to interception risk
+- production auth should not be considered complete without TLS
+
+Target state:
+
+- domain or VPS host serves the site over `https://`
+- IIS redirects `http` to `https`
+
+### 5. Secrets hygiene should be reviewed
+
+- Keep production secrets only on the VPS `.env`.
+- Do not rely on secrets stored in random local copies.
+- If any real API key was accidentally exposed in a local file or screenshot, rotate it.
+
+## Tonight Plan
+
+### Priority 1: Finish production-safe frontend AI behavior
+
+1. Verify PM2 is installed on the VPS.
+2. Remove or disable `Local (Ollama)` mode from the public frontend.
+3. Rebuild frontend.
+4. Copy frontend `dist` output into `C:\inetpub\wwwroot`.
+5. Hard-refresh and confirm the browser no longer calls `localhost:11434`.
+
+### Priority 2: Secure the site with HTTPS
+
+1. Bind TLS certificate in IIS.
+2. Serve the portfolio over `https://`.
+3. Redirect `http` requests to `https`.
+4. Re-test login and signup over TLS.
+
+### Priority 3: Lock in PM2 persistence
+
+1. Run `pm2 save`.
+2. Register PM2 startup for Windows VPS boot.
+3. Reboot-safe check: confirm backend returns after VPS restart.
+
+### Priority 4: Clean deployment workflow
+
+1. Pull latest repo on VPS.
+2. Build frontend.
+3. Copy frontend `dist` output into `C:\inetpub\wwwroot`.
+4. Build backend.
+5. Restart PM2 process cleanly.
+6. Stop editing production manually unless it is an emergency.
+7. Make local repo the source of truth again.
 
 ## Useful Commands
 
@@ -140,13 +219,27 @@ npm install
 npm run build
 ```
 
-### Restart backend
+### Start backend with PM2
 
 ```powershell
-netstat -ano | findstr :3001
-taskkill /PID PID_NUMBER /F
 cd C:\inetpub\wwwroot\portofolio-faturachman\server
-node .\dist\index.js
+pm2 start .\dist\index.js --name portfolio-backend
+pm2 save
+```
+
+### PM2 checks
+
+```powershell
+pm2 list
+pm2 logs portfolio-backend
+pm2 restart portfolio-backend
+pm2 status
+```
+
+### Verify backend health
+
+```powershell
+Invoke-WebRequest -Uri "http://127.0.0.1:3001/" -UseBasicParsing
 ```
 
 ### Verify DB connection from backend env
@@ -156,19 +249,32 @@ cd C:\inetpub\wwwroot\portofolio-faturachman\server
 node -e "require('dotenv').config(); const mysql=require('mysql2/promise'); (async()=>{ const conn=await mysql.createConnection({host:process.env.DB_HOST,user:process.env.DB_USER,password:process.env.DB_PASSWORD,database:process.env.DB_NAME}); const [rows]=await conn.query('SELECT DATABASE() AS db'); console.log(rows); await conn.end(); })().catch(console.error)"
 ```
 
-## Recent Important Commits
+### Check market table shape
 
+```sql
+DESCRIBE market_prices;
+SELECT instrument_name, COUNT(*) AS total_rows
+FROM market_prices
+GROUP BY instrument_name;
+```
+
+## Recent Relevant Commits
+
+- `9e87771` `feat: perbaikan AI chat dan persiapan deployment VPS`
 - `154e0c6` `fix: surface auth backend errors`
 - `cbd75f3` `fix: tighten navbar and add GOLD market chart`
 - `65bde36` `fix: route frontend API through IIS proxy`
-- `0fad56a` `feat: add account menu and profile page`
 - `ec0da00` `fix: route AI chat through VPS backend`
-- `60e2b46` `chore: migrate app to TypeScript and prepare Netlify deploy`
 
-## Recommended Next Steps
+## Definition Of Done For Tonight
 
-1. Fill `GROQ_API_KEY` and test `/api/ai-chat`.
-2. Create table `market_prices`.
-3. Import or populate market data.
-4. Re-test dashboard charts.
-5. Convert backend process into a Windows Service.
+Tonight is successful if all of these are true:
+
+- frontend live on IIS shows the latest `Ting AI` changes
+- backend runs under PM2
+- backend comes back automatically after crash/restart
+- `/api/ai-chat` returns a valid reply
+- `/api/investment-summary` works without schema errors
+- dashboard has usable market data for at least `ANTAM` and `SP500`
+- public frontend no longer exposes `Local (Ollama)` mode
+- login is served over `https://`

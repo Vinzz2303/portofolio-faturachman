@@ -44,7 +44,7 @@ export default function Login() {
   return (
     <section className="container auth-shell">
       <div className="auth-card">
-        <p className="eyebrow">Fatur LifeOS</p>
+        <p className="eyebrow">Ting AI</p>
         <h2>Login to Continue</h2>
         <p className="lead">
           Masuk untuk mengakses dashboard investasi dan AI assistant berbasis data pasar terbaru.

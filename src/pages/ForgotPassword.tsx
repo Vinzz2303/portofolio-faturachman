@@ -33,7 +33,7 @@ export default function ForgotPassword() {
   return (
     <section className="container auth-shell">
       <div className="auth-card">
-        <p className="eyebrow">Executive LifeOS</p>
+        <p className="eyebrow">Ting AI</p>
         <h2>Forgot Password</h2>
         <p className="lead">
           Masukkan email untuk menerima link reset password.

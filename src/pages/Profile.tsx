@@ -31,14 +31,14 @@ export default function Profile() {
           <div className="profile-panel">
             <h3>Profile</h3>
             <p className="card-note">
-              Halaman ini menampilkan ringkasan akun yang sedang aktif di sesi LifeOS saat ini.
+              Halaman ini menampilkan ringkasan akun yang sedang aktif di sesi Ting AI saat ini.
             </p>
             <div className="profile-actions">
               <Link className="btn" to="/dashboard">
                 Buka Dashboard
               </Link>
               <Link className="btn secondary" to="/lifeos">
-                Buka LifeOS
+                Buka Ting AI
               </Link>
             </div>
           </div>

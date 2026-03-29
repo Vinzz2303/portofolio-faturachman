@@ -54,6 +54,9 @@ type AiMessage = {
   content: string
 }
 
+const tingAiSystemPrompt =
+  "Kamu adalah Ting AI, asisten analisis investasi pribadi Fatur. Jawab dalam bahasa Indonesia dengan nada profesional, ringkas, dan teknis. Fokus pada pasar, investasi, diversifikasi aman, dan literasi keuangan yang relevan bagi mahasiswa Informatika. Jika konteks pengguna tidak terkait investasi, tetap jawab singkat lalu arahkan kembali ke topik finansial dan strategi portofolio."
+
 type AiChatBody = {
   messages?: AiMessage[]
   summary?: string
@@ -544,9 +547,14 @@ const sendGroq = async (messages: AiMessage[]) => {
   const model = process.env.GROQ_MODEL
   if (!url || !apiKey || !model) return null
 
+  const normalizedMessages: AiMessage[] = [
+    { role: 'system', content: tingAiSystemPrompt },
+    ...messages
+  ]
+
   const payload = {
     model,
-    messages,
+    messages: normalizedMessages,
     temperature: 0.4
   }
 
