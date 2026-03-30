@@ -59,6 +59,7 @@ const tingAiSystemPrompt =
   "Kamu adalah Ting AI, asisten analisis investasi pribadi Fatur. Jawab dalam bahasa Indonesia dengan nada profesional, ringkas, dan teknis. Fokus pada pasar, investasi, diversifikasi aman, dan literasi keuangan yang relevan bagi mahasiswa Informatika. Jika konteks pengguna tidak terkait investasi, tetap jawab singkat lalu arahkan kembali ke topik finansial dan strategi portofolio."
 
 type AiChatBody = {
+  provider?: 'groq' | 'gemini'
   messages?: AiMessage[]
   summary?: string
   meta?: {
@@ -542,6 +543,39 @@ const buildLocalReply = (
   return 'Saya siap membantu analisis data investasi jika ringkasan tersedia.'
 }
 
+const sendGroq = async (messages: AiMessage[]) => {
+  const url = process.env.GROQ_API_URL
+  const apiKey = process.env.GROQ_API_KEY
+  const model = process.env.GROQ_MODEL
+  if (!url || !apiKey || !model) return null
+
+  const normalizedMessages: AiMessage[] = [
+    { role: 'system', content: tingAiSystemPrompt },
+    ...messages
+  ]
+
+  const payload = {
+    model,
+    messages: normalizedMessages,
+    temperature: 0.4
+  }
+
+  try {
+    const response = await axios.post(url, payload, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      timeout: Number(process.env.GROQ_REQUEST_TIMEOUT_MS || 12000)
+    })
+
+    return (response.data?.choices?.[0]?.message?.content?.trim() as string | undefined) || null
+  } catch (error) {
+    console.error('GROQ_ERROR', error)
+    return null
+  }
+}
+
 const sendGemini = async (messages: AiMessage[]) => {
   const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) return null
@@ -587,16 +621,25 @@ const sendGemini = async (messages: AiMessage[]) => {
 app.post('/api/ai-chat', async (req, res) => {
   try {
     const payload = parsePayload<AiChatBody>(req)
-    const { messages, summary, meta } = payload
+    const { messages, summary, meta, provider } = payload
 
     if (!Array.isArray(messages)) {
       const fallback = buildLocalReply([], summary, meta)
       return res.status(200).json({ reply: fallback, usedGroq: false, usedGemini: false })
     }
 
-    const geminiReply = await sendGemini(messages)
-    if (geminiReply) {
-      return res.status(200).json({ reply: geminiReply, usedGroq: false, usedGemini: true })
+    const resolvedProvider = provider || (summary || meta ? 'gemini' : 'groq')
+
+    if (resolvedProvider === 'groq') {
+      const groqReply = await sendGroq(messages)
+      if (groqReply) {
+        return res.status(200).json({ reply: groqReply, usedGroq: true, usedGemini: false })
+      }
+    } else {
+      const geminiReply = await sendGemini(messages)
+      if (geminiReply) {
+        return res.status(200).json({ reply: geminiReply, usedGroq: false, usedGemini: true })
+      }
     }
 
     const localReply = buildLocalReply(messages, summary, meta)

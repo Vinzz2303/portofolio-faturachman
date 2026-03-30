@@ -78,8 +78,9 @@ export default function AiChat({
   const [error, setError] = useState('')
   const [messages, setMessages] = useState<AiMessage[]>(defaultMessages)
 
-  const storageKey = 'lifeos_chat_groq' // Hardcoded to groq
   const isDataChat = Boolean(summary || meta)
+  const activeProvider = isDataChat ? 'gemini' : 'groq'
+  const storageKey = `lifeos_chat_${activeProvider}`
 
   useEffect(() => {
     try {
@@ -142,7 +143,7 @@ export default function AiChat({
 
     try {
       const url = `${API_URL}/api/ai-chat`
-      const body = { messages: nextMessages, summary, meta }
+      const body = { messages: nextMessages, summary, meta, provider: activeProvider }
 
       const res = await fetch(url, {
         method: 'POST',
@@ -167,7 +168,7 @@ export default function AiChat({
       setError(
         err instanceof Error
           ? err.message
-          : 'Ting AI error. Make sure GROQ_API_KEY is set on the VPS backend.'
+          : `Ting AI error. Pastikan API Key untuk ${activeProvider.toUpperCase()} sudah disetel di VPS.`
       )
     } finally {
       setLoading(false)
