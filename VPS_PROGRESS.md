@@ -18,6 +18,8 @@ Run the portfolio frontend, backend, and database fully from the Windows VPS so 
 - PM2 is running the backend process as `lifeos-backend`.
 - Backend AI endpoint `/api/ai-chat` responds correctly on the VPS.
 - Groq integration is working in production and returns `usedGroq: true`.
+- Gemini integration on the VPS now returns live replies again after replacing the deprecated model.
+- VPS runtime has been aligned to `Node.js v20.20.2`.
 - Investment summary endpoint works with authenticated requests.
 - `market_prices` table now exists in the VPS MySQL database.
 - Initial VPS market data for `ANTAM` and `SP500` has been inserted.
@@ -68,12 +70,14 @@ Backend env file location:
 Minimum required values:
 
 ```env
-PORT=3001
+PORT=3002
 DB_HOST=127.0.0.1
 DB_USER=root
 DB_PASSWORD=YOUR_MYSQL_ROOT_PASSWORD
 DB_NAME=fatur_life_os
 JWT_SECRET=YOUR_JWT_SECRET
+GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+GEMINI_MODEL=gemini-2.5-flash
 GROQ_API_URL=https://api.groq.com/openai/v1/chat/completions
 GROQ_MODEL=llama-3.1-8b-instant
 GROQ_API_KEY=YOUR_GROQ_API_KEY
@@ -97,8 +101,9 @@ MARKET_CACHE_TTL_MS=3600000
 
 Current state:
 
-- backend is already running under PM2 as `lifeos-backend`
+- backend is now confirmed running under PM2 as `lifeos-backend`
 - manual restart through `pm2 restart lifeos-backend --update-env` works
+- a previous port conflict on `3002` was caused by a manual `npm run start` process, and that conflict has been cleared
 
 Still to verify:
 
@@ -223,7 +228,7 @@ npm run build
 
 ```powershell
 cd C:\inetpub\wwwroot\portofolio-faturachman\server
-pm2 start .\dist\index.js --name portfolio-backend
+pm2 start .\dist\index.js --name lifeos-backend
 pm2 save
 ```
 
@@ -231,16 +236,23 @@ pm2 save
 
 ```powershell
 pm2 list
-pm2 logs portfolio-backend
-pm2 restart portfolio-backend
+pm2 logs lifeos-backend
+pm2 restart lifeos-backend --update-env
 pm2 status
 ```
 
 ### Verify backend health
 
 ```powershell
-Invoke-WebRequest -Uri "http://127.0.0.1:3001/" -UseBasicParsing
+Invoke-WebRequest -Uri "http://127.0.0.1:3002/api/ai-chat" -UseBasicParsing
 ```
+
+## Latest Fix Summary
+
+- Root cause of the Gemini failure on the VPS was not only `Node 24`, but also the deprecated model name `gemini-1.0-pro`.
+- Backend source now uses `process.env.GEMINI_MODEL || 'gemini-2.5-flash'`.
+- `POST /api/ai-chat` has been re-tested locally on the VPS and returns a live Gemini reply.
+- PM2 is now the process actually holding `port 3002`, after the manual Node process was terminated.
 
 ### Verify DB connection from backend env
 

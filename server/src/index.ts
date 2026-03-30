@@ -582,8 +582,9 @@ const sendGemini = async (messages: AiMessage[]) => {
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey)
+    const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash'
     const model = genAI.getGenerativeModel({
-      model: 'gemini-1.0-pro',
+      model: modelName,
       systemInstruction: tingAiSystemPrompt
     })
 
