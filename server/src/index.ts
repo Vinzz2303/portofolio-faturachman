@@ -583,7 +583,7 @@ const sendGemini = async (messages: AiMessage[]) => {
   try {
     const genAI = new GoogleGenerativeAI(apiKey)
     const model = genAI.getGenerativeModel({
-      model: 'gemini-pro',
+      model: 'gemini-1.5-flash-latest',
       systemInstruction: tingAiSystemPrompt
     })
 
