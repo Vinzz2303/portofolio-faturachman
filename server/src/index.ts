@@ -587,25 +587,35 @@ const sendGemini = async (messages: AiMessage[]) => {
       systemInstruction: tingAiSystemPrompt
     })
 
-    const history = messages
+    const historyWithCorrectRoles = messages
       .filter((m) => m.role !== 'system')
       .map((m) => ({
         role: m.role === 'assistant' ? 'model' : m.role,
         parts: [{ text: m.content }]
       }))
 
-    const lastMessage = history.pop()
+    // Find the index of the first user message
+    const firstUserIndex = historyWithCorrectRoles.findIndex(m => m.role === 'user');
+    
+    // If no user message found, we can't proceed
+    if (firstUserIndex === -1) {
+      return null;
+    }
+
+    // Take all messages from the first user message onwards
+    const validHistory = historyWithCorrectRoles.slice(firstUserIndex);
+
+    const lastMessage = validHistory.pop()
     if (!lastMessage) return null
 
     // Gemini requires the history to not have consecutive messages from the same role.
-    const mergedHistory = history.reduce((acc, current) => {
+    const mergedHistory = validHistory.reduce((acc, current) => {
       if (acc.length > 0 && acc[acc.length - 1].role === current.role) {
         acc[acc.length - 1].parts[0].text += `\n${current.parts[0].text}`;
         return acc;
       }
       return [...acc, current];
-    }, [] as typeof history);
-
+    }, [] as typeof validHistory);
 
     const chat = model.startChat({ history: mergedHistory })
     const result = await chat.sendMessage(lastMessage.parts)
