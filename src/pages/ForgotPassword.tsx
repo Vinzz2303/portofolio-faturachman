@@ -20,11 +20,11 @@ export default function ForgotPassword() {
       })
       if (!res.ok) {
         const text = await res.text()
-        throw new Error(text || 'Request gagal')
+        throw new Error(text || 'Permintaan gagal')
       }
       setDone(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Request gagal')
+      setError(err instanceof Error ? err.message : 'Permintaan gagal')
     } finally {
       setLoading(false)
     }
@@ -36,7 +36,7 @@ export default function ForgotPassword() {
         <p className="eyebrow">Ting AI</p>
         <h2>Forgot Password</h2>
         <p className="lead">
-          Masukkan email untuk menerima link reset password.
+          Masukkan email untuk meminta instruksi reset password.
         </p>
 
         <form onSubmit={handleSubmit} className="auth-form">
@@ -51,12 +51,12 @@ export default function ForgotPassword() {
             autoComplete="email"
           />
           <button className="btn" type="submit" disabled={loading || done}>
-            {loading ? 'Mengirim...' : done ? 'Email Terkirim' : 'Kirim Link Reset'}
+            {loading ? 'Mengirim...' : done ? 'Instruksi Terkirim' : 'Kirim Instruksi Reset'}
           </button>
         </form>
 
         {error && <p className="auth-note warn">{error}</p>}
-        {done && <p className="auth-note">Jika email terdaftar, link reset sudah dikirim.</p>}
+        {done && <p className="auth-note">Jika email terdaftar, instruksi reset password akan dikirim.</p>}
       </div>
     </section>
   )

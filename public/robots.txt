@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://portofolio-faturachmanalkahfi.netlify.app/sitemap.xml
+Sitemap: https://faturachman.my.id/sitemap.xml

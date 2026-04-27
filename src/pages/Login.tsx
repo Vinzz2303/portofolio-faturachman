@@ -1,16 +1,17 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { API_URL } from '../utils/api'
+import { persistAuthSession } from '../utils/auth'
 import type { LoginResponse } from '../types'
-
-const STORAGE_KEY = 'lifeos-auth'
 
 export default function Login() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const loginNotice = new URLSearchParams(location.search).get('signup') === 'success'
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -28,11 +29,7 @@ export default function Login() {
         throw new Error(errorData.error || 'Login gagal')
       }
       const data = (await res.json()) as LoginResponse
-      window.localStorage.setItem(STORAGE_KEY, 'true')
-      window.localStorage.setItem('lifeOS_token', data?.token || '')
-      window.localStorage.setItem('lifeOS_user', data?.user?.fullname || email.trim())
-      window.localStorage.setItem('lifeOS_user_email', data?.user?.email || email.trim())
-      window.dispatchEvent(new Event('lifeos-auth'))
+      persistAuthSession(data?.token || '', data.user || null)
       navigate('/dashboard', { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login gagal')
@@ -45,10 +42,9 @@ export default function Login() {
     <section className="container auth-shell">
       <div className="auth-card">
         <p className="eyebrow">Ting AI</p>
-        <h2>Login to Continue</h2>
-        <p className="lead">
-          Masuk untuk mengakses dashboard investasi dan AI assistant berbasis data pasar terbaru.
-        </p>
+        <h2>Masuk ke Ting AI</h2>
+        <p className="lead">Masuk untuk membuka dashboard dan ringkasan pasar hari ini.</p>
+        {loginNotice ? <p className="auth-note">Akun berhasil dibuat. Silakan masuk dengan email dan password Anda.</p> : null}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <label className="auth-label" htmlFor="lifeos-email">Email</label>
@@ -72,17 +68,13 @@ export default function Login() {
             autoComplete="current-password"
           />
           <button className="btn" type="submit" disabled={loading}>
-            {loading ? 'Memproses...' : 'Masuk ke Dashboard'}
+            {loading ? 'Memproses...' : 'Masuk'}
           </button>
         </form>
         {error && <p className="auth-note warn">{error}</p>}
-
-        <p className="auth-note">
-          Login ini menggunakan autentikasi server (JWT).
-        </p>
         <div className="auth-links">
-          <a href="/signup">Buat akun</a>
-          <a href="/forgot">Lupa password</a>
+          <Link to="/signup">Buat akun</Link>
+          <a href="/forgot">Lupa kata sandi</a>
         </div>
       </div>
     </section>

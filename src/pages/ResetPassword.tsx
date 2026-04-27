@@ -27,12 +27,12 @@ export default function ResetPassword() {
       })
       if (!res.ok) {
         const text = await res.text()
-        throw new Error(text || 'Reset gagal')
+        throw new Error(text || 'Permintaan reset gagal')
       }
       setDone(true)
       window.setTimeout(() => navigate('/login', { replace: true }), 1200)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Reset gagal')
+      setError(err instanceof Error ? err.message : 'Permintaan reset gagal')
     } finally {
       setLoading(false)
     }
@@ -64,7 +64,7 @@ export default function ResetPassword() {
         </form>
 
         {(!email || !token) && (
-          <p className="auth-note warn">Token reset tidak valid. Mohon cek link dari email.</p>
+          <p className="auth-note warn">Link reset tidak valid atau sudah kedaluwarsa.</p>
         )}
         {error && <p className="auth-note warn">{error}</p>}
       </div>

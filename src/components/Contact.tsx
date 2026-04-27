@@ -1,29 +1,68 @@
 import React from 'react'
 import type { SectionProps } from '../types'
+import { useLanguagePreference } from '../utils/language'
 
 export default function Contact({ sectionId }: SectionProps) {
+  const { language } = useLanguagePreference()
+  const isEnglish = language === 'en'
+
+  const copy = isEnglish
+    ? {
+        title: 'Contact',
+        body:
+          'If you need an AI product builder who can turn product direction into a clear interface, reach me at',
+        faq: 'FAQ',
+        items: [
+          {
+            title: 'What do you build?',
+            text: 'Frontend product pages, dashboard surfaces, and product-first landing pages.'
+          },
+          {
+            title: 'Can you shape the structure too?',
+            text: 'Yes. I help define hierarchy, flow, and messaging so the interface feels easier to use.'
+          },
+          {
+            title: 'Do you support iteration?',
+            text: 'Yes. I can continue with refinement, polish, and the next stage after launch.'
+          }
+        ]
+      }
+    : {
+        title: 'Kontak',
+        body:
+          'Jika Anda butuh AI product builder yang bisa menerjemahkan arah produk menjadi interface yang jelas, hubungi saya di',
+        faq: 'FAQ',
+        items: [
+          {
+            title: 'Apa yang saya bangun?',
+            text: 'Halaman produk frontend, dashboard, dan landing page yang berfokus pada produk.'
+          },
+          {
+            title: 'Bisa bantu struktur juga?',
+            text: 'Ya. Saya juga membantu menyusun hierarchy, flow, dan messaging agar interface lebih mudah dipakai.'
+          },
+          {
+            title: 'Bisa lanjut iterasi?',
+            text: 'Ya. Saya bisa lanjut untuk refinement, polish, dan tahap berikutnya setelah launch.'
+          }
+        ]
+      }
+
   return (
     <section id={sectionId} className="contact container reveal">
-      <h2>Contact</h2>
+      <h2>{copy.title}</h2>
       <p>
-        Need a clean landing page or UI? Send me an email.
-        Reach out anytime: <a href="mailto:faturachmanalkahfi7@gmail.com">faturachmanalkahfi7@gmail.com</a>
+        {copy.body} <a href="mailto:faturachmanalkahfi7@gmail.com">faturachmanalkahfi7@gmail.com</a>.
       </p>
       <div className="faq">
-        <h3>FAQ</h3>
+        <h3>{copy.faq}</h3>
         <div className="faq-grid">
-          <div className="faq-item">
-            <h4>How long does it take?</h4>
-            <p>Usually 3-10 days depending on scope and revisions.</p>
-          </div>
-          <div className="faq-item">
-            <h4>Can you design from scratch?</h4>
-            <p>Yes. Share your brief and references, I will handle the rest.</p>
-          </div>
-          <div className="faq-item">
-            <h4>Do you offer maintenance after launch?</h4>
-            <p>Yes. It includes small content updates and minor fixes.</p>
-          </div>
+          {copy.items.map((item) => (
+            <div key={item.title} className="faq-item">
+              <h4>{item.title}</h4>
+              <p>{item.text}</p>
+            </div>
+          ))}
         </div>
       </div>
       <div className="social-links">

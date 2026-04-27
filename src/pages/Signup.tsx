@@ -25,7 +25,7 @@ export default function Signup() {
         const text = await res.text()
         throw new Error(text || 'Signup gagal')
       }
-      navigate('/login', { replace: true })
+      navigate('/login?signup=success', { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Signup gagal')
     } finally {
@@ -37,11 +37,11 @@ export default function Signup() {
     <section className="container auth-shell">
       <div className="auth-card">
         <p className="eyebrow">Ting AI</p>
-        <h2>Create Account</h2>
-        <p className="lead">Buat akun untuk mengakses dashboard dan AI assistant.</p>
+        <h2>Buat Akun Ting AI</h2>
+        <p className="lead">Buat akun untuk mulai masuk ke dashboard dan asisten AI Ting AI.</p>
 
         <form onSubmit={handleSubmit} className="auth-form">
-          <label className="auth-label" htmlFor="signup-name">Fullname</label>
+          <label className="auth-label" htmlFor="signup-name">Nama Lengkap</label>
           <input
             id="signup-name"
             className="auth-input"
@@ -77,7 +77,7 @@ export default function Signup() {
         </form>
 
         {error && <p className="auth-note warn">{error}</p>}
-        <p className="auth-note">Sudah punya akun? Login dari menu Ting AI.</p>
+        <p className="auth-note">Sudah punya akun? <a href="/login">Masuk di sini</a>.</p>
       </div>
     </section>
   )
