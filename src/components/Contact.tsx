@@ -1,36 +1,53 @@
 import React from 'react'
-import type { SectionProps } from '../types'
+import { motion } from 'framer-motion'
+import { useLanguagePreference } from '../utils/language'
 
-export default function Contact({ sectionId }: SectionProps) {
+const contactItems = [
+  { label: "Email", value: "faturachmanalkahfi7@gmail.com", href: "mailto:faturachmanalkahfi7@gmail.com" },
+  { label: "LinkedIn", value: "linkedin.com/in/faturachman-alkahfi", href: "https://linkedin.com/in/faturachman-alkahfi" },
+  { label: "GitHub", value: "github.com/Vinzz2303", href: "https://github.com/Vinzz2303" },
+  { label: "Portfolio", value: "faturachman.my.id", href: "https://faturachman.my.id" }
+]
+
+export default function Contact({ sectionId }: { sectionId: string }) {
+  const { language } = useLanguagePreference()
+
   return (
-    <section id={sectionId} className="contact container reveal">
-      <h2>Contact</h2>
-      <p>
-        Need a clean landing page or UI? Send me an email.
-        Reach out anytime: <a href="mailto:faturachmanalkahfi7@gmail.com">faturachmanalkahfi7@gmail.com</a>
-      </p>
-      <div className="faq">
-        <h3>FAQ</h3>
-        <div className="faq-grid">
-          <div className="faq-item">
-            <h4>How long does it take?</h4>
-            <p>Usually 3-10 days depending on scope and revisions.</p>
+    <section id={sectionId} className="py-32 relative">
+      <div className="container-saas text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="max-w-3xl mx-auto"
+        >
+          <div className="panel-label mb-2">Connect</div>
+          <h2 className="text-4xl font-bold mb-6 text-gradient">Let’s Build Intelligence Together</h2>
+          <p className="text-lg text-white/60 mb-12">
+            {language === 'en'
+              ? "Open for collaboration, research discussion, internship opportunities, product feedback, and AI-related projects."
+              : "Terbuka untuk kolaborasi, diskusi riset, peluang magang, feedback produk, dan proyek terkait AI."}
+          </p>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            {contactItems.map((item, i) => (
+              <motion.a
+                key={item.label}
+                href={item.href}
+                target="_blank"
+                rel="noreferrer"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="glass-card p-6 text-left hover:bg-white/[0.05] group transition-all"
+              >
+                <div className="panel-label text-[9px] mb-1 group-hover:text-accent transition-colors">{item.label}</div>
+                <div className="text-white/80 font-mono text-sm truncate">{item.value}</div>
+              </motion.a>
+            ))}
           </div>
-          <div className="faq-item">
-            <h4>Can you design from scratch?</h4>
-            <p>Yes. Share your brief and references, I will handle the rest.</p>
-          </div>
-          <div className="faq-item">
-            <h4>Do you offer maintenance after launch?</h4>
-            <p>Yes. It includes small content updates and minor fixes.</p>
-          </div>
-        </div>
-      </div>
-      <div className="social-links">
-        <a href="https://github.com/Vinzz2303" target="_blank" rel="noreferrer">GitHub</a>
-        <a href="https://www.linkedin.com/in/faturachman-al-kahfi-662283304/" target="_blank" rel="noreferrer">LinkedIn</a>
-        <a href="https://instagram.com/alvinstzy" target="_blank" rel="noreferrer">Instagram</a>
-        <a href="https://wa.me/62895618466907" target="_blank" rel="noreferrer">WhatsApp</a>
+        </motion.div>
       </div>
     </section>
   )

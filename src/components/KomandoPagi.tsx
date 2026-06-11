@@ -1,0 +1,549 @@
+/**
+ * KomandoPagi.tsx — Morning Command (v5 with News Intelligence)
+ * Compact decision dashboard with integrated news signals.
+ * Layer A (Free): 2–3 micro-evidence bullets under hero.
+ * Layer B (Pro): Collapsed news analysis with impact + scenario.
+ */
+import { useMemo, useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useLanguagePreference } from '../utils/language'
+import { getMorningCommandCopy } from '../utils/morningCommandI18n'
+import { computeMorningCommandState, type RiskLevel } from '../utils/morningCommandModel'
+import { fetchNewsIntelligence, type NewsIntelligence, type SignalDirection } from '../utils/newsSignalService'
+import { useAuthSession } from '../utils/useAuthSession'
+import PortfolioActionWatchlist from './PortfolioActionWatchlist'
+import RiskBudgetCard from './RiskBudgetCard'
+import DecisionJournal from './DecisionJournal'
+import EmptyPortfolioState from './EmptyPortfolioState'
+import { readPortfolioSnapshot } from '../utils/portfolioSnapshot'
+import { buildPortfolioActionWatchlist } from '../utils/portfolioActionWatchlist'
+import { evaluateRiskBudget, readRiskBudget } from '../utils/riskBudget'
+
+/* ── Palette ──────────────────────────────────────────────────────── */
+const palette: Record<RiskLevel, {
+  accent: string; dot: string; glow: string; bg: string
+  pillBg: string; pillText: string; pillBorder: string
+}> = {
+  low: {
+    accent: '#2dd4bf', dot: '#14b8a6', glow: 'rgba(20,184,166,0.12)',
+    bg: 'rgba(20,184,166,0.04)',
+    pillBg: 'rgba(20,184,166,0.10)', pillText: '#5eead4', pillBorder: 'rgba(20,184,166,0.25)',
+  },
+  medium: {
+    accent: '#fbbf24', dot: '#f59e0b', glow: 'rgba(251,191,36,0.12)',
+    bg: 'rgba(251,191,36,0.04)',
+    pillBg: 'rgba(251,191,36,0.10)', pillText: '#fcd34d', pillBorder: 'rgba(251,191,36,0.25)',
+  },
+  high: {
+    accent: '#f87171', dot: '#ef4444', glow: 'rgba(248,113,113,0.14)',
+    bg: 'rgba(248,113,113,0.05)',
+    pillBg: 'rgba(248,113,113,0.10)', pillText: '#fca5a5', pillBorder: 'rgba(248,113,113,0.25)',
+  },
+}
+
+/* ── Signal direction to dot color ────────────────────────────────── */
+const directionDot: Record<SignalDirection, string> = {
+  risk_off: '#f87171',
+  risk_on: '#34d399',
+  neutral: '#94a3b8',
+}
+
+/* ── Subtle pulsing indicator ─────────────────────────────────────── */
+function PulseIndicator({ color, glowColor }: { color: string; glowColor: string }) {
+  return (
+    <span className="relative block w-2 h-2 flex-shrink-0">
+      <span
+        className="absolute inset-0 rounded-full animate-ping opacity-40"
+        style={{ background: color }}
+      />
+      <span
+        className="relative block w-2 h-2 rounded-full"
+        style={{ background: color, boxShadow: `0 0 8px ${glowColor}` }}
+      />
+    </span>
+  )
+}
+
+/* ── Pro gate wrapper ─────────────────────────────────────────────── */
+function ProSection({
+  children,
+  label,
+  proLabel,
+  previewLabel,
+  isPremium,
+}: {
+  children: React.ReactNode
+  label: string
+  proLabel: string
+  previewLabel: string
+  isPremium: boolean
+}) {
+  const [revealed, setRevealed] = useState(false)
+  if (isPremium || revealed) return <>{children}</>
+  return (
+    <div className="relative rounded-2xl border border-white/[0.06] overflow-hidden">
+      <div className="pointer-events-none blur-[3px] opacity-30 select-none">
+        {children}
+      </div>
+      <div className="absolute inset-0 flex items-center justify-center bg-[#080a0f]/60 backdrop-blur-sm">
+        <div className="text-center space-y-2">
+          <span className="inline-block px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest border border-teal-500/30 text-teal-400/70 mb-1">
+            {proLabel}
+          </span>
+          <p className="text-slate-400 text-xs max-w-[200px] leading-relaxed">{label}</p>
+          <button
+            onClick={() => setRevealed(true)}
+            className="px-4 py-1.5 text-[11px] font-semibold rounded-lg border border-teal-500/30 text-teal-400 hover:bg-teal-500/10 transition-all"
+          >
+            {previewLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Main Component ───────────────────────────────────────────────── */
+export default function KomandoPagi({ userPlan }: { userPlan?: string }) {
+  const navigate = useNavigate()
+  const { language } = useLanguagePreference()
+  const { user } = useAuthSession()
+  const isPremium = Boolean(userPlan && userPlan !== 'free')
+  const copy = useMemo(() => getMorningCommandCopy(language), [language])
+  const state = useMemo(() => computeMorningCommandState(language), [language])
+  const portfolioSnapshot = useMemo(() => readPortfolioSnapshot(), [])
+  const actionWatchlist = useMemo(
+    () => buildPortfolioActionWatchlist(portfolioSnapshot, language, isPremium ? 5 : 2),
+    [isPremium, language, portfolioSnapshot]
+  )
+  const riskBudgetEvaluation = useMemo(
+    () => evaluateRiskBudget(portfolioSnapshot, readRiskBudget(), language),
+    [language, portfolioSnapshot]
+  )
+  const p = palette[state.riskLevel]
+
+  const name = user?.fullname?.split(' ')[0] ?? ''
+  const dateLabel = useMemo(() =>
+    new Intl.DateTimeFormat(language === 'en' ? 'en-US' : 'id-ID', {
+      weekday: 'long', day: 'numeric', month: 'long'
+    }).format(new Date()), [language])
+
+  const [showContext, setShowContext] = useState(false)
+  const [showNewsAnalysis, setShowNewsAnalysis] = useState(false)
+
+  // ── News Intelligence fetch ─────────────────────────────────────
+  const [newsData, setNewsData] = useState<NewsIntelligence | null>(null)
+
+  useEffect(() => {
+    if (!state.hasPortfolio) return
+    fetchNewsIntelligence(language).then(setNewsData)
+  }, [language, state.hasPortfolio])
+
+  const hasNews = newsData?.loaded && newsData.signals.length > 0
+
+  // ── Empty state ─────────────────────────────────────────────────
+  if (!state.hasPortfolio) {
+    return <EmptyPortfolioState userPlan={userPlan} language={language} />
+  }
+
+  // ── Quick cards data ────────────────────────────────────────────
+  const quickCards = [
+    { icon: '◈', label: copy.cardMarketPressure, value: copy.impact[state.stateKey] },
+    { icon: '◎', label: copy.cardPortfolioImpact, value: copy.statesSub[state.stateKey] },
+    { icon: '◉', label: copy.cardFocusLabel,      value: copy.focus[state.stateKey] },
+  ]
+
+  // ── News impact text (uses portfolio concentration) ─────────────
+  const newsImpactText = state.topAssetLabel
+    ? copy.newsImpactToPortfolio
+        .replace('{asset}', state.topAssetLabel)
+        .replace('{pct}', state.concentrationPct.toFixed(0))
+    : ''
+
+  return (
+    <div className="space-y-4">
+      {/* ══════════════════════════════════════════════════════════
+          COMMAND HERO — Above the fold
+         ══════════════════════════════════════════════════════════ */}
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+        className="relative rounded-3xl overflow-hidden border border-white/[0.07]"
+        style={{ background: p.bg }}
+      >
+        {/* Glow accent */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-24 rounded-full blur-3xl"
+          style={{ background: p.glow }}
+        />
+        <div
+          className="absolute top-0 inset-x-0 h-[1.5px]"
+          style={{ background: `linear-gradient(90deg, transparent, ${p.accent}70, transparent)` }}
+        />
+
+        <div className="relative z-10 p-6 md:p-8 space-y-4">
+          {/* Date + name */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <PulseIndicator color={p.dot} glowColor={p.glow} />
+              <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">{dateLabel}</span>
+            </div>
+            {name && (
+              <span className="text-[11px] text-slate-500">
+                {copy.greetingMorning.split(',')[0]}, <span className="text-slate-300 font-medium">{name}</span>
+              </span>
+            )}
+          </div>
+
+          {/* Main headline */}
+          <h1
+            className="text-xl md:text-2xl font-bold tracking-tight text-white"
+            style={{ lineHeight: '1.3', maxWidth: '540px' }}
+          >
+            {copy.heroHeadline[state.stateKey]}
+          </h1>
+
+          {/* ── Layer A: News micro-evidence bullets (Free) ──── */}
+          {hasNews && (
+            <div className="space-y-1.5 pt-1">
+              <p className="text-[9px] font-mono text-slate-600 uppercase tracking-wider">
+                {copy.newsEvidenceLabel}
+              </p>
+              <ul className="space-y-1">
+                {newsData!.signals.slice(0, 3).map((sig, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-2 text-[12px] text-slate-400"
+                    style={{ lineHeight: '1.45' }}
+                  >
+                    <span
+                      className="block w-1.5 h-1.5 rounded-full mt-[5px] flex-shrink-0"
+                      style={{ background: directionDot[sig.direction] }}
+                    />
+                    <span className="line-clamp-1">{sig.bullet}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {newsData !== null && !hasNews && newsData.loaded && null /* silently skip if no news */}
+
+          {/* Pills row */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border"
+              style={{
+                background: p.pillBg, color: p.pillText, borderColor: p.pillBorder,
+              }}
+            >
+              {copy.riskLevels[state.riskLevel]}
+            </span>
+            <span
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border border-white/[0.08]"
+              style={{ background: 'rgba(255,255,255,0.03)', color: '#94a3b8' }}
+            >
+              {copy.portfolioFit[state.stateKey]}
+            </span>
+          </div>
+
+          {/* Primary + Secondary CTAs */}
+          <div className="flex flex-wrap items-center gap-3 pt-1">
+            <Link
+              to="/portfolio"
+              id="komando-cta-portfolio"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-[13px] font-bold rounded-xl transition-all"
+              style={{ background: p.accent, color: '#000', boxShadow: `0 4px 16px ${p.dot}20` }}
+            >
+              {copy.ctaPortfolioImpact}
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
+            <button
+              type="button"
+              onClick={() => navigate('/ting-ai')}
+              id="komando-cta-tingai"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-[13px] font-medium rounded-xl border border-white/[0.08] text-slate-300 hover:bg-white/[0.04] transition-all"
+            >
+              {copy.ctaTingAi}
+            </button>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* ══════════════════════════════════════════════════════════
+          3 COMPACT CARDS — 1 sentence each, no paragraphs
+         ══════════════════════════════════════════════════════════ */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+        {quickCards.map((card, i) => (
+          <motion.div
+            key={card.label}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.06 + i * 0.06, ease: [0.16, 1, 0.3, 1] }}
+            className="rounded-xl border border-white/[0.06] px-4 py-3.5 space-y-1.5"
+            style={{ background: 'rgba(255,255,255,0.02)', minHeight: '68px' }}
+          >
+            <p className="text-[10px] font-mono text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+              <span style={{ opacity: 0.5, fontSize: '8px' }}>{card.icon}</span>
+              {card.label}
+            </p>
+            <p className="text-slate-300 text-[13px]" style={{ lineHeight: '1.5' }}>
+              {card.value}
+            </p>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* ══════════════════════════════════════════════════════════
+          FREE: Collapsible context detail
+         ══════════════════════════════════════════════════════════ */}
+		      <RiskBudgetCard
+		        snapshot={portfolioSnapshot}
+		        language={language}
+		        isPro={isPremium}
+		        compact
+		      />
+
+		      <PortfolioActionWatchlist
+		        items={actionWatchlist}
+		        language={language}
+		        isPro={isPremium}
+	        compact
+	      />
+
+	      <DecisionJournal
+	        snapshot={portfolioSnapshot}
+	        language={language}
+	        isPro={isPremium}
+	        riskBudgetEvaluation={riskBudgetEvaluation}
+	        watchlistItems={actionWatchlist}
+	        compact
+	      />
+
+	      <motion.div
+	        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.25 }}
+      >
+        <button
+          onClick={() => setShowContext(v => !v)}
+          className="flex items-center gap-1.5 text-[11px] text-slate-500 hover:text-slate-300 transition-colors font-medium"
+        >
+          <svg
+            className={`w-3 h-3 transition-transform duration-200 ${showContext ? 'rotate-90' : ''}`}
+            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+          {showContext ? copy.hideDetail : copy.showDetail}
+        </button>
+        <AnimatePresence>
+          {showContext && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="overflow-hidden"
+            >
+              <div className="pt-3 pb-1">
+                <div
+                  className="rounded-xl border border-white/[0.05] px-4 py-3.5"
+                  style={{ background: 'rgba(255,255,255,0.015)' }}
+                >
+                  <p className="text-slate-400 text-[13px]" style={{ lineHeight: '1.55' }}>
+                    {copy.context[state.stateKey]}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* ══════════════════════════════════════════════════════════
+          LAYER B (PRO): News analysis — collapsed by default
+         ══════════════════════════════════════════════════════════ */}
+      {hasNews && (
+        <ProSection
+          label={copy.newsAnalysisLabel}
+          proLabel={copy.proUnlockLabel}
+          previewLabel={copy.proPreviewLabel}
+          isPremium={isPremium}
+        >
+          <div className="space-y-0.5">
+            <button
+              onClick={() => setShowNewsAnalysis(v => !v)}
+              className="flex items-center gap-1.5 text-[11px] text-slate-500 hover:text-slate-300 transition-colors font-medium w-full"
+            >
+              <svg
+                className={`w-3 h-3 transition-transform duration-200 ${showNewsAnalysis ? 'rotate-90' : ''}`}
+                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+              {copy.newsAnalysisLabel}
+              {!isPremium && (
+                <span className="ml-1 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-widest border border-teal-500/25 text-teal-400/60 rounded">
+                  {copy.proUnlockLabel}
+                </span>
+              )}
+            </button>
+            <AnimatePresence>
+              {showNewsAnalysis && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="overflow-hidden"
+                >
+                  <div className="pt-3 pb-1 space-y-3">
+                    {/* Why it matters */}
+                    <div
+                      className="rounded-xl border border-white/[0.05] px-4 py-3.5 space-y-1.5"
+                      style={{ background: 'rgba(255,255,255,0.015)' }}
+                    >
+                      <p className="text-[10px] font-mono text-slate-600 uppercase tracking-wider">
+                        {language === 'en' ? 'Why it matters' : 'Mengapa penting'}
+                      </p>
+                      <p className="text-slate-400 text-[13px]" style={{ lineHeight: '1.55' }}>
+                        {copy.newsWhyItMatters[newsData!.netDirection]}
+                      </p>
+                    </div>
+
+                    {/* Impact to portfolio */}
+                    {newsImpactText && (
+                      <div
+                        className="rounded-xl border border-white/[0.05] px-4 py-3.5 space-y-1.5"
+                        style={{ background: 'rgba(255,255,255,0.015)' }}
+                      >
+                        <p className="text-[10px] font-mono text-slate-600 uppercase tracking-wider">
+                          {language === 'en' ? 'Your portfolio' : 'Portofoliomu'}
+                        </p>
+                        <p className="text-slate-400 text-[13px]" style={{ lineHeight: '1.55' }}>
+                          {newsImpactText}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Scenario */}
+                    <div
+                      className="rounded-xl border border-white/[0.05] px-4 py-3.5 space-y-1.5"
+                      style={{ background: 'rgba(255,255,255,0.015)' }}
+                    >
+                      <p className="text-[10px] font-mono text-slate-600 uppercase tracking-wider">
+                        {language === 'en' ? 'If this continues' : 'Jika berlanjut'}
+                      </p>
+                      <p className="text-slate-400 text-[13px]" style={{ lineHeight: '1.55' }}>
+                        {copy.newsScenario[newsData!.netDirection]}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </ProSection>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════
+          PRO SECTIONS — locked/blurred for free
+         ══════════════════════════════════════════════════════════ */}
+      <div className="space-y-3 pt-1">
+        {/* Pro: AI Explanation */}
+        <ProSection
+          label={copy.proSectionAiExplanation}
+          proLabel={copy.proUnlockLabel}
+          previewLabel={copy.proPreviewLabel}
+          isPremium={isPremium}
+        >
+          <div
+            className="rounded-xl border border-white/[0.06] px-5 py-4 space-y-2"
+            style={{ background: 'rgba(255,255,255,0.02)' }}
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono text-slate-600 uppercase tracking-wider">{copy.proSectionAiExplanation}</span>
+              {!isPremium && (
+                <span className="px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-widest border border-teal-500/25 text-teal-400/60 rounded">
+                  {copy.proUnlockLabel}
+                </span>
+              )}
+            </div>
+            <p className="text-slate-400 text-[13px]" style={{ lineHeight: '1.55' }}>
+              {copy.context[state.stateKey]}
+            </p>
+          </div>
+        </ProSection>
+
+        {/* Pro: Risk Scenario */}
+        <ProSection
+          label={copy.proSectionRiskScenario}
+          proLabel={copy.proUnlockLabel}
+          previewLabel={copy.proPreviewLabel}
+          isPremium={isPremium}
+        >
+          <div
+            className="rounded-xl border border-white/[0.06] px-5 py-4 space-y-2"
+            style={{ background: 'rgba(255,255,255,0.02)' }}
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono text-slate-600 uppercase tracking-wider">{copy.proSectionRiskScenario}</span>
+              {!isPremium && (
+                <span className="px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-widest border border-teal-500/25 text-teal-400/60 rounded">
+                  {copy.proUnlockLabel}
+                </span>
+              )}
+            </div>
+            <ul className="space-y-1">
+              <li className="flex items-start gap-2 text-slate-400 text-[13px]" style={{ lineHeight: '1.5' }}>
+                <span className="text-slate-600 mt-0.5">•</span>
+                {state.topAssetLabel
+                  ? (language === 'en'
+                    ? `If ${state.topAssetLabel} drops 5%, portfolio impact: ~${(state.concentrationPct * 0.05).toFixed(1)}%.`
+                    : `Jika ${state.topAssetLabel} turun 5%, dampak: ~${(state.concentrationPct * 0.05).toFixed(1)}%.`)
+                  : copy.impact[state.stateKey]
+                }
+              </li>
+              <li className="flex items-start gap-2 text-slate-400 text-[13px]" style={{ lineHeight: '1.5' }}>
+                <span className="text-slate-600 mt-0.5">•</span>
+                {state.topAssetLabel
+                  ? (language === 'en'
+                    ? `Concentration: ${state.topAssetLabel} at ${state.concentrationPct.toFixed(0)}%.`
+                    : `Konsentrasi: ${state.topAssetLabel} di ${state.concentrationPct.toFixed(0)}%.`)
+                  : copy.focus[state.stateKey]
+                }
+              </li>
+            </ul>
+          </div>
+        </ProSection>
+      </div>
+
+      {/* ══════════════════════════════════════════════════════════
+          FREE: Action hint (subtle pro teaser)
+         ══════════════════════════════════════════════════════════ */}
+      {!isPremium && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.35 }}
+          className="pt-1"
+        >
+          <Link
+            to="/upgrade"
+            className="flex items-center gap-2 text-[11px] text-slate-600 hover:text-slate-400 transition-colors"
+          >
+            <span className="px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-widest border border-white/[0.08] text-slate-600 rounded">
+              Pro
+            </span>
+            {copy.proHint} →
+          </Link>
+        </motion.div>
+      )}
+    </div>
+  )
+}
