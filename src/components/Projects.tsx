@@ -22,8 +22,8 @@ const projects: Project[] = [
     status: "Active · v1.9",
     statusColor: "#25d0c3",
     category: "AI Product",
-    description: "Sistem pendukung keputusan berbasis AI untuk investor ritel — analisis risiko portofolio, wawasan makro, dan morning briefing harian.",
-    descriptionEn: "AI decision support system for retail investors — portfolio risk analysis, macro insight, and daily morning briefing.",
+    description: "Sistem pendukung keputusan berbasis AI untuk investor ritel — memproses data pasar makro secara real-time dan memberikan wawasan analisis dalam hitungan detik.",
+    descriptionEn: "AI decision support system for retail investors — processing real-time macro market data and delivering analysis insights in seconds.",
     stack: ["React", "FastAPI", "Gemini Pro", "Python", "Recharts"],
     demo: "https://faturachman.my.id",
     featured: true
@@ -33,8 +33,8 @@ const projects: Project[] = [
     status: "Merged",
     statusColor: "#4ea8de",
     category: "Open Source · tscircuit",
-    description: "Kontribusi ke library open source tscircuit — menambahkan fitur analog simulation viewer dan highlight connected traces on hover.",
-    descriptionEn: "Open source contribution to tscircuit — added analog simulation viewer and highlight connected traces on hover feature.",
+    description: "Mempercepat visualisasi alur debugging PCB pengguna lewat fitur analog simulation viewer interaktif dan trace highlight on hover.",
+    descriptionEn: "Accelerated PCB debugging visualization workflows via interactive analog simulation viewer and trace highlight on hover.",
     stack: ["TypeScript", "React", "TSX", "PCB Design"],
     github: "https://github.com/tscircuit/schematic-viewer"
   },
@@ -43,8 +43,8 @@ const projects: Project[] = [
     status: "Contributing",
     statusColor: "#d6b15d",
     category: "Open Source · MCP",
-    description: "Kontribusi ke platform archestra — pengembangan MCP catalog form dan frontend module untuk integrasi enterprise.",
-    descriptionEn: "Contributions to archestra platform — MCP catalog form and frontend module for enterprise integrations.",
+    description: "Meningkatkan utilitas integrasi enterprise dengan mengembangkan form katalog MCP dan modul arsitektur frontend.",
+    descriptionEn: "Increased enterprise integration utility by developing the MCP catalog form and frontend architecture modules.",
     stack: ["React", "TypeScript", "Next.js", "MCP"],
     github: "https://github.com/sparesparrow/archestra"
   },
@@ -53,8 +53,8 @@ const projects: Project[] = [
     status: "Contributing",
     statusColor: "#a78bfa",
     category: "Open Source · Algorithms",
-    description: "Kontribusi algoritma ChipPartitionsSolver ke library matchpack untuk pemecahan masalah partisi chip dalam desain PCB.",
-    descriptionEn: "ChipPartitionsSolver algorithm contribution to matchpack library for chip partition problem solving in PCB design.",
+    description: "Mengoptimalkan sistem layouting otomatis dengan merancang algoritma ChipPartitionsSolver untuk pemecahan masalah partisi desain PCB.",
+    descriptionEn: "Optimized automated layouting systems by designing the ChipPartitionsSolver algorithm for PCB design partition problem solving.",
     stack: ["TypeScript", "Bun", "Algorithms"],
     github: "https://github.com/matchpack/matchpack"
   },
@@ -63,8 +63,8 @@ const projects: Project[] = [
     status: "Production",
     statusColor: "#4ea8de",
     category: "Financial Data",
-    description: "Abstraction layer untuk multi-source financial data intelligence — menggabungkan data dari Polygon, FRED, dan market feeds.",
-    descriptionEn: "Abstraction layer for multi-source financial data intelligence — combining data from Polygon, FRED, and market feeds.",
+    description: "Abstraction layer terpusat yang memangkas redundansi request untuk intelijen finansial (Polygon, FRED, Market News) secara signifikan.",
+    descriptionEn: "Centralized abstraction layer that significantly cuts request redundancy for multi-source financial intelligence (Polygon, FRED).",
     stack: ["Python", "Redis", "GraphQL", "FastAPI"]
   },
   {
@@ -72,8 +72,8 @@ const projects: Project[] = [
     status: "Published",
     statusColor: "#f59e0b",
     category: "Research",
-    description: "Riset dan presentasi machine learning — eksplorasi model, dataset, dan metodologi untuk aplikasi AI di domain finansial.",
-    descriptionEn: "Machine learning research and presentation — model exploration, datasets, and methodology for AI in financial domain.",
+    description: "Penelitian pemodelan sentimen finansial — mengevaluasi performa model LLM terhadap data unstructured untuk akurasi prediksi arah market.",
+    descriptionEn: "Financial sentiment modeling research — evaluating LLM model performance on unstructured data for market direction prediction accuracy.",
     stack: ["Python", "Jupyter", "ML", "Data Science"]
   }
 ]

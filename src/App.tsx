@@ -28,6 +28,8 @@ import Contact from './components/Contact'
 import SystemStack from './components/SystemStack'
 import SystemThinking from './components/SystemThinking'
 import Philosophy from './components/Philosophy'
+import BlogList from './views/BlogList'
+import BlogPost from './views/BlogPost'
 import { useLanguagePreference } from './utils/language'
 import { useDocumentMetadata } from './utils/metadata'
 
@@ -185,6 +187,15 @@ function RouteMetadata() {
           path: '/personal-space',
           robots: 'noindex, nofollow'
         }
+      case '/blog':
+        return {
+          title: language === 'en' ? 'Blog & Insights | Faturachman Alkahfi' : 'Blog & Wawasan | Faturachman Alkahfi',
+          description: language === 'en' 
+            ? 'Notes on building AI products, full-stack systems, and financial abstractions.'
+            : 'Catatan tentang membangun produk AI, sistem full-stack, dan abstraksi finansial.',
+          path: '/blog',
+          robots: 'index, follow'
+        }
       default:
         return {
           title: 'Faturachman Alkahfi | AI Product Builder & Full Stack Developer',
@@ -308,6 +319,8 @@ function AppShell() {
             </ProtectedRoute>
           }
         />
+        <Route path="/blog" element={<BlogList />} />
+        <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
       <Footer />

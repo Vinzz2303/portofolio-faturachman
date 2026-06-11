@@ -83,6 +83,7 @@ export default function Navbar() {
     account: isEnglish ? 'Account' : 'Akun',
     tingAi: 'Ting AI',
     projects: isEnglish ? 'Projects' : 'Proyek',
+    blog: 'Blog',
     resume: 'Resume',
     contact: isEnglish ? 'Contact' : 'Kontak',
     switchLang: isEnglish ? 'EN | switch to ID' : 'ID | switch to EN',
@@ -188,6 +189,9 @@ export default function Navbar() {
             </button>
             <Link to={isHome ? '#projects' : '/#projects'} onClick={closeAll}>
               {navText.projects}
+            </Link>
+            <Link to="/blog" onClick={closeAll}>
+              {navText.blog}
             </Link>
             <a href="/faturachman-alkahfi-resume.pdf" target="_blank" rel="noreferrer" onClick={closeAll}>
               {navText.resume}
