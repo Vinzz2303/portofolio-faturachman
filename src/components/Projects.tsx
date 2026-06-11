@@ -1,132 +1,260 @@
 import React from 'react'
-import type { SectionProps } from '../types'
+import { motion } from 'framer-motion'
+import type { Variants } from 'framer-motion'
+import { useLanguagePreference } from '../utils/language'
 
-type ProjectLink = {
-  label: string
-  href: string
-}
-
-type CaseStudyItem = {
-  label: string
-  text: string
-}
-
-type Project = {
-  id: number
-  cover: string
+interface Project {
   title: string
-  desc: string
-  stack: string
-  highlights: string[]
-  caseStudy: CaseStudyItem[]
-  note: string
-  links: ProjectLink[]
+  status: string
+  statusColor: string
+  category: string
+  description: string
+  descriptionEn: string
+  stack: string[]
+  github?: string
+  demo?: string
+  featured?: boolean
 }
 
 const projects: Project[] = [
   {
-    id: 1,
-    cover: '/projects/central-emas.png',
-    title: 'Central Jual Emas (Concept Project)',
-    desc:
-      'Concept landing page for a gold selling service focused on education and conversion. ' +
-      'Conversion-focused with pricing insights and clear CTAs.',
-    stack: 'HTML, CSS, JavaScript, React, Vite, REST API',
-    highlights: [
-      'Gold price estimation calculator',
-      'Auto gold price via API (XAUSD/world data)',
-      'WhatsApp CTA, testimonials, FAQ, locations'
-    ],
-    caseStudy: [
-      { label: 'Problem', text: 'Visitors need quick estimates and trust when selling gold.' },
-      { label: 'Solution', text: 'Auto pricing calculator plus clear WhatsApp CTA.' },
-      { label: 'Result', text: 'A shorter flow focused on conversion.' }
-    ],
-    note: 'Customer/branch/testimonial data uses mock content for design purposes.',
-    links: [
-      { label: 'Demo', href: 'https://central-jual-emas.netlify.app/' },
-      { label: 'Admin', href: 'https://central-jual-emas.netlify.app/admin.html' },
-      { label: 'Repo', href: 'https://github.com/Vinzz2303/central-jual-emas' }
-    ]
+    title: "Ting AI",
+    status: "Active · v1.9",
+    statusColor: "#25d0c3",
+    category: "AI Product",
+    description: "Sistem pendukung keputusan berbasis AI untuk investor ritel — analisis risiko portofolio, wawasan makro, dan morning briefing harian.",
+    descriptionEn: "AI decision support system for retail investors — portfolio risk analysis, macro insight, and daily morning briefing.",
+    stack: ["React", "FastAPI", "Gemini Pro", "Python", "Recharts"],
+    demo: "https://faturachman.my.id",
+    featured: true
   },
   {
-    id: 2,
-    cover: '/projects/queen-cell.png',
-    title: 'For My Queen Cell (Client Project)',
-    desc:
-      'Romantic themed website for "HTS" with personal messages, mood switch, and warm storytelling. ' +
-      'A soft, mobile-first experience with playful interactions.',
-    stack: 'HTML, CSS, JavaScript, React (UMD)',
-    highlights: [
-      'Hero with personal message + message toggle',
-      'Mood switch to change the vibe',
-      'Story timeline + audio player',
-      'Floating hearts animation'
-    ],
-    caseStudy: [
-      { label: 'Problem', text: 'Client wanted a personal, warm digital gift.' },
-      { label: 'Solution', text: 'Soft storytelling with mood switch and audio.' },
-      { label: 'Result', text: 'An intimate, memorable mobile experience.' }
-    ],
-    note: 'Client project: copy and content customized to the request.',
-    links: [
-      { label: 'Demo', href: 'https://formyqueencell.netlify.app/' },
-      { label: 'Repo', href: 'https://github.com/Vinzz2303/buatcelyn' }
-    ]
+    title: "Schematic Viewer",
+    status: "Merged",
+    statusColor: "#4ea8de",
+    category: "Open Source · tscircuit",
+    description: "Kontribusi ke library open source tscircuit — menambahkan fitur analog simulation viewer dan highlight connected traces on hover.",
+    descriptionEn: "Open source contribution to tscircuit — added analog simulation viewer and highlight connected traces on hover feature.",
+    stack: ["TypeScript", "React", "TSX", "PCB Design"],
+    github: "https://github.com/tscircuit/schematic-viewer"
+  },
+  {
+    title: "Archestra Platform",
+    status: "Contributing",
+    statusColor: "#d6b15d",
+    category: "Open Source · MCP",
+    description: "Kontribusi ke platform archestra — pengembangan MCP catalog form dan frontend module untuk integrasi enterprise.",
+    descriptionEn: "Contributions to archestra platform — MCP catalog form and frontend module for enterprise integrations.",
+    stack: ["React", "TypeScript", "Next.js", "MCP"],
+    github: "https://github.com/sparesparrow/archestra"
+  },
+  {
+    title: "Matchpack",
+    status: "Contributing",
+    statusColor: "#a78bfa",
+    category: "Open Source · Algorithms",
+    description: "Kontribusi algoritma ChipPartitionsSolver ke library matchpack untuk pemecahan masalah partisi chip dalam desain PCB.",
+    descriptionEn: "ChipPartitionsSolver algorithm contribution to matchpack library for chip partition problem solving in PCB design.",
+    stack: ["TypeScript", "Bun", "Algorithms"],
+    github: "https://github.com/matchpack/matchpack"
+  },
+  {
+    title: "OpenBB Fast Data Layer",
+    status: "Production",
+    statusColor: "#4ea8de",
+    category: "Financial Data",
+    description: "Abstraction layer untuk multi-source financial data intelligence — menggabungkan data dari Polygon, FRED, dan market feeds.",
+    descriptionEn: "Abstraction layer for multi-source financial data intelligence — combining data from Polygon, FRED, and market feeds.",
+    stack: ["Python", "Redis", "GraphQL", "FastAPI"]
+  },
+  {
+    title: "ML Research PPT",
+    status: "Published",
+    statusColor: "#f59e0b",
+    category: "Research",
+    description: "Riset dan presentasi machine learning — eksplorasi model, dataset, dan metodologi untuk aplikasi AI di domain finansial.",
+    descriptionEn: "Machine learning research and presentation — model exploration, datasets, and methodology for AI in financial domain.",
+    stack: ["Python", "Jupyter", "ML", "Data Science"]
   }
 ]
 
-export default function Projects({ sectionId }: SectionProps) {
+const container: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08
+    }
+  }
+}
+
+const item: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
+}
+
+function ExternalLinkIcon() {
   return (
-    <section id={sectionId} className="projects container reveal">
-      <h2>Projects</h2>
-      <div className="grid">
-        {projects.map(project => (
-          <article key={project.id} className="card">
-            <div className="card-cover">
-              <img
-                src={project.cover}
-                alt={`${project.title} cover`}
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-            <div className="card-body">
-              <h3>{project.title}</h3>
-              <p>{project.desc}</p>
-              <p className="card-meta">
-                <strong>Stack:</strong> {project.stack}
-              </p>
-              <ul className="card-list">
-                {project.highlights.map((highlight) => (
-                  <li key={highlight}>{highlight}</li>
-                ))}
-              </ul>
-              <div className="case-study">
-                {project.caseStudy.map((item) => (
-                  <div key={item.label} className="case-row">
-                    <span className="case-label">{item.label}</span>
-                    <span className="case-text">{item.text}</span>
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 10L10 2M10 2H4M10 2V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  )
+}
+
+function GitHubIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+    </svg>
+  )
+}
+
+export default function Projects({ sectionId }: { sectionId: string }) {
+  const { language } = useLanguagePreference()
+  const isEn = language === 'en'
+
+  return (
+    <section id={sectionId} className="py-24 bg-white/[0.01]">
+      <div className="container-saas">
+        <div className="mb-16">
+          <div className="panel-label mb-2 text-accent">
+            {isEn ? 'Selected Work' : 'Karya Pilihan'}
+          </div>
+          <h2 className="text-3xl font-bold text-gradient">
+            {isEn ? 'Projects & Contributions' : 'Proyek & Kontribusi'}
+          </h2>
+          <p className="text-sm text-white/40 mt-3 max-w-lg">
+            {isEn
+              ? 'A mix of personal products, open source contributions, and research work.'
+              : 'Perpaduan antara produk pribadi, kontribusi open source, dan karya riset.'}
+          </p>
+        </div>
+
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-80px" }}
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
+        >
+          {projects.map((project) => {
+            const hasLink = project.github || project.demo
+            const Wrapper = hasLink ? 'a' : 'div'
+            const wrapperProps = hasLink
+              ? {
+                  href: project.github || project.demo,
+                  target: '_blank' as const,
+                  rel: 'noreferrer noopener'
+                }
+              : {}
+
+            return (
+              <motion.div
+                key={project.title}
+                variants={item}
+                className={`relative ${project.featured ? 'md:col-span-2 lg:col-span-1' : ''}`}
+              >
+                <Wrapper
+                  {...wrapperProps}
+                  className={`glass-card p-6 flex flex-col justify-between h-full transition-all will-change-transform group ${hasLink ? 'hover-glow cursor-pointer' : ''} ${project.featured ? 'border-accent/20' : ''}`}
+                >
+                  {/* Top: status + category + link icon */}
+                  <div>
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex flex-col gap-1.5">
+                        <div
+                          className="status-badge w-fit"
+                          style={{
+                            color: project.statusColor,
+                            borderColor: `${project.statusColor}22`,
+                            background: `${project.statusColor}0a`
+                          }}
+                        >
+                          {project.status}
+                        </div>
+                        <div className="text-[9px] font-mono text-white/25 uppercase tracking-widest">
+                          {project.category}
+                        </div>
+                      </div>
+                      {hasLink && (
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity text-white/40 group-hover:text-accent">
+                          <ExternalLinkIcon />
+                        </div>
+                      )}
+                    </div>
+
+                    <h3 className="text-lg font-bold mb-2 group-hover:text-accent transition-colors">
+                      {project.title}
+                    </h3>
+                    <p className="text-sm text-white/50 leading-relaxed mb-5">
+                      {isEn ? project.descriptionEn : project.description}
+                    </p>
                   </div>
-                ))}
-              </div>
-              <p className="card-note">{project.note}</p>
-              <div className="card-links">
-                {project.links.map((link) => (
-                  <a
-                    key={link.label}
-                    className="btn-outline"
-                    href={link.href}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-            </div>
-          </article>
-        ))}
+
+                  {/* Bottom: stack + links */}
+                  <div className="pt-4 border-t border-white/[0.06]">
+                    <div className="flex flex-wrap gap-1.5 mb-4">
+                      {project.stack.map(tech => (
+                        <span
+                          key={tech}
+                          className="px-2 py-0.5 text-[9px] font-mono bg-white/[0.04] border border-white/[0.06] rounded text-white/50"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="flex gap-3">
+                      {project.github && (
+                        <a
+                          href={project.github}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          onClick={e => e.stopPropagation()}
+                          className="flex items-center gap-1.5 text-[10px] font-mono text-white/30 hover:text-white/70 transition-colors"
+                        >
+                          <GitHubIcon />
+                          GitHub
+                        </a>
+                      )}
+                      {project.demo && (
+                        <a
+                          href={project.demo}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          onClick={e => e.stopPropagation()}
+                          className="flex items-center gap-1.5 text-[10px] font-mono text-accent/50 hover:text-accent transition-colors"
+                        >
+                          <ExternalLinkIcon />
+                          Live Demo
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </Wrapper>
+              </motion.div>
+            )
+          })}
+        </motion.div>
+
+        {/* GitHub CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+          className="mt-10 flex justify-center"
+        >
+          <a
+            href="https://github.com/Vinzz2303"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="flex items-center gap-2 px-5 py-2.5 glass-card text-sm text-white/50 hover:text-white/80 hover:border-white/20 transition-all font-mono"
+          >
+            <GitHubIcon />
+            {isEn ? 'See all on GitHub →' : 'Lihat semua di GitHub →'}
+          </a>
+        </motion.div>
       </div>
     </section>
   )
