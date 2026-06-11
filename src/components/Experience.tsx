@@ -32,6 +32,15 @@ const experiences: TimelineItem[] = [
     color: "#4ea8de"
   },
   {
+    year: "2024 - 2025",
+    title: "Full-Stack Web Developer",
+    company: "Universitas Primagraha (upg.ac.id)",
+    description: "Membangun sistem informasi dan website portal akademik untuk Universitas Primagraha. Proyek ini dikerjakan secara profesional (freelance/kontrak), di luar pendidikan sarjana saya di UMN.",
+    descriptionEn: "Built the academic portal and information system website for Universitas Primagraha. This was a professional contract project, separate from my undergraduate studies at UMN.",
+    type: "work",
+    color: "#f59e0b"
+  },
+  {
     year: "2025 - Present",
     title: "Open Source Contributor",
     company: "Tscircuit, Archestra, Matchpack",
