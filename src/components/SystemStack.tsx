@@ -2,190 +2,85 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { useLanguagePreference } from '../utils/language'
 
-const skillGroups = [
-  {
-    title: "Frontend",
-    icon: "⬡",
-    color: "#25d0c3",
-    techs: [
-      { name: "React", level: 90 },
-      { name: "TypeScript", level: 85 },
-      { name: "Next.js", level: 80 },
-      { name: "Tailwind", level: 88 },
-      { name: "Framer Motion", level: 75 }
-    ],
-    descId: "Membangun antarmuka modern, responsif, dan interaktif dengan fokus pada pengalaman pengguna.",
-    descEn: "Building modern, responsive, and interactive interfaces with focus on user experience."
-  },
-  {
-    title: "Backend & AI",
-    icon: "⬡",
-    color: "#4ea8de",
-    techs: [
-      { name: "FastAPI", level: 82 },
-      { name: "Python", level: 85 },
-      { name: "Gemini Pro", level: 78 },
-      { name: "LangChain", level: 70 },
-      { name: "Groq / GPT", level: 72 }
-    ],
-    descId: "Merancang backend dan pipeline AI multi-model untuk sistem pendukung keputusan.",
-    descEn: "Designing backend and multi-model AI pipelines for decision support systems."
-  },
-  {
-    title: "Data & Infrastructure",
-    icon: "⬡",
-    color: "#d6b15d",
-    techs: [
-      { name: "PostgreSQL", level: 75 },
-      { name: "Redis", level: 68 },
-      { name: "OpenBB", level: 80 },
-      { name: "Polygon API", level: 76 },
-      { name: "FRED / Macro", level: 72 }
-    ],
-    descId: "Integrasi sumber data keuangan dan pengelolaan infrastruktur data untuk analitik real-time.",
-    descEn: "Integrating financial data sources and managing data infrastructure for real-time analytics."
-  },
-  {
-    title: "Tooling & Workflow",
-    icon: "⬡",
-    color: "#a78bfa",
-    techs: [
-      { name: "Git / GitHub", level: 88 },
-      { name: "Vite / Bun", level: 80 },
-      { name: "Playwright", level: 70 },
-      { name: "PM2 / VPS", level: 72 },
-      { name: "Figma", level: 65 }
-    ],
-    descId: "Toolchain lengkap dari development hingga deployment — testing, CI, dan server management.",
-    descEn: "Full toolchain from development to deployment — testing, CI, and server management."
-  }
-]
-
-function SkillBar({ level, color }: { level: number; color: string }) {
-  return (
-    <div className="h-0.5 w-full bg-white/[0.05] rounded-full overflow-hidden">
-      <motion.div
-        className="h-full rounded-full"
-        style={{ background: `${color}60` }}
-        initial={{ width: 0 }}
-        whileInView={{ width: `${level}%` }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      />
-    </div>
-  )
-}
-
 export default function SystemStack() {
   const { language } = useLanguagePreference()
   const isEn = language === 'en'
 
   return (
-    <section className="py-24 relative overflow-hidden">
-      <div className="container-saas">
-        <div className="mb-16 text-center lg:text-left">
-          <div className="panel-label mb-2 text-accent">
-            {isEn ? 'Capabilities' : 'Kemampuan'}
+    <section className="py-24 relative overflow-hidden bg-[#0d1117] border-y border-[#30363d]">
+      <div className="max-w-5xl mx-auto px-6 relative z-10">
+        <div className="mb-12">
+          <div className="flex items-center gap-2 mb-3">
+            <svg className="w-5 h-5 text-[#8b949e]" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z" />
+            </svg>
+            <span className="text-sm font-semibold text-[#c9d1d9]">faturachman / stack</span>
+            <span className="px-2 py-0.5 rounded-full border border-[#30363d] text-[#8b949e] text-[10px] font-medium">Public</span>
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-gradient">
-            {isEn ? 'Tech Stack & Skills' : 'Tech Stack & Keahlian'}
+          <h2 className="text-3xl md:text-4xl font-bold text-[#c9d1d9] tracking-tight">
+            {isEn ? 'Tech Stack & Capabilities' : 'Tech Stack & Keahlian'}
           </h2>
-          <p className="text-sm text-white/40 mt-3 max-w-lg">
+          <p className="text-sm text-[#8b949e] mt-3 max-w-lg leading-relaxed">
             {isEn
-              ? 'Technologies I work with across products, open source, and research.'
-              : 'Teknologi yang saya gunakan di produk, open source, dan riset.'}
+              ? 'Core technologies I use to build scalable products and AI systems.'
+              : 'Teknologi utama yang saya gunakan untuk membangun produk berskala besar dan sistem AI.'}
           </p>
         </div>
 
-        {/* Mobile: accordion */}
-        <div className="md:hidden text-left mb-8">
-          <details className="group border border-white/10 rounded-xl bg-white/[0.02] overflow-hidden">
-            <summary className="p-4 text-sm font-medium text-white cursor-pointer hover:bg-white/[0.04] transition-colors list-none flex justify-between items-center">
-              <span>{isEn ? 'View full skill breakdown' : 'Lihat semua keahlian'}</span>
-              <span className="text-white/40 group-open:rotate-180 transition-transform">▼</span>
-            </summary>
-            <div className="p-4 pt-0 flex flex-col gap-5">
-              {skillGroups.map((group) => (
-                <div key={group.title} className="border-b border-white/5 pb-5 last:border-0 last:pb-0">
-                  <div className="flex items-center gap-2 mb-3">
-                    <h3 className="text-sm font-bold text-white">{group.title}</h3>
-                  </div>
-                  <p className="text-xs text-white/40 mb-3 leading-relaxed">
-                    {isEn ? group.descEn : group.descId}
-                  </p>
-                  <div className="flex flex-col gap-2.5">
-                    {group.techs.map(tech => (
-                      <div key={tech.name}>
-                        <div className="flex justify-between mb-1">
-                          <span className="text-[10px] font-mono text-white/50">{tech.name}</span>
-                          <span className="text-[10px] font-mono text-white/25">{tech.level}%</span>
-                        </div>
-                        <SkillBar level={tech.level} color={group.color} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </details>
-        </div>
-
-        {/* Desktop: grid */}
-        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 relative">
-          {/* Subtle connection line */}
-          <div className="hidden lg:block absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-y-1/2 z-0" />
-
-          {skillGroups.map((group, i) => (
-            <motion.div
-              key={group.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="glass-card p-6 flex flex-col hover-glow transition-all will-change-transform group relative z-10 h-full"
-            >
-              <div className="mb-5">
-                <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center mb-4 border border-white/5 group-hover:border-opacity-40 transition-colors"
-                  style={{ background: `${group.color}10`, borderColor: `${group.color}20` }}
-                >
-                  <span className="text-base" style={{ color: group.color }}>⬡</span>
-                </div>
-                <h3 className="text-base font-bold mb-2 group-hover:text-accent transition-colors">
-                  {group.title}
-                </h3>
-                <p className="text-xs text-white/40 leading-relaxed">
-                  {isEn ? group.descEn : group.descId}
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-3 mt-auto">
-                {group.techs.map(tech => (
-                  <div key={tech.name}>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-[10px] font-mono text-white/50">{tech.name}</span>
-                      <span className="text-[10px] font-mono text-white/20">{tech.level}%</span>
-                    </div>
-                    <SkillBar level={tech.level} color={group.color} />
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Bottom label strip */}
-        <div className="mt-12 flex items-center justify-center gap-2 text-[10px] font-mono text-white/20 uppercase tracking-widest">
-          <span>Frontend</span>
-          <span className="w-4 h-px bg-white/10" />
-          <span>Backend</span>
-          <span className="w-4 h-px bg-white/10" />
-          <span>Data</span>
-          <span className="w-4 h-px bg-white/10" />
-          <span>Tooling</span>
-          <span className="w-4 h-px bg-white/10" />
-          <span className="text-accent/50">{isEn ? 'Full Stack AI Builder' : 'Full Stack AI Builder'}</span>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="border border-[#30363d] rounded-xl bg-[#0d1117] overflow-hidden shadow-2xl"
+        >
+          {/* IDE Header */}
+          <div className="bg-[#161b22] px-4 py-3 border-b border-[#30363d] flex items-center gap-3">
+             <div className="flex gap-1.5">
+               <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
+               <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
+               <div className="w-3 h-3 rounded-full bg-[#27c93f]" />
+             </div>
+             <div className="flex-1 text-center text-xs font-mono text-[#8b949e] mr-12 flex justify-center items-center gap-2">
+               <svg className="w-4 h-4 text-[#8b949e]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.379.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"/></svg>
+               package.json
+             </div>
+          </div>
+          
+          {/* Code Body */}
+          <div className="p-4 md:p-6 overflow-x-auto text-xs md:text-sm font-mono leading-[1.6] text-[#c9d1d9] selection:bg-[#1f6feb] selection:text-white">
+            <pre className="!bg-transparent !p-0 !m-0">
+              <code>
+                <span className="text-[#8b949e]">{"{"}</span>{'\n'}
+                <span className="text-[#79c0ff]">  "name"</span>: <span className="text-[#a5d6ff]">"faturachman-stack"</span>,{'\n'}
+                <span className="text-[#79c0ff]">  "version"</span>: <span className="text-[#a5d6ff]">"2.0.0"</span>,{'\n'}
+                <span className="text-[#79c0ff]">  "role"</span>: <span className="text-[#a5d6ff]">"Full Stack AI Developer"</span>,{'\n'}
+                <span className="text-[#79c0ff]">  "dependencies"</span>: <span className="text-[#8b949e]">{"{"}</span>{'\n'}
+                <span className="text-[#8b949e] italic">    // 1. Frontend & Interfaces</span>{'\n'}
+                <span className="text-[#79c0ff]">    "react"</span>: <span className="text-[#a5d6ff]">"^18.2.0"</span>,{'\n'}
+                <span className="text-[#79c0ff]">    "next.js"</span>: <span className="text-[#a5d6ff]">"^15.0.0"</span>,{'\n'}
+                <span className="text-[#79c0ff]">    "typescript"</span>: <span className="text-[#a5d6ff]">"^5.0.0"</span>,{'\n'}
+                <span className="text-[#79c0ff]">    "tailwind-css"</span>: <span className="text-[#a5d6ff]">"^3.4.0"</span>,{'\n'}
+                <span className="text-[#79c0ff]">    "framer-motion"</span>: <span className="text-[#a5d6ff]">"^12.0.0"</span>,{'\n'}
+                {'\n'}
+                <span className="text-[#8b949e] italic">    // 2. Backend & AI Layer</span>{'\n'}
+                <span className="text-[#79c0ff]">    "python"</span>: <span className="text-[#a5d6ff]">"^3.11.0"</span>,{'\n'}
+                <span className="text-[#79c0ff]">    "fastapi"</span>: <span className="text-[#a5d6ff]">"^0.100.0"</span>,{'\n'}
+                <span className="text-[#79c0ff]">    "node.js"</span>: <span className="text-[#a5d6ff]">"^20.0.0"</span>,{'\n'}
+                <span className="text-[#79c0ff]">    "gemini-pro"</span>: <span className="text-[#a5d6ff]">"latest"</span>,{'\n'}
+                <span className="text-[#79c0ff]">    "langchain"</span>: <span className="text-[#a5d6ff]">"latest"</span>,{'\n'}
+                {'\n'}
+                <span className="text-[#8b949e] italic">    // 3. Database & Infrastructure</span>{'\n'}
+                <span className="text-[#79c0ff]">    "postgresql"</span>: <span className="text-[#a5d6ff]">"^15.0.0"</span>,{'\n'}
+                <span className="text-[#79c0ff]">    "redis"</span>: <span className="text-[#a5d6ff]">"^7.0.0"</span>,{'\n'}
+                <span className="text-[#79c0ff]">    "github-actions-ci"</span>: <span className="text-[#a5d6ff]">"latest"</span>,{'\n'}
+                <span className="text-[#79c0ff]">    "linux-pm2"</span>: <span className="text-[#a5d6ff]">"stable"</span>{'\n'}
+                <span className="text-[#8b949e]">  {"}"}</span>{'\n'}
+                <span className="text-[#8b949e]">{"}"}</span>
+              </code>
+            </pre>
+          </div>
+        </motion.div>
       </div>
     </section>
   )

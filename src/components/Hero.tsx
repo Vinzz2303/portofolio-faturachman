@@ -93,287 +93,74 @@ export default function Hero({ sectionId }: { sectionId: string }) {
             </div>
           </motion.div>
 
-          {/* ── RIGHT: Identity Orbit System ──────────────── */}
+          {/* ── RIGHT: Developer Terminal ──────────────── */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.85 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
-            className="hidden lg:flex items-center justify-center"
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+            className="hidden lg:flex items-center justify-center w-full"
           >
-            {/* Root container — fixed pixel size for predictable layout */}
-            <div className="orbit-root">
-
-              {/* Ambient glow */}
-              <div className="orbit-glow" />
-
-              {/* Static decorative rings */}
-              <div className="orbit-ring ring-outer" />
-              <div className="orbit-ring ring-mid dashed" />
-              <div className="orbit-ring ring-inner" />
-
-              {/* HUD axes */}
-              <div className="hud-axis hud-h" />
-              <div className="hud-axis hud-v" />
-
-              {/* Corner HUD brackets */}
-              <div className="hud-corner top-[6%]    left-[6%]    border-t border-l"  />
-              <div className="hud-corner top-[6%]    right-[6%]   border-t border-r"  />
-              <div className="hud-corner bottom-[6%] left-[6%]    border-b border-l"  />
-              <div className="hud-corner bottom-[6%] right-[6%]   border-b border-r"  />
-
-              {/* ── Satellites ───────────────────────────── */}
-              {satellites.map((sat) => (
-                <div
-                  key={sat.label}
-                  className="orbit-arm"
-                  style={{
-                    '--orbit-r':    `${sat.orbitR}%`,
-                    '--duration':   `${sat.duration}s`,
-                    '--start-deg':  `${sat.startAngle}deg`,
-                    '--border-clr': borderMap[sat.color],
-                    '--label-clr':  colorMap[sat.color],
-                  } as React.CSSProperties}
-                >
-                  <div className="sat-chip">
-                    <div className="sat-label">{sat.label}</div>
-                    <div className="sat-status" style={{ color: colorMap[sat.color] }}>{sat.status}</div>
+            <div className="w-full max-w-lg rounded-xl overflow-hidden bg-[#0d1117] border border-[#30363d] shadow-2xl font-mono text-sm">
+              <div className="bg-[#161b22] px-4 py-3 border-b border-[#30363d] flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
+                <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
+                <div className="w-3 h-3 rounded-full bg-[#27c93f]" />
+                <span className="ml-2 text-[#8b949e] text-xs">bash - faturachman</span>
+              </div>
+              <div className="p-5 text-[#c9d1d9] leading-[1.7] h-[340px] flex flex-col justify-end relative">
+                <div className="absolute top-5 left-5 right-5 bottom-5 overflow-hidden">
+                  <div className="terminal-typing-sequence">
+                    <p><span className="text-[#3fb950]">➜</span> <span className="text-[#79c0ff]">~</span> git clone https://github.com/Vinzz2303/ting-ai.git</p>
+                    <p className="text-[#8b949e]">Cloning into 'ting-ai'...</p>
+                    <p className="text-[#8b949e]">remote: Enumerating objects: 823, done.</p>
+                    <p className="text-[#8b949e]">Receiving objects: 100% (823/823), 19.06 MiB | 17.34 MiB/s, done.</p>
+                    <br/>
+                    <p className="delay-1"><span className="text-[#3fb950]">➜</span> <span className="text-[#79c0ff]">ting-ai</span> <span className="text-[#a5d6ff]">git:(</span><span className="text-[#ff7b72]">main</span><span className="text-[#a5d6ff]">)</span> npm install && npm run build</p>
+                    <p className="text-[#8b949e] delay-2">[pm2] Installing dependencies...</p>
+                    <p className="text-[#3fb950] delay-3">✓ Compiled successfully in 34.4s</p>
+                    <p className="text-[#3fb950] delay-4">✓ AI Models & Risk Engine Connected</p>
+                    <br/>
+                    <p className="delay-5"><span className="text-[#3fb950]">➜</span> <span className="text-[#79c0ff]">ting-ai</span> <span className="text-[#a5d6ff]">git:(</span><span className="text-[#ff7b72]">main</span><span className="text-[#a5d6ff]">)</span> ./deploy.sh</p>
+                    <p className="text-[#d2a8ff] delay-6">Deploying to production (faturachman.my.id) 🚀</p>
+                    <p className="animate-pulse delay-6 mt-1 text-[#3fb950]">_</p>
                   </div>
                 </div>
-              ))}
-
-              {/* ── Central Profile ──────────────────────── */}
-              <div className="orbit-center">
-                <div className="profile-ring">
-                  <img
-                    src="/profile.png"
-                    alt="Faturachman Alkahfi"
-                    className="w-full h-full object-cover grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-700"
-                  />
-                  <div className="profile-overlay" />
-                  <div className="scan-beam" />
-                </div>
-                {/* Pulse rings */}
-                <div className="pulse-ring pulse-1" />
-                <div className="pulse-ring pulse-2" />
-                {/* ID tag */}
-                <div className="id-tag">
-                  <span>ID: FOUNDER</span>
-                </div>
               </div>
-
-              {/* ── Status bar ────────────────────────────── */}
-              <div className="status-bar">
-                <div className="status-dot" />
-                <span className="status-text">
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={statusMessages[msgIdx]}
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -4 }}
-                      transition={{ duration: 0.4 }}
-                    >
-                      {statusMessages[msgIdx]}
-                    </motion.span>
-                  </AnimatePresence>
-                </span>
-              </div>
-
             </div>
           </motion.div>
         </div>
       </div>
 
-      {/* ── All orbit CSS lives here so it's self-contained ── */}
       <style>{`
-        /* ── Headline sizing (smaller & balanced) ── */
+        /* ── Headline sizing ── */
         .hero-headline {
           font-size: clamp(2rem, 4vw, 3.2rem);
           font-weight: 800;
           letter-spacing: -0.03em;
         }
 
-        /* ── Root orbit stage ── */
-        .orbit-root {
-          position: relative;
-          width: 420px;
-          height: 420px;
+        /* ── Terminal Animation Sequence ── */
+        .terminal-typing-sequence p {
+          opacity: 0;
+          animation: terminalFadeIn 0.1s forwards;
         }
+        
+        /* Staggered delays to simulate typing/processing */
+        .terminal-typing-sequence p:nth-child(1) { animation-delay: 0.5s; }
+        .terminal-typing-sequence p:nth-child(2) { animation-delay: 1.2s; }
+        .terminal-typing-sequence p:nth-child(3) { animation-delay: 1.6s; }
+        .terminal-typing-sequence p:nth-child(4) { animation-delay: 2.0s; }
+        
+        .terminal-typing-sequence .delay-1 { animation-delay: 3.0s; }
+        .terminal-typing-sequence .delay-2 { animation-delay: 3.5s; }
+        .terminal-typing-sequence .delay-3 { animation-delay: 5.0s; }
+        .terminal-typing-sequence .delay-4 { animation-delay: 5.3s; }
+        
+        .terminal-typing-sequence .delay-5 { animation-delay: 6.5s; }
+        .terminal-typing-sequence .delay-6 { animation-delay: 7.0s; }
 
-        /* Ambient glow */
-        .orbit-glow {
-          position: absolute;
-          inset: 15%;
-          border-radius: 50%;
-          background: radial-gradient(circle, rgba(37,208,195,0.08) 0%, transparent 70%);
-          filter: blur(40px);
-          animation: pulse 4s ease-in-out infinite;
-        }
-        @keyframes pulse { 0%,100%{opacity:.6} 50%{opacity:1} }
-
-        /* Static ring decorations */
-        .orbit-ring {
-          position: absolute;
-          border-radius: 50%;
-          border: 1px solid rgba(37,208,195,0.08);
-          top: 50%; left: 50%;
-          transform: translate(-50%,-50%);
-        }
-        .ring-outer { width: 95%; height: 95%; }
-        .ring-mid   { width: 73%; height: 73%; border-color: rgba(78,168,222,0.08); }
-        .ring-inner { width: 52%; height: 52%; border-color: rgba(37,208,195,0.06); }
-        .dashed     { border-style: dashed; }
-
-        /* HUD crosshairs */
-        .hud-axis {
-          position: absolute;
-          background: linear-gradient(to right, transparent, rgba(37,208,195,0.08), transparent);
-          pointer-events: none;
-        }
-        .hud-h { top:50%; left:0; right:0; height:1px; transform:translateY(-50%); }
-        .hud-v { left:50%; top:0; bottom:0; width:1px; transform:translateX(-50%);
-                 background: linear-gradient(to bottom, transparent, rgba(37,208,195,0.08), transparent); }
-
-        /* HUD corner brackets */
-        .hud-corner {
-          position: absolute;
-          width: 18px; height: 18px;
-          border-color: rgba(37,208,195,0.3) !important;
-          border-width: 1.5px;
-        }
-
-        /* ── Orbital arm technique ─────────────────────────
-           1. Arm is centred on the stage.
-           2. It rotates around that centre.
-           3. A translateY moves the chip to the orbit edge.
-           4. The chip counter-rotates so text stays upright.
-        ──────────────────────────────────────────────────── */
-        .orbit-arm {
-          position: absolute;
-          top: 50%; left: 50%;
-          width: 0; height: 0;               /* zero-size pivot */
-          animation: armSpin var(--duration) linear infinite;
-          animation-delay: calc(-1 * var(--duration) * var(--start-deg) / 360deg);
-        }
-        @keyframes armSpin { to { transform: rotate(360deg); } }
-
-        .sat-chip {
-          position: absolute;
-          transform: translateY(calc(-1 * var(--orbit-r) * 2.1))  /* move outward along arm */
-                     rotate(calc(-1 * 1turn))                       /* keep text upright — overridden by counter-anim */
-                     translate(-50%, -50%);
-          animation: chipCounter var(--duration) linear infinite;
-          background: rgba(255,255,255,0.03);
-          border: 1px solid var(--border-clr);
-          border-radius: 8px;
-          padding: 5px 10px;
-          min-width: 88px;
-          backdrop-filter: blur(10px);
-          white-space: nowrap;
-          transition: border-color .3s, background .3s;
-          cursor: default;
-        }
-        .sat-chip:hover {
-          background: rgba(255,255,255,0.06);
-          border-color: var(--label-clr);
-        }
-        @keyframes chipCounter { to { transform: translateY(calc(-1 * var(--orbit-r) * 2.1)) rotate(-360deg) translate(-50%,-50%); } }
-
-        .sat-label {
-          font-family: monospace;
-          font-size: 7px;
-          text-transform: uppercase;
-          letter-spacing: 1.5px;
-          color: var(--label-clr);
-          opacity: 0.8;
-        }
-        .sat-status {
-          font-family: monospace;
-          font-size: 9px;
-          color: rgba(255,255,255,0.85);
-          margin-top: 1px;
-        }
-
-        /* ── Central profile ── */
-        .orbit-center {
-          position: absolute;
-          top: 50%; left: 50%;
-          transform: translate(-50%,-50%);
-          width: 160px; height: 160px;
-        }
-        .profile-ring {
-          width: 100%; height: 100%;
-          border-radius: 50%;
-          overflow: hidden;
-          border: 2px solid rgba(37,208,195,0.35);
-          box-shadow: 0 0 50px rgba(37,208,195,0.2), inset 0 0 20px rgba(0,0,0,0.4);
-          position: relative;
-        }
-        .profile-overlay {
-          position: absolute; inset: 0;
-          background: linear-gradient(to top, rgba(11,13,18,.65) 0%, transparent 60%);
-        }
-        .scan-beam {
-          position: absolute; top: 0; left: 0;
-          width: 100%; height: 2px;
-          background: rgba(37,208,195,0.55);
-          box-shadow: 0 0 8px rgba(37,208,195,0.9);
-          animation: scanDown 2.8s linear infinite;
-        }
-        @keyframes scanDown { 0%{top:-3%;opacity:.9} 85%{opacity:.9} 100%{top:103%;opacity:0} }
-
-        /* Pulse rings */
-        .pulse-ring {
-          position: absolute;
-          border-radius: 50%;
-          border: 1px solid rgba(37,208,195,0.2);
-          top: 50%; left: 50%;
-          transform: translate(-50%,-50%);
-          pointer-events: none;
-        }
-        .pulse-1 { width:130%; height:130%; animation: ringPulse 3s ease-out infinite; }
-        .pulse-2 { width:160%; height:160%; animation: ringPulse 3s ease-out infinite .8s; }
-        @keyframes ringPulse { 0%{opacity:.4;transform:translate(-50%,-50%) scale(.9)} 100%{opacity:0;transform:translate(-50%,-50%) scale(1.15)} }
-
-        /* ID tag */
-        .id-tag {
-          position: absolute;
-          top: -12px; right: -16px;
-          background: rgba(255,255,255,0.03);
-          border: 1px solid rgba(37,208,195,0.3);
-          border-radius: 6px;
-          padding: 2px 8px;
-        }
-        .id-tag span { font-family: monospace; font-size: 7px; color: rgba(37,208,195,0.9); letter-spacing: 1px; }
-
-        /* ── Status bar ── */
-        .status-bar {
-          position: absolute;
-          bottom: 8px; left: 50%;
-          transform: translateX(-50%);
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          background: rgba(255,255,255,0.02);
-          border: 1px solid rgba(37,208,195,0.1);
-          border-radius: 99px;
-          padding: 6px 16px;
-          white-space: nowrap;
-          backdrop-filter: blur(10px);
-        }
-        .status-dot {
-          width: 6px; height: 6px;
-          border-radius: 50%;
-          background: #25d0c3;
-          animation: ping 1.5s cubic-bezier(0,0,.2,1) infinite;
-        }
-        @keyframes ping { 75%,100%{transform:scale(1.8);opacity:0} }
-        .status-text {
-          font-family: monospace;
-          font-size: 9px;
-          text-transform: uppercase;
-          letter-spacing: 2px;
-          color: rgba(37,208,195,0.6);
+        @keyframes terminalFadeIn {
+          to { opacity: 1; }
         }
       `}</style>
     </section>
