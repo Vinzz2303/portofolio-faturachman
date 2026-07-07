@@ -197,6 +197,20 @@ function RouteMetadata() {
           robots: 'index, follow'
         }
       default:
+        const isPersonal = typeof window !== 'undefined' ? window.location.hostname === 'faturachman.my.id' : true;
+        if (!isPersonal) {
+          return {
+            title:
+              language === 'en'
+                ? 'Ting AI | Macro, Market, and Wealth Intelligence'
+                : 'Ting AI | Inteligensi Makro, Pasar, dan Portofolio',
+            description:
+              language === 'en'
+                ? 'Product overview for Ting AI, a market intelligence surface focused on macro context, portfolio visibility, and AI-assisted decision support.'
+                : 'Ikhtisar produk Ting AI yang berfokus pada konteks makro, visibilitas portofolio, dan dukungan keputusan berbasis AI.',
+            path: '/'
+          }
+        }
         return {
           title: 'Faturachman Alkahfi | AI Product Builder & Full Stack Developer',
           description:
@@ -219,7 +233,12 @@ const STANDALONE_PATHS = ['/login', '/signup', '/forgot', '/reset', '/verify-ema
 
 function AppShell() {
   const location = useLocation()
-  const isStandalone = STANDALONE_PATHS.some(p => location.pathname.startsWith(p))
+  
+  // Domain router logic: If not on faturachman.my.id, default '/' to Ting AI Landing
+  const isPersonalDomain = typeof window !== 'undefined' ? window.location.hostname === 'faturachman.my.id' : true
+  const isTingAiRoot = !isPersonalDomain && location.pathname === '/'
+
+  const isStandalone = STANDALONE_PATHS.some(p => location.pathname.startsWith(p)) || isTingAiRoot
 
   if (isStandalone) {
     return (
@@ -232,6 +251,7 @@ function AppShell() {
           <Route path="/reset" element={<ResetPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/ting-ai" element={<TingAi />} />
+          {isTingAiRoot && <Route path="/" element={<TingAi />} />}
         </Routes>
         <MobileBottomNav />
       </>
