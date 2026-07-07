@@ -29,12 +29,17 @@ jobs:
         run: |
           npm run build
 
-      - name: Deploy to IIS Webroot
+      - name: Deploy Frontend to IIS Webroot
         run: |
           Copy-Item -Path ".\dist\*" -Destination "D:\wwwroot\" -Recurse -Force
 
+      - name: Deploy Backend Code
+        run: |
+          # Copy backend files to PM2 directory, excluding .env so we don't overwrite API keys
+          Copy-Item -Path ".\server\*" -Destination "D:\apps\portofolio-faturachman\server\" -Recurse -Force -Exclude ".env"
+
       - name: Restart PM2 Backend
         run: |
-          cd server
+          cd D:\apps\portofolio-faturachman\server
           pm2 restart ting-ai-backend --update-env
           pm2 save
