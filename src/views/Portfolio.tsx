@@ -1530,8 +1530,21 @@ export default function Portfolio() {
               </div>
             )) : (
               <div className="premium-card text-center py-20 bg-white/[0.01] border-dashed border border-white/10 rounded-3xl">
-                <p className="text-slate-400 font-medium">{copy.noPositions}</p>
-                <p className="text-slate-500 text-sm mt-2">{copy.addFirstAsset}</p>
+                <div className="w-16 h-16 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-7 h-7 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+                  </svg>
+                </div>
+                <p className="text-slate-300 font-semibold text-lg">{copy.noPositions}</p>
+                <p className="text-slate-500 text-sm mt-2 max-w-xs mx-auto leading-relaxed">{copy.addFirstAsset}</p>
+                <button
+                  id="portfolio-empty-add-cta"
+                  type="button"
+                  className="mt-6 px-6 py-3 bg-teal-500 hover:bg-teal-400 text-black font-semibold rounded-2xl transition-all text-sm shadow-lg shadow-teal-500/20"
+                  onClick={() => document.getElementById('portfolio-form-section')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  {language === 'id' ? '+ Tambahkan Aset Pertama' : '+ Add Your First Asset'}
+                </button>
               </div>
             )}
           </div>
