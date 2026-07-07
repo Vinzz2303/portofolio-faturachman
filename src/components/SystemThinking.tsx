@@ -47,7 +47,7 @@ export default function SystemThinking() {
   return (
     <section className="py-28 relative overflow-hidden">
       {/* Ambient */}
-      <div className="absolute top-1/4 right-0 w-96 h-96 rounded-full bg-[#a78bfa]/[0.03] blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 right-0 w-96 h-96 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, #a78bfa15, transparent 70%)' }} />
 
       <div className="container-saas relative z-10">
         {/* Header */}

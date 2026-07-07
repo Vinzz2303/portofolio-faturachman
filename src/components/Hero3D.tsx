@@ -26,8 +26,8 @@ function OrganicBlob() {
   return (
     <Float speed={0.8} rotationIntensity={0.15} floatIntensity={0.3}>
       <group>
-        {/* Main distorted glass blob - OPTIMIZED segments */}
-        <Sphere ref={meshRef} args={[1.4, 64, 64]}>
+        {/* Main distorted glass blob - HIGHLY OPTIMIZED */}
+        <Sphere ref={meshRef} args={[1.4, 32, 32]}>
           <MeshDistortMaterial
             color="#1a9e94"
             distort={0.45}
@@ -120,7 +120,7 @@ function GlowOrb({ position, color, size = 0.15 }: {
 }
 
 /* ─── Ambient flowing particles ────────────────────────── */
-function FlowParticles({ count = 120 }: { count?: number }) {
+function FlowParticles({ count = 50 }: { count?: number }) {
   const ref = useRef<THREE.Points>(null!)
 
   const { positions, speeds } = useMemo(() => {
@@ -201,24 +201,18 @@ function Scene() {
       <ambientLight intensity={0.3} />
       <directionalLight position={[5, 5, 5]} intensity={0.8} color="#ffffff" />
 
-      {/* Colored point lights for depth */}
+      {/* Colored point lights for depth - OPTIMIZED to 1 light for FPS */}
       <pointLight position={[-3, 2, 4]} intensity={3} color="#25d0c3" distance={12} decay={2} />
-      <pointLight position={[4, -1, 3]} intensity={2} color="#4ea8de" distance={10} decay={2} />
-      <pointLight position={[0, 3, -2]} intensity={1.5} color="#a78bfa" distance={8} decay={2} />
-      <pointLight position={[-2, -3, 2]} intensity={1} color="#d6b15d" distance={6} decay={2} />
 
       {/* Main elements */}
       <OrganicBlob />
       <GlassRing position={[2.8, 0.8, -1.5]} color="#4ea8de" size={0.45} />
       <GlassRing position={[-2.5, -0.5, -0.8]} color="#a78bfa" size={0.35} />
 
-      {/* Scattered glow orbs */}
+      {/* Scattered glow orbs - OPTIMIZED count */}
       <GlowOrb position={[2.2, 2.0, -0.5]} color="#25d0c3" size={0.12} />
       <GlowOrb position={[-2.0, 1.5, 0.3]} color="#a78bfa" size={0.09} />
       <GlowOrb position={[1.0, -2.2, 0.8]} color="#4ea8de" size={0.1} />
-      <GlowOrb position={[-1.2, -1.8, -1.0]} color="#d6b15d" size={0.07} />
-      <GlowOrb position={[3.5, -0.5, -2]} color="#25d0c3" size={0.06} />
-      <GlowOrb position={[-3.2, 0.8, -1.5]} color="#4ea8de" size={0.08} />
 
       {/* Flowing particles */}
       <FlowParticles />

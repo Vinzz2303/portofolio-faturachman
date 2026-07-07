@@ -37,7 +37,7 @@ export default function FeaturedProduct({ sectionId }: { sectionId: string }) {
   return (
     <section id={sectionId} className="py-28 relative overflow-hidden">
       {/* Ambient */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full bg-[#25d0c3]/[0.03] blur-[150px] pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, #25d0c315, transparent 70%)' }} />
 
       <div className="container-saas relative z-10">
         {/* Header */}

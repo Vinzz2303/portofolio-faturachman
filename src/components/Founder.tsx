@@ -49,8 +49,8 @@ export default function Founder() {
   return (
     <section className="py-28 relative overflow-hidden">
       {/* Ambient gradient bg */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-[#25d0c3]/[0.03] blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-[#a78bfa]/[0.03] blur-[100px] pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, #25d0c315, transparent 70%)' }} />
+      <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, #a78bfa15, transparent 70%)' }} />
 
       <div className="container-saas relative z-10">
         <div className="grid lg:grid-cols-[1fr_1.1fr] gap-16 items-center">

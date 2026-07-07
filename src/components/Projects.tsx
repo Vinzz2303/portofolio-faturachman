@@ -214,7 +214,7 @@ export default function Projects({ sectionId }: { sectionId: string }) {
   return (
     <section id={sectionId} className="py-28 relative">
       {/* Ambient bg */}
-      <div className="absolute top-1/3 right-0 w-72 h-72 rounded-full bg-[#25d0c3]/[0.02] blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/3 right-0 w-72 h-72 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, #25d0c315, transparent 70%)' }} />
 
       <div className="container-saas relative z-10">
         <div className="mb-16">
