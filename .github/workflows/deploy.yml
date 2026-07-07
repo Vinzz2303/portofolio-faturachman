@@ -1,0 +1,40 @@
+name: Deploy to Windows VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: |
+          cd server
+          npm install --legacy-peer-deps
+          cd ..
+          npm install --legacy-peer-deps
+
+      - name: Build Frontend
+        run: |
+          npm run build
+
+      - name: Deploy to IIS Webroot
+        run: |
+          Copy-Item -Path ".\dist\*" -Destination "D:\wwwroot\" -Recurse -Force
+
+      - name: Restart PM2 Backend
+        run: |
+          cd server
+          pm2 restart ting-ai-backend --update-env
+          pm2 save
