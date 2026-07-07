@@ -26,8 +26,8 @@ function OrganicBlob() {
   return (
     <Float speed={0.8} rotationIntensity={0.15} floatIntensity={0.3}>
       <group>
-        {/* Main distorted glass blob */}
-        <Sphere ref={meshRef} args={[1.4, 128, 128]}>
+        {/* Main distorted glass blob - OPTIMIZED segments */}
+        <Sphere ref={meshRef} args={[1.4, 64, 64]}>
           <MeshDistortMaterial
             color="#1a9e94"
             distort={0.45}
@@ -75,7 +75,7 @@ function GlassRing({ position, color, size = 0.5 }: {
   return (
     <Float speed={2} rotationIntensity={0.8} floatIntensity={1.2} position={position}>
       <mesh ref={ref}>
-        <torusGeometry args={[size, size * 0.15, 16, 48]} />
+        <torusGeometry args={[size, size * 0.15, 12, 32]} />
         <meshStandardMaterial
           color={color}
           metalness={0.95}
@@ -97,7 +97,7 @@ function GlowOrb({ position, color, size = 0.15 }: {
 }) {
   return (
     <Float speed={2.5 + Math.random()} rotationIntensity={0} floatIntensity={2} position={position}>
-      <Sphere args={[size, 16, 16]}>
+      <Sphere args={[size, 12, 12]}>
         <meshStandardMaterial
           color={color}
           emissive={color}
@@ -108,7 +108,7 @@ function GlowOrb({ position, color, size = 0.15 }: {
         />
       </Sphere>
       {/* Outer glow halo */}
-      <Sphere args={[size * 2.5, 16, 16]}>
+      <Sphere args={[size * 2.5, 12, 12]}>
         <meshBasicMaterial
           color={color}
           transparent
@@ -234,8 +234,8 @@ export default function Hero3D() {
   return (
     <Canvas
       camera={{ position: [0, 0, 5.5], fov: 55 }}
-      gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-      dpr={[1, 1.5]}
+      gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
+      dpr={[1, 1]}
       style={{ background: 'transparent' }}
     >
       <Suspense fallback={null}>

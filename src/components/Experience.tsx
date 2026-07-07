@@ -79,16 +79,8 @@ export default function Experience({ sectionId }: { sectionId?: string }) {
   return (
     <section id={sectionId || "experience"} className="py-28 relative overflow-hidden">
       {/* Ambient blobs */}
-      <motion.div
-        animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-        className="absolute top-20 -right-40 w-80 h-80 rounded-full bg-[#25d0c3]/[0.03] blur-[120px] pointer-events-none"
-      />
-      <motion.div
-        animate={{ x: [0, -20, 0], y: [0, 30, 0] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
-        className="absolute bottom-20 -left-40 w-96 h-96 rounded-full bg-[#a78bfa]/[0.03] blur-[100px] pointer-events-none"
-      />
+      <div className="absolute top-20 -right-40 w-80 h-80 rounded-full bg-[#25d0c3]/[0.03] blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-20 -left-40 w-96 h-96 rounded-full bg-[#a78bfa]/[0.03] blur-[100px] pointer-events-none" />
 
       <div className="container-saas relative z-10">
         {/* Header */}

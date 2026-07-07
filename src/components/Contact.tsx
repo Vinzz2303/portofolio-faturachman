@@ -40,11 +40,7 @@ export default function Contact({ sectionId }: { sectionId: string }) {
   return (
     <section id={sectionId} className="py-32 relative overflow-hidden">
       {/* Ambient */}
-      <motion.div
-        animate={{ scale: [1, 1.15, 1], x: [0, 30, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-        className="absolute bottom-0 left-1/3 w-[400px] h-[400px] rounded-full bg-[#25d0c3]/[0.04] blur-[150px] pointer-events-none"
-      />
+      <div className="absolute bottom-0 left-1/3 w-[400px] h-[400px] rounded-full bg-[#25d0c3]/[0.04] blur-[150px] pointer-events-none" />
 
       <div className="container-saas relative z-10">
         <motion.div

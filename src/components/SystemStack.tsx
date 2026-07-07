@@ -57,16 +57,8 @@ export default function SystemStack() {
     <section className="py-28 relative overflow-hidden">
       {/* ── Ambient Fluid Blobs ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <motion.div 
-          animate={{ x: [0, 50, 0], y: [0, 30, 0], scale: [1, 1.1, 1] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-40 -left-20 w-96 h-96 bg-[#4ea8de]/[0.05] rounded-full blur-[100px]"
-        />
-        <motion.div 
-          animate={{ x: [0, -40, 0], y: [0, 50, 0], scale: [1, 1.2, 1] }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear", delay: 2 }}
-          className="absolute top-20 -right-20 w-[30rem] h-[30rem] bg-[#a78bfa]/[0.04] rounded-full blur-[120px]"
-        />
+        <div className="absolute -top-40 -left-20 w-96 h-96 bg-[#4ea8de]/[0.05] rounded-full blur-[100px]" />
+        <div className="absolute top-20 -right-20 w-[30rem] h-[30rem] bg-[#a78bfa]/[0.04] rounded-full blur-[120px]" />
       </div>
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">

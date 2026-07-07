@@ -47,11 +47,7 @@ export default function SystemThinking() {
   return (
     <section className="py-28 relative overflow-hidden">
       {/* Ambient */}
-      <motion.div
-        animate={{ x: [0, -30, 0], y: [0, 20, 0] }}
-        transition={{ duration: 16, repeat: Infinity, ease: "linear" }}
-        className="absolute top-1/4 right-0 w-96 h-96 rounded-full bg-[#a78bfa]/[0.03] blur-[120px] pointer-events-none"
-      />
+      <div className="absolute top-1/4 right-0 w-96 h-96 rounded-full bg-[#a78bfa]/[0.03] blur-[120px] pointer-events-none" />
 
       <div className="container-saas relative z-10">
         {/* Header */}

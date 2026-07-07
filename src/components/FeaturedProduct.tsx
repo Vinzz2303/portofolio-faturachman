@@ -37,11 +37,7 @@ export default function FeaturedProduct({ sectionId }: { sectionId: string }) {
   return (
     <section id={sectionId} className="py-28 relative overflow-hidden">
       {/* Ambient */}
-      <motion.div
-        animate={{ scale: [1, 1.2, 1], x: [0, 40, 0] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full bg-[#25d0c3]/[0.03] blur-[150px] pointer-events-none"
-      />
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full bg-[#25d0c3]/[0.03] blur-[150px] pointer-events-none" />
 
       <div className="container-saas relative z-10">
         {/* Header */}
