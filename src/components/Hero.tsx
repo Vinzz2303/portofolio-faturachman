@@ -1,168 +1,189 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { useLanguagePreference } from '../utils/language'
 
+const Hero3D = lazy(() => import('./Hero3D'))
+
 const statusMessages = [
-  "HUMAN_NODE_CONNECTED",
-  "ANALYZING_PORTFOLIO_RISK...",
-  "DETECTING_MARKET_NARRATIVES...",
-  "SYSTEM_OPTIMIZED_BY_FATUR",
-  "NEURAL_SYNC_COMPLETE",
+  "BUILDING_TING_AI...",
+  "OPEN_SOURCE_CONTRIBUTOR",
+  "FULL_STACK_DEVELOPER",
+  "AI_SYSTEMS_ARCHITECT",
+  "SHIPPING_TO_PRODUCTION",
 ]
 
-/* ─── Orbital data ─────────────────────────────────────────────
-   Each satellite lives inside a wrapper that rotates around the
-   centre. The wrapper starts at the centre, is offset upward by
-   `orbitR` (radius), and the satellite counter-rotates so its
-   label always faces the reader.
-   Different `startAngle` values spread them evenly.
-─────────────────────────────────────────────────────────────── */
-const satellites = [
-  { label: "RISK_ENGINE",    status: "STABLE",   color: "accent",  orbitR: 46, duration: 22, startAngle: 0   },
-  { label: "PORTFOLIO",      status: "SYNCED",   color: "accent",  orbitR: 46, duration: 22, startAngle: 120 },
-  { label: "MACRO_SYNC",     status: "PARSING",  color: "accent",  orbitR: 46, duration: 22, startAngle: 240 },
-  { label: "SENTIMENT_AI",   status: "ACTIVE",   color: "purple",  orbitR: 33, duration: 16, startAngle: 60  },
-  { label: "REASONING",      status: "READY",    color: "blue",    orbitR: 33, duration: 16, startAngle: 240 },
+const statItems = [
+  { value: "3+", label: "Shipped Products" },
+  { value: "5+", label: "OSS Contributions" },
+  { value: "2026", label: "Active" },
 ]
-
-const colorMap: Record<string, string> = {
-  accent: "rgba(37,208,195,0.9)",
-  purple: "rgba(192,132,252,0.9)",
-  blue:   "rgba(96,165,250,0.9)",
-}
-const borderMap: Record<string, string> = {
-  accent: "rgba(37,208,195,0.25)",
-  purple: "rgba(192,132,252,0.2)",
-  blue:   "rgba(96,165,250,0.2)",
-}
 
 export default function Hero({ sectionId }: { sectionId: string }) {
   const { language } = useLanguagePreference()
   const navigate = useNavigate()
   const [msgIdx, setMsgIdx] = useState(0)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const t = setInterval(() => setMsgIdx(i => (i + 1) % statusMessages.length), 3500)
+    const t = setInterval(() => setMsgIdx(i => (i + 1) % statusMessages.length), 3200)
+    setMounted(true)
     return () => clearInterval(t)
   }, [])
 
   return (
-    <section id={sectionId} className="relative min-h-screen flex flex-col justify-center pt-20 overflow-hidden">
+    <section
+      id={sectionId}
+      className="relative min-h-screen flex flex-col justify-center pt-24 overflow-hidden"
+    >
+      {/* ── 3D Canvas Background ────────────────────────── */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        {mounted && (
+          <Suspense fallback={null}>
+            <Hero3D />
+          </Suspense>
+        )}
+        {/* Gradient fade at bottom */}
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#0b0d12] to-transparent" />
+        {/* Subtle radial glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_60%_40%,rgba(37,208,195,0.04)_0%,transparent_70%)]" />
+      </div>
+
+      {/* ── Content ─────────────────────────────────────── */}
       <div className="container-saas relative z-10">
-        <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-16 items-center">
-
-          {/* ── LEFT: Copy ────────────────────────────────── */}
+        <div className="max-w-2xl">
+          
+          {/* Status pill */}
           <motion.div
-            initial={{ opacity: 0, x: -24 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            className="will-change-transform"
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-8 inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-[#25d0c3]/20 bg-[#25d0c3]/5 backdrop-blur-sm"
           >
-            {/* Eyebrow */}
-            <div className="mb-6 inline-flex items-center gap-2 px-4 py-1.5 glass-card text-accent rounded-full border border-accent/10 bg-accent/5">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-              <span className="panel-label tracking-widest">
-                {language === 'en' ? 'AI SYSTEM ARCHITECT' : 'ARSITEK SISTEM AI'}
+            <span className="w-1.5 h-1.5 rounded-full bg-[#25d0c3] animate-pulse" />
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={statusMessages[msgIdx]}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.3 }}
+                className="text-[10px] font-mono tracking-[0.2em] text-[#25d0c3]/80 uppercase"
+              >
+                {statusMessages[msgIdx]}
+              </motion.span>
+            </AnimatePresence>
+          </motion.div>
+
+          {/* Headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[1.02] text-white mb-6"
+          >
+            {language === 'en' ? (
+              <>
+                I build<br />
+                <span className="bg-gradient-to-r from-[#25d0c3] via-[#4ea8de] to-[#a78bfa] bg-clip-text text-transparent">
+                  intelligence
+                </span>
+                <br />into products.
+              </>
+            ) : (
+              <>
+                Membangun<br />
+                <span className="bg-gradient-to-r from-[#25d0c3] via-[#4ea8de] to-[#a78bfa] bg-clip-text text-transparent">
+                  kecerdasan
+                </span>
+                <br />ke dalam produk.
+              </>
+            )}
+          </motion.h1>
+
+          {/* Subtext */}
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="text-base md:text-lg text-white/45 max-w-lg leading-relaxed mb-10"
+          >
+            {language === 'en'
+              ? 'Full stack developer & AI systems builder. Creator of Ting AI — a market intelligence platform for retail investors.'
+              : 'Full stack developer & pembangun sistem AI. Pencipta Ting AI — platform intelijen pasar untuk investor ritel.'}
+          </motion.p>
+
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="flex flex-wrap gap-3 mb-16"
+          >
+            <button
+              type="button"
+              onClick={() => navigate('/ting-ai')}
+              className="group relative px-7 py-3 bg-[#25d0c3] text-[#0b0d12] font-bold rounded-xl overflow-hidden transition-all hover:scale-[1.03] shadow-lg shadow-[#25d0c3]/20"
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                {language === 'en' ? 'Explore Ting AI' : 'Jelajahi Ting AI'}
+                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </span>
-            </div>
-
-            {/* Headline — moderate size, max 2-3 lines */}
-            <h1 className="hero-headline text-gradient mb-6 leading-[1.05]">
-              {language === 'en'
-                ? <>Building <br /> Intelligence Layer <br /> for Decision Making</>
-                : <>Membangun Lapisan <br /> Kecerdasan untuk <br /> Pengambilan Keputusan</>}
-            </h1>
-
-            {/* Sub */}
-            <p className="text-base md:text-lg text-white/50 max-w-xl mb-10 leading-relaxed">
-              {language === 'en'
-                ? 'I build AI-powered systems that transform raw data into risk-aware insights — enabling deeper clarity before every decision.'
-                : 'Saya membangun sistem berbasis AI yang mengubah data mentah menjadi wawasan sadar risiko — memungkinkan kejelasan yang lebih dalam sebelum setiap keputusan.'}
-            </p>
-
-            {/* CTAs */}
-            <div className="flex flex-wrap gap-4">
-              <button type="button" onClick={() => navigate('/explore-intelligence')} className="relative overflow-hidden px-8 py-3.5 bg-accent text-dark font-bold rounded-xl hover:scale-105 transition-all shadow-xl shadow-accent/10 group">
-                <span className="relative z-10">{language === 'en' ? 'Explore Ting AI' : 'Jelajahi Ting AI'}</span>
-                <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-500" />
-              </button>
-              <a href="#contact" className="px-8 py-3.5 glass-card hover:bg-white/5 transition-colors font-semibold border-white/10">
-                {language === 'en' ? 'Contact Founder' : 'Hubungi Founder'}
-              </a>
-            </div>
+              <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-500" />
+            </button>
+            <a
+              href="#projects"
+              className="px-7 py-3 rounded-xl border border-white/10 text-white/70 hover:text-white hover:border-white/25 hover:bg-white/5 transition-all font-semibold backdrop-blur-sm"
+            >
+              {language === 'en' ? 'View Work' : 'Lihat Karya'}
+            </a>
+            <a
+              href="https://github.com/Vinzz2303"
+              target="_blank"
+              rel="noreferrer"
+              className="px-4 py-3 rounded-xl border border-white/10 text-white/50 hover:text-white/80 hover:border-white/20 transition-all flex items-center gap-2 backdrop-blur-sm"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+              </svg>
+              GitHub
+            </a>
           </motion.div>
 
-          {/* ── RIGHT: Developer Terminal ──────────────── */}
+          {/* Stats strip */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-            className="hidden lg:flex items-center justify-center w-full"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7, duration: 0.6 }}
+            className="flex items-center gap-8 border-t border-white/[0.06] pt-8"
           >
-            <div className="w-full max-w-lg rounded-xl overflow-hidden bg-[#0d1117] border border-[#30363d] shadow-2xl font-mono text-sm">
-              <div className="bg-[#161b22] px-4 py-3 border-b border-[#30363d] flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
-                <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
-                <div className="w-3 h-3 rounded-full bg-[#27c93f]" />
-                <span className="ml-2 text-[#8b949e] text-xs">bash - faturachman</span>
+            {statItems.map((s, i) => (
+              <div key={i}>
+                <div className="text-2xl font-black text-white">{s.value}</div>
+                <div className="text-[10px] font-mono text-white/30 uppercase tracking-widest mt-0.5">{s.label}</div>
               </div>
-              <div className="p-5 text-[#c9d1d9] leading-[1.7] h-[340px] flex flex-col justify-end relative">
-                <div className="absolute top-5 left-5 right-5 bottom-5 overflow-hidden">
-                  <div className="terminal-typing-sequence">
-                    <p><span className="text-[#3fb950]">➜</span> <span className="text-[#79c0ff]">~</span> git clone https://github.com/Vinzz2303/ting-ai.git</p>
-                    <p className="text-[#8b949e]">Cloning into 'ting-ai'...</p>
-                    <p className="text-[#8b949e]">remote: Enumerating objects: 823, done.</p>
-                    <p className="text-[#8b949e]">Receiving objects: 100% (823/823), 19.06 MiB | 17.34 MiB/s, done.</p>
-                    <br/>
-                    <p className="delay-1"><span className="text-[#3fb950]">➜</span> <span className="text-[#79c0ff]">ting-ai</span> <span className="text-[#a5d6ff]">git:(</span><span className="text-[#ff7b72]">main</span><span className="text-[#a5d6ff]">)</span> npm install && npm run build</p>
-                    <p className="text-[#8b949e] delay-2">[pm2] Installing dependencies...</p>
-                    <p className="text-[#3fb950] delay-3">✓ Compiled successfully in 34.4s</p>
-                    <p className="text-[#3fb950] delay-4">✓ AI Models & Risk Engine Connected</p>
-                    <br/>
-                    <p className="delay-5"><span className="text-[#3fb950]">➜</span> <span className="text-[#79c0ff]">ting-ai</span> <span className="text-[#a5d6ff]">git:(</span><span className="text-[#ff7b72]">main</span><span className="text-[#a5d6ff]">)</span> ./deploy.sh</p>
-                    <p className="text-[#d2a8ff] delay-6">Deploying to production (faturachman.my.id) 🚀</p>
-                    <p className="animate-pulse delay-6 mt-1 text-[#3fb950]">_</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            ))}
           </motion.div>
+
         </div>
       </div>
 
-      <style>{`
-        /* ── Headline sizing ── */
-        .hero-headline {
-          font-size: clamp(2rem, 4vw, 3.2rem);
-          font-weight: 800;
-          letter-spacing: -0.03em;
-        }
-
-        /* ── Terminal Animation Sequence ── */
-        .terminal-typing-sequence p {
-          opacity: 0;
-          animation: terminalFadeIn 0.1s forwards;
-        }
-        
-        /* Staggered delays to simulate typing/processing */
-        .terminal-typing-sequence p:nth-child(1) { animation-delay: 0.5s; }
-        .terminal-typing-sequence p:nth-child(2) { animation-delay: 1.2s; }
-        .terminal-typing-sequence p:nth-child(3) { animation-delay: 1.6s; }
-        .terminal-typing-sequence p:nth-child(4) { animation-delay: 2.0s; }
-        
-        .terminal-typing-sequence .delay-1 { animation-delay: 3.0s; }
-        .terminal-typing-sequence .delay-2 { animation-delay: 3.5s; }
-        .terminal-typing-sequence .delay-3 { animation-delay: 5.0s; }
-        .terminal-typing-sequence .delay-4 { animation-delay: 5.3s; }
-        
-        .terminal-typing-sequence .delay-5 { animation-delay: 6.5s; }
-        .terminal-typing-sequence .delay-6 { animation-delay: 7.0s; }
-
-        @keyframes terminalFadeIn {
-          to { opacity: 1; }
-        }
-      `}</style>
+      {/* Scroll hint */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10"
+      >
+        <span className="text-[9px] font-mono text-white/20 uppercase tracking-widest">Scroll</span>
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          className="w-px h-8 bg-gradient-to-b from-white/20 to-transparent"
+        />
+      </motion.div>
     </section>
   )
 }
