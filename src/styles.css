@@ -170,7 +170,8 @@ nav a,
   font:inherit;
   cursor:pointer;
 }
-nav{
+nav,
+.nav-desktop{
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -1778,6 +1779,8 @@ textarea:focus-visible,
     font-size:0.78rem;
   }
   .nav-toggle{display:flex}
+  /* Hide desktop nav on mobile */
+  .nav-desktop{display:none!important}
   .hero-cta{flex-direction:column;align-items:flex-start}
   .ai-highlights{
     gap:0.5rem;
@@ -1809,6 +1812,184 @@ textarea:focus-visible,
   .hero-photo{width:130px;height:130px}
   .hero-panel{width:100%}
   .profile-grid{grid-template-columns:1fr}
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE FULLSCREEN OVERLAY — Taste Skill / Linear style
+   ═══════════════════════════════════════════════════════════ */
+
+/* Overlay hidden by default — slides in from right */
+.mobile-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:200;
+  background:var(--bg);
+  flex-direction:column;
+  overflow:hidden;
+}
+.mobile-overlay--open{
+  display:flex;
+}
+
+/* ── Overlay header bar ── */
+.mobile-overlay-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:1rem 1.25rem;
+  border-bottom:1px solid var(--line);
+  flex-shrink:0;
+}
+.mobile-overlay-close{
+  appearance:none;
+  background:transparent;
+  border:1px solid var(--line);
+  border-radius:8px;
+  color:var(--muted);
+  width:36px;
+  height:36px;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  font-size:1rem;
+  transition:color 0.15s, border-color 0.15s;
+}
+.mobile-overlay-close:hover{color:var(--text);border-color:rgba(255,255,255,0.2)}
+
+/* ── Scrollable body ── */
+.mobile-overlay-body{
+  flex:1;
+  overflow-y:auto;
+  padding:1.5rem 1.25rem;
+  display:flex;
+  flex-direction:column;
+}
+
+/* Section label — tiny uppercase grey */
+.mobile-nav-section-label{
+  display:block;
+  font-size:0.68rem;
+  text-transform:uppercase;
+  letter-spacing:0.18em;
+  color:var(--muted);
+  font-weight:700;
+  margin-bottom:0.75rem;
+}
+
+/* ── Nav items — large typography with border separator ── */
+.mobile-nav-list{
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+.mobile-nav-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0.9rem 0;
+  border-bottom:1px solid var(--line);
+  font-size:1.45rem;
+  font-weight:500;
+  color:var(--text);
+  text-decoration:none;
+  transition:color 0.15s;
+  margin-left:0;
+}
+.mobile-nav-item:hover{color:var(--accent)}
+.mobile-nav-arrow{
+  color:var(--muted);
+  font-size:1rem;
+  transition:transform 0.15s, color 0.15s;
+}
+.mobile-nav-item:hover .mobile-nav-arrow{
+  color:var(--accent);
+  transform:translateX(3px);
+}
+
+/* ── Pinned account footer ── */
+.mobile-overlay-footer{
+  flex-shrink:0;
+  padding:1rem 1.25rem;
+  border-top:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  gap:0.75rem;
+  padding-bottom:calc(1rem + env(safe-area-inset-bottom));
+}
+.mobile-account-summary{
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+}
+.mobile-account-info{
+  display:flex;
+  flex-direction:column;
+  gap:0.15rem;
+  min-width:0;
+}
+.mobile-account-name{
+  font-size:0.95rem;
+  font-weight:600;
+  color:var(--text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.mobile-account-email{
+  font-size:0.78rem;
+  color:var(--muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.mobile-account-actions{
+  display:flex;
+  gap:0.6rem;
+}
+.mobile-account-btn{
+  flex:1;
+  padding:0.6rem 0.8rem;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--muted);
+  font:inherit;
+  font-size:0.9rem;
+  font-weight:600;
+  text-align:center;
+  text-decoration:none;
+  cursor:pointer;
+  transition:color 0.15s, border-color 0.15s, background 0.15s;
+}
+.mobile-account-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.2)}
+.mobile-account-btn--primary{
+  background:linear-gradient(135deg,#e1c382,#caa45c);
+  color:#1c140a;
+  border-color:transparent;
+}
+.mobile-account-btn--primary:hover{opacity:0.9;color:#1c140a}
+.mobile-account-btn--danger{
+  color:#ff8080;
+  border-color:rgba(255,120,120,0.25);
+}
+.mobile-account-btn--danger:hover{
+  background:rgba(255,120,120,0.1);
+  color:#ffb3b3;
+}
+
+/* ── Hamburger X animation ── */
+.nav-toggle span{
+  transition:transform 0.25s ease, opacity 0.25s ease;
+  transform-origin:center;
+}
+.nav-toggle--open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.nav-toggle--open span:nth-child(2){transform:translateY(-6px) rotate(-45deg)}
+
+/* Desktop: hide overlay completely */
+@media(min-width:769px){
+  .mobile-overlay{display:none!important}
+  .nav-desktop{display:flex}
 }
 
 .dashboard-shell{
