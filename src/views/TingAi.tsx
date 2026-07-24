@@ -432,7 +432,33 @@ export default function TingAi() {
   const hasPortfolioContext = holdings.length > 0 || portfolioSnapshot.hasPortfolio
 
   return (
-    <div style={{ minHeight: '100vh', background: C.bg, color: C.white, overflowX: 'hidden', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: C.bg, color: C.white, overflowX: 'hidden', fontFamily: 'Inter, system-ui, sans-serif', position: 'relative' }}>
+
+      {/* ══ AMBIENT BACKGROUND ═════════════════════════════════════ */}
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
+        {/* Aurora gradient */}
+        <div style={{
+          position: 'absolute', top: '-20%', left: '-10%', width: '60%', height: '60%',
+          background: 'radial-gradient(ellipse at center, rgba(37,208,195,0.06) 0%, transparent 70%)',
+          filter: 'blur(80px)',
+          animation: 'float-gentle 8s ease-in-out infinite',
+        }} />
+        <div style={{
+          position: 'absolute', top: '10%', right: '-15%', width: '50%', height: '50%',
+          background: 'radial-gradient(ellipse at center, rgba(78,168,222,0.05) 0%, transparent 70%)',
+          filter: 'blur(80px)',
+          animation: 'float-gentle 10s ease-in-out infinite',
+          animationDelay: '-3s',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: '5%', left: '20%', width: '40%', height: '40%',
+          background: 'radial-gradient(ellipse at center, rgba(167,139,250,0.04) 0%, transparent 70%)',
+          filter: 'blur(100px)',
+          animation: 'float-gentle 12s ease-in-out infinite',
+          animationDelay: '-5s',
+        }} />
+      </div>
+
 
       {/* ══ TOPNAV ══════════════════════════════════════════════════ */}
       <nav style={{
@@ -459,15 +485,17 @@ export default function TingAi() {
           {/* Logo badge */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{
-              width: 22, height: 22, borderRadius: 7,
-              background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.2)',
+              width: 26, height: 26, borderRadius: 8,
+              background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 0 16px rgba(245,158,11,0.1)',
+              animation: 'glow-pulse-amber 4s ease-in-out infinite',
             }}>
-              <svg width="10" height="10" fill={C.amber} viewBox="0 0 24 24">
+              <svg width="12" height="12" fill={C.amber} viewBox="0 0 24 24">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
               </svg>
             </div>
-            <span style={{ fontFamily: C.mono, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.2em', color: C.slate500 }}>Ting AI</span>
+            <span style={{ fontFamily: C.mono, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.2em', color: C.slate400 }}>Ting AI</span>
           </div>
 
           {/* Auth actions */}
@@ -483,9 +511,12 @@ export default function TingAi() {
             {!isPro && (
               <Link to="/upgrade" style={{
                 fontFamily: C.mono, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em',
-                padding: '6px 14px', borderRadius: 8,
-                border: '1px solid rgba(245,158,11,0.25)', background: 'rgba(245,158,11,0.08)',
+                padding: '7px 16px', borderRadius: 10,
+                border: '1px solid rgba(245,158,11,0.3)', 
+                background: 'linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.06))',
                 color: C.amber, textDecoration: 'none',
+                boxShadow: '0 0 20px rgba(245,158,11,0.08)',
+                transition: 'all 0.3s ease',
               }}>
                 {t.viewPro}
               </Link>
@@ -683,30 +714,43 @@ export default function TingAi() {
 
         {/* ── 4. FOOTER NOTE ──────────────────────────────────────── */}
         <footer style={{
-          borderTop: '1px solid rgba(255,255,255,0.05)',
-          paddingTop: 32, display: 'flex', flexDirection: 'column', gap: 24,
+          borderTop: '1px solid transparent',
+          borderImage: 'linear-gradient(90deg, transparent, rgba(20,184,166,0.2), rgba(78,168,222,0.2), transparent) 1',
+          paddingTop: 40, display: 'flex', flexDirection: 'column', gap: 32,
         }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 32 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <h4 style={{ margin: 0, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', color: C.slate500 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24 }}>
+            <div style={{ 
+              display: 'flex', flexDirection: 'column', gap: 12,
+              padding: '20px 24px', borderRadius: 16,
+              background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+            }}>
+              <h4 style={{ margin: 0, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', color: C.teal }}>
                 {t.footerPhilosophyTitle}
               </h4>
-              <p style={{ margin: 0, fontSize: 12, color: C.slate600, lineHeight: 1.8 }}>
+              <p style={{ margin: 0, fontSize: 13, color: C.slate500, lineHeight: 1.8 }}>
                 {t.footerPhilosophyBody}
               </p>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <h4 style={{ margin: 0, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', color: C.slate500 }}>
+            <div style={{ 
+              display: 'flex', flexDirection: 'column', gap: 12,
+              padding: '20px 24px', borderRadius: 16,
+              background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+            }}>
+              <h4 style={{ margin: 0, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', color: C.teal }}>
                 {t.footerDataTitle}
               </h4>
-              <p style={{ margin: 0, fontSize: 12, color: C.slate600, lineHeight: 1.8 }}>
+              <p style={{ margin: 0, fontSize: 13, color: C.slate500, lineHeight: 1.8 }}>
                 {t.footerDataBody}
               </p>
             </div>
           </div>
-          <p style={{ margin: 0, fontFamily: C.mono, fontSize: 10, color: C.slate700, textAlign: 'center', letterSpacing: '0.08em' }}>
-            {t.footerCredit}
-          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, justifyContent: 'center' }}>
+            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.04)' }} />
+            <p style={{ margin: 0, fontFamily: C.mono, fontSize: 10, color: C.slate600, textAlign: 'center', letterSpacing: '0.1em', whiteSpace: 'nowrap' }}>
+              {t.footerCredit}
+            </p>
+            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.04)' }} />
+          </div>
         </footer>
       </main>
     </div>

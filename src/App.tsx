@@ -32,6 +32,7 @@ import BlogList from './views/BlogList'
 import BlogPost from './views/BlogPost'
 import { useLanguagePreference } from './utils/language'
 import { useDocumentMetadata } from './utils/metadata'
+import { isPersonalDomain as checkIsPersonalDomain } from './utils/domain'
 
 const sections = ['hero', 'system-stack', 'founder', 'experience', 'featured', 'system-flow', 'projects', 'philosophy', 'contact'] as const
 
@@ -197,7 +198,7 @@ function RouteMetadata() {
           robots: 'index, follow'
         }
       default:
-        const isPersonal = typeof window !== 'undefined' ? window.location.hostname === 'faturachman.my.id' : true;
+        const isPersonal = checkIsPersonalDomain()
         if (!isPersonal) {
           return {
             title:
@@ -235,8 +236,17 @@ function AppShell() {
   const location = useLocation()
   
   // Domain router logic: If not on faturachman.my.id, default '/' to Ting AI Landing
-  const isPersonalDomain = typeof window !== 'undefined' ? window.location.hostname === 'faturachman.my.id' : true
-  const isTingAiRoot = !isPersonalDomain && location.pathname === '/'
+  const isPersonal = checkIsPersonalDomain()
+  const isTingAiRoot = !isPersonal && location.pathname === '/'
+
+  // Redirect personal portfolio pages to faturachman.my.id if accessed via Ting AI domain
+  if (!isPersonal) {
+    const isPortfolioRoute = ['/blog'].some(p => location.pathname.startsWith(p))
+    if (isPortfolioRoute) {
+      window.location.href = `https://faturachman.my.id${location.pathname}${location.search}`
+      return null
+    }
+  }
 
   const isStandalone = STANDALONE_PATHS.some(p => location.pathname.startsWith(p)) || isTingAiRoot
 
@@ -263,7 +273,7 @@ function AppShell() {
       <Navbar />
       <RouteMetadata />
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={isPersonal ? <HomePage /> : <Navigate to="/" replace />} />
         <Route path="/ting-ai-2" element={<Navigate to="/explore-intelligence" replace />} />
         <Route path="/decision-briefing" element={<Navigate to="/explore-intelligence" replace />} />
         <Route
@@ -339,9 +349,9 @@ function AppShell() {
             </ProtectedRoute>
           }
         />
-        <Route path="/blog" element={<BlogList />} />
-        <Route path="/blog/:slug" element={<BlogPost />} />
-        <Route path="*" element={<HomePage />} />
+        <Route path="/blog" element={isPersonal ? <BlogList /> : <Navigate to="/" replace />} />
+        <Route path="/blog/:slug" element={isPersonal ? <BlogPost /> : <Navigate to="/" replace />} />
+        <Route path="*" element={isPersonal ? <HomePage /> : <Navigate to="/" replace />} />
       </Routes>
       <Footer />
       <MobileBottomNav />

@@ -76,10 +76,10 @@ function PulseCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
       onClick={onClick}
-      className={`text-left p-5 rounded-2xl border transition-all w-full ${
+      className={`text-left p-5 rounded-2xl border transition-all duration-300 w-full cursor-pointer group ${
         selected
-          ? 'bg-white/[0.07] border-white/20 ring-1 ring-white/10 shadow-xl'
-          : 'bg-white/[0.025] border-white/[0.06] hover:bg-white/[0.05]'
+          ? 'bg-white/[0.07] border-teal-500/30 ring-1 ring-teal-500/10 shadow-xl shadow-teal-500/5'
+          : 'bg-white/[0.025] border-white/[0.06] hover:bg-white/[0.05] hover:border-white/[0.12] hover:-translate-y-0.5 hover:shadow-lg'
       }`}
     >
       <div className="flex items-start justify-between mb-3">
@@ -204,8 +204,10 @@ function SmartChart({
             <button
               key={r}
               onClick={() => setRange(r)}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-mono font-bold transition-all ${
-                range === r ? 'bg-white text-black' : 'text-slate-600 hover:text-white'
+              className={`px-3 py-1.5 rounded-lg text-[10px] font-mono font-bold transition-all duration-200 ${
+                range === r 
+                  ? 'bg-teal-500 text-black shadow-[0_0_12px_rgba(20,184,166,0.2)]' 
+                  : 'text-slate-600 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
               {i18n.rangeLabels[r]}
@@ -550,7 +552,7 @@ function NewsSectionV2({ i18n, symbols, userPlan }: { i18n: ReturnType<typeof ge
       ) : (
         <div className="space-y-4">
           {visibleNews.map((item, i) => (
-            <a key={`${item.url}-${i}`} href={item.url} target="_blank" rel="noopener noreferrer" className="block p-4 rounded-xl border border-white/[0.04] hover:bg-white/[0.02] transition-colors">
+            <a key={`${item.url}-${i}`} href={item.url} target="_blank" rel="noopener noreferrer" className="block p-4 rounded-xl border border-white/[0.04] hover:bg-white/[0.03] hover:border-white/[0.1] hover:-translate-y-0.5 transition-all duration-300">
               <p className="text-sm font-semibold text-slate-200 mb-1">{item.title}</p>
               {item.summary && (
                 <p className="text-xs text-slate-400 mb-2 line-clamp-2 leading-relaxed">{item.summary}</p>

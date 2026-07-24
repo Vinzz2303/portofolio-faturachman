@@ -231,7 +231,11 @@ export default function DecisionJournal({
             setError('')
           }}
           disabled={isFreeLimitReached && !open}
-          className="self-start rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-semibold text-slate-200 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-50"
+          className={`self-start rounded-xl border px-4 py-2 text-xs font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-50 ${
+            open
+              ? 'border-white/10 bg-white/[0.04] text-slate-200 hover:bg-white/[0.07]'
+              : 'border-teal-500/30 bg-teal-500/10 text-teal-300 hover:bg-teal-500/20 hover:border-teal-500/40 shadow-[0_0_16px_rgba(20,184,166,0.1)]'
+          }`}
         >
           {open ? t.close : t.cta}
         </button>
@@ -350,7 +354,7 @@ export default function DecisionJournal({
           <button
             type="button"
             onClick={handleSave}
-            className="rounded-xl bg-teal-400 px-4 py-2 text-xs font-bold text-black hover:bg-teal-300"
+            className="rounded-xl bg-teal-400 px-5 py-2.5 text-xs font-bold text-black hover:bg-teal-300 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_16px_rgba(20,184,166,0.2)]"
           >
             {t.save}
           </button>
@@ -358,14 +362,34 @@ export default function DecisionJournal({
       )}
 
       {!visibleEntries.length ? (
-        <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.015] p-5">
+        <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.015] p-6 text-center">
+          {/* Icon */}
+          <div className="mx-auto mb-3 w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center">
+            <svg className="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+            </svg>
+          </div>
           <p className="text-sm font-medium text-slate-300">{t.emptyTitle}</p>
-          <p className="mt-1.5 text-xs text-slate-500 leading-relaxed max-w-md">{t.emptyBody}</p>
+          <p className="mt-1.5 text-xs text-slate-500 leading-relaxed max-w-md mx-auto">{t.emptyBody}</p>
+          {/* Writing prompts */}
+          <div className="mt-4 flex flex-wrap gap-2 justify-center">
+            {(language === 'id'
+              ? ['Pantau posisi terbesar', 'Review sebelum tambah posisi', 'Evaluasi risiko saat ini']
+              : ['Watch largest position', 'Review before adding', 'Evaluate current risk']
+            ).map((prompt) => (
+              <span
+                key={prompt}
+                className="text-[10px] px-2.5 py-1 rounded-lg border border-white/[0.06] bg-white/[0.02] text-slate-500 font-mono"
+              >
+                {prompt}
+              </span>
+            ))}
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {visibleEntries.map((entry) => (
-            <article key={entry.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3">
+            <article key={entry.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3 transition-all duration-300 hover:border-white/[0.12] hover:shadow-lg hover:-translate-y-0.5">
               <div className="flex items-start justify-between gap-3">
                 <span className={`rounded-md border px-2 py-1 text-[10px] font-mono uppercase tracking-wider ${badgeClass(entry.decisionType)}`}>
                   {decisionTypeLabel(entry.decisionType, language)}

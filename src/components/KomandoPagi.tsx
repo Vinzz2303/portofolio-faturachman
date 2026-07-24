@@ -237,6 +237,8 @@ export default function KomandoPagi({ userPlan }: { userPlan?: string }) {
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border"
               style={{
                 background: p.pillBg, color: p.pillText, borderColor: p.pillBorder,
+                boxShadow: `0 0 12px ${p.glow}, 0 0 24px ${p.glow}`,
+                animation: state.riskLevel === 'high' ? 'glow-pulse 2s ease-in-out infinite' : 'none',
               }}
             >
               {copy.riskLevels[state.riskLevel]}
@@ -254,8 +256,8 @@ export default function KomandoPagi({ userPlan }: { userPlan?: string }) {
             <Link
               to="/portfolio"
               id="komando-cta-portfolio"
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-[13px] font-bold rounded-xl transition-all"
-              style={{ background: p.accent, color: '#000', boxShadow: `0 4px 16px ${p.dot}20` }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-[13px] font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+              style={{ background: p.accent, color: '#000', boxShadow: `0 4px 20px ${p.dot}30, 0 0 40px ${p.dot}10` }}
             >
               {copy.ctaPortfolioImpact}
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,7 +286,7 @@ export default function KomandoPagi({ userPlan }: { userPlan?: string }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.06 + i * 0.06, ease: [0.16, 1, 0.3, 1] }}
-            className="rounded-xl border border-white/[0.06] px-4 py-3.5 space-y-1.5"
+            className="rounded-xl border border-white/[0.06] px-4 py-3.5 space-y-1.5 transition-all duration-300 hover:border-white/[0.12] hover:shadow-lg hover:-translate-y-0.5"
             style={{ background: 'rgba(255,255,255,0.02)', minHeight: '68px' }}
           >
             <p className="text-[10px] font-mono text-slate-600 uppercase tracking-wider flex items-center gap-1.5">

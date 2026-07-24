@@ -17,7 +17,7 @@ export const dynamicParams = false
 
 export function generateStaticParams() {
   return staticRoutes.map(route => ({
-    slug: route === '' ? [] : route.split('/'),
+    slug: route.split('/'),
   }))
 }
 
@@ -125,9 +125,9 @@ const routeMetadata: Record<string, Metadata> = {
   },
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug?: string[] }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }): Promise<Metadata> {
   const resolvedParams = await params
-  const path = resolvedParams.slug?.length ? `/${resolvedParams.slug.join('/')}` : '/'
+  const path = `/${resolvedParams.slug.join('/')}`
   return routeMetadata[path] ?? defaultMetadata
 }
 
