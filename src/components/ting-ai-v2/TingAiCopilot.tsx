@@ -94,7 +94,6 @@ function TypingDots() {
     </div>
   )
 }
-
 // ── Chip button ───────────────────────────────────────────────────────────────
 function ChipButton({ label, onClick, disabled }: { label: string; onClick: () => void; disabled: boolean }) {
   const [hovered, setHovered] = useState(false)
@@ -116,7 +115,9 @@ function ChipButton({ label, onClick, disabled }: { label: string; onClick: () =
         cursor: disabled ? 'not-allowed' : 'pointer',
         transition: 'all 0.2s ease',
         opacity: disabled ? 0.5 : 1,
-        whiteSpace: 'nowrap',
+        whiteSpace: 'normal',
+        textAlign: 'left',
+        lineHeight: 1.4,
       }}
     >
       {displayLabel}

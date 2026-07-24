@@ -2,13 +2,15 @@ import React, { useRef, useState } from 'react'
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
 import { useLanguagePreference } from '../utils/language'
 
+import { BrainCircuit, Server, Layers, Code, Network, Database } from 'lucide-react'
+
 const highlights = [
-  { label: "AI Product Builder", emoji: "🧠" },
-  { label: "Full Stack Developer", emoji: "⚡" },
-  { label: "Open Source Contributor", emoji: "🌐" },
-  { label: "React + FastAPI", emoji: "⚛️" },
-  { label: "TypeScript · Python", emoji: "📦" },
-  { label: "Market Intelligence", emoji: "📊" },
+  { label: "AI Architecture", icon: <BrainCircuit size={14} /> },
+  { label: "LLM Orchestration", icon: <Server size={14} /> },
+  { label: "Full-Stack Systems", icon: <Layers size={14} /> },
+  { label: "React + FastAPI", icon: <Code size={14} /> },
+  { label: "TypeScript · Python", icon: <Code size={14} /> },
+  { label: "Context Engineering", icon: <Network size={14} /> },
 ]
 
 /* ── Tilt Card with 3D perspective ──────────────────────── */
@@ -47,7 +49,7 @@ export default function Founder() {
   const [hovered, setHovered] = useState<number | null>(null)
 
   return (
-    <section className="py-28 relative overflow-hidden">
+    <section id="founder" className="py-28 relative overflow-hidden">
       {/* Ambient gradient bg */}
       <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, #25d0c315, transparent 70%)' }} />
       <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, #a78bfa15, transparent 70%)' }} />
@@ -111,21 +113,21 @@ export default function Founder() {
                 viewport={{ once: true }}
                 className="text-xs font-mono text-[#25d0c3]/60 tracking-widest uppercase"
               >
-                {isEn ? 'About The Builder' : 'Tentang Pembangun'}
+                {isEn ? 'The Architect' : 'Sang Arsitek'}
               </motion.span>
               <h2 className="text-4xl md:text-5xl font-black text-white mt-3 tracking-tight leading-[1.1]">
                 {isEn ? (
-                  <>Crafting systems that<br /><span className="bg-gradient-to-r from-[#25d0c3] to-[#4ea8de] bg-clip-text text-transparent">think with you.</span></>
+                  <>Engineering systems that<br /><span className="bg-gradient-to-r from-[#25d0c3] to-[#4ea8de] bg-clip-text text-transparent">scale and reason.</span></>
                 ) : (
-                  <>Membangun sistem yang<br /><span className="bg-gradient-to-r from-[#25d0c3] to-[#4ea8de] bg-clip-text text-transparent">berpikir bersama Anda.</span></>
+                  <>Merancang sistem AI yang<br /><span className="bg-gradient-to-r from-[#25d0c3] to-[#4ea8de] bg-clip-text text-transparent">bernalar dan terukur.</span></>
                 )}
               </h2>
             </div>
 
             <p className="text-base text-white/50 leading-relaxed max-w-lg">
               {isEn
-                ? "I build AI-driven products from zero to production — from database schemas to pixel-perfect interfaces. Currently shipping Ting AI, an intelligence layer for retail investors, while contributing to open source in PCB design, MCP platforms, and algorithmic tooling."
-                : "Saya membangun produk berbasis AI dari nol hingga produksi — dari skema database hingga interface pixel-perfect. Saat ini mengembangkan Ting AI, lapisan kecerdasan untuk investor ritel, sambil berkontribusi ke open source di PCB design, platform MCP, dan algorithmic tooling."}
+                ? "I am an AI Specialist and Full-Stack Architect. Beyond just calling APIs, I design robust intelligence layers, implement context-aware LLM orchestration, and build the production-ready infrastructure that powers them. Currently engineering Ting AI's core market reasoning engine."
+                : "Saya adalah Spesialis AI dan Full-Stack Architect. Lebih dari sekadar memanggil API, saya merancang lapisan kecerdasan buatan, mengimplementasikan orkestrasi LLM tingkat lanjut, dan membangun infrastruktur skalabel di belakangnya. Saat ini fokus membangun mesin penalaran (reasoning engine) untuk Ting AI."}
             </p>
 
             {/* Skill tokens - interactive */}
@@ -149,7 +151,7 @@ export default function Founder() {
                     }
                   `}
                 >
-                  <span className="mr-1.5">{h.emoji}</span>
+                  <span className="mr-1.5 flex items-center">{h.icon}</span>
                   {h.label}
                 </motion.div>
               ))}

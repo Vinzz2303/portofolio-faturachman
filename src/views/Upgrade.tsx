@@ -58,10 +58,17 @@ export default function Upgrade() {
   
   const [copied, setCopied] = useState(false)
 
+  const isPremium = Boolean(user?.plan && user.plan !== 'free')
+
   useEffect(() => {
     let active = true
 
     const sync = async () => {
+      if (isPremium) {
+        setPaymentStatus('active')
+        return
+      }
+
       const draft = readDraft()
       if (draft) {
         setFullName(draft.fullName)

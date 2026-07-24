@@ -27,6 +27,7 @@ import {
 } from './services/chatProvider'
 import { getMarketQuoteCacheTtlMinutes, resolveMarketQuotes } from './services/marketQuoteService'
 import { getMarketNews } from './services/marketNewsService'
+import { getInsiderTrading } from './services/openbbAgentTools'
 
 // --- START: Portfolio Context Types ---
 type PortfolioHolding = {
@@ -1195,7 +1196,8 @@ const resolveAssetFromYahoo = async (symbol: string) => {
   })
 
   const normalized = symbol.toUpperCase()
-  const quote = (response.data?.quotes || []).find((item) => item.symbol?.toUpperCase() === normalized)
+  const quotes = response.data?.quotes || []
+  const quote = quotes.find((item) => item.symbol?.toUpperCase() === normalized) || quotes[0]
   if (!quote?.symbol) return null
 
   const name = quote.longname || quote.shortname || quote.symbol
@@ -3018,6 +3020,17 @@ app.get('/api/market/overview', async (_req, res) => {
   return res.status(200).json({ ok: true, data, source: 'yahoo-finance' })
 })
 
+app.get('/api/market/macro', async (req, res) => {
+  try {
+    const { fetchMacroData } = require('./utils/openbbAdapter')
+    const data = await fetchMacroData()
+    res.json({ success: true, data })
+  } catch (error) {
+    console.error('Macro API Error:', error)
+    res.status(500).json({ success: false, error: 'Failed to fetch macro data' })
+  }
+})
+
 app.get('/api/market/news', async (req, res) => {
   const symbols = typeof req.query.symbols === 'string'
     ? req.query.symbols.split(',').map((symbol) => symbol.trim()).filter(Boolean)
@@ -3344,6 +3357,7 @@ const isAssetSpecificQuestion = (text: string) =>
   ].some((keyword) => text.includes(keyword))
 
 const hasReliableAssetContext = (text: string, meta?: AiChatBody['meta']) => {
+  if ((meta as any)?.copilot) return true
   const instruments = meta?.instruments
 
   if (text.includes('emas') || text.includes('gold') || text.includes('xau') || text.includes('antam')) {
@@ -4081,6 +4095,32 @@ function formatAskTingAiResponse(
 }
 // --- END: Helper to format Ask Ting AI response ---
 
+app.post('/api/morning-brief', async (req, res) => {
+  try {
+    const { language = 'id', portfolio, marketData } = req.body;
+    const systemPrompt = `You are Ting AI, a highly analytical market intelligence assistant.
+Your task is to provide a very brief (1-2 paragraphs) morning market hook and portfolio impact analysis based on the latest market conditions.
+STRICT RULE: NO SIGNAL POLICY. Do NOT suggest buying, selling, or trading any specific asset. Focus on risk, narrative, and context.
+Language: ${language === 'id' ? 'Indonesian' : 'English'}.
+
+Market Data Context:
+${JSON.stringify(marketData || {})}
+
+User Portfolio:
+${JSON.stringify(portfolio || {})}`;
+
+    const result = await sendChatWithFallback([
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: 'Generate the morning brief. Focus on how the current market context affects my portfolio.' }
+    ], language as 'id' | 'en');
+
+    return res.json({ brief: result.reply });
+  } catch (err) {
+    console.error('[morning-brief error]', err);
+    return res.status(500).json({ error: 'Failed to generate morning brief' });
+  }
+});
+
 app.post('/api/ai-chat', async (req, res) => {
   const startedAt = Date.now()
   let providerUsed = 'none'
@@ -4264,14 +4304,43 @@ app.post('/api/ai-chat', async (req, res) => {
       })
     }
 
+    if (intent === 'other' && !(meta as any)?.copilot) {
+      const fallbackReply = buildAiFallbackReply(messages, summary, meta, 'invalid_payload')
+      providerUsed = 'local'
+      logAiTelemetry({
+        intent,
+        providerRequested,
+        providerUsed,
+        durationMs: Date.now() - startedAt,
+        fallbackUsed: true,
+        hasMarketContext,
+        hasPortfolioContext
+      })
+      return res.status(200).json({
+        reply: fallbackReply,
+        usedGroq: false,
+        usedGemini: false,
+        providerStatus: {
+          requested: providerRequested as 'auto' | 'groq' | 'gemini',
+          used: 'local',
+          fallbackUsed: true,
+          hasMarketContext,
+          hasPortfolioContext,
+          durationMs: Date.now() - startedAt
+        }
+      })
+    }
+
     const marketBriefContext = shouldInjectMarketContext(lastUserMessage)
       ? createMarketBriefContext(summary, meta)
       : null
     const portfolioContext = requestPlan === 'pro'
       ? createPortfolioContext(portfolio, hasProfitLossData)
       : null
-    hasMarketContext = Boolean(marketBriefContext)
-    hasPortfolioContext = Boolean(portfolioContext)
+    hasMarketContext = Boolean(marketBriefContext) || Boolean((meta as any)?.copilot)
+    hasPortfolioContext = Boolean(portfolioContext) || Boolean((meta as any)?.copilot)
+    
+    console.log('[DEBUG /api/ai-chat] meta.copilot:', (meta as any)?.copilot, 'hasMarketContext:', hasMarketContext, 'hasPortfolioContext:', hasPortfolioContext);
     const messagesWithContext = [...messages]
     const preferredLanguage = detectPreferredLanguage(messages)
 
@@ -4373,6 +4442,265 @@ app.post('/api/ai-chat', async (req, res) => {
 
 app.get('/api/ai-chat', (_req, res) => {
   res.status(200).json({ status: 'ok' })
+})
+
+app.get('/api/openbb/insider_trading', async (req, res) => {
+  try {
+    const symbol = req.query.symbol as string
+    if (!symbol) {
+      return res.status(400).json({ ok: false, error: 'symbol is required' })
+    }
+    const data = await getInsiderTrading(symbol)
+    res.json({ ok: true, data })
+  } catch (err) {
+    console.error('[OpenBB Proxy Error]', err)
+    res.status(500).json({ ok: false, error: 'Failed to fetch insider trading data' })
+  }
+})
+
+// CFTC Commitments of Traders (COT) proxy — for commodity whale radar
+app.get('/api/openbb/cot', async (req, res) => {
+  try {
+    const code  = req.query.code  as string
+    const limit = parseInt((req.query.limit as string) || '8', 10)
+    if (!code) {
+      return res.status(400).json({ ok: false, error: 'code is required' })
+    }
+    const OPENBB_URL = process.env.OPENBB_API_URL || 'http://127.0.0.1:6900'
+    const url = `${OPENBB_URL}/api/v1/cftc/cot?code=${encodeURIComponent(code)}&limit=${limit}`
+    const resp = await fetch(url, { signal: AbortSignal.timeout(30000) })
+    if (!resp.ok) {
+      const txt = await resp.text()
+      return res.status(resp.status).json({ ok: false, error: txt })
+    }
+    const json = await resp.json() as { results?: unknown[] }
+    res.json({ ok: true, data: json.results ?? [] })
+  } catch (err) {
+    console.error('[COT Proxy Error]', err)
+    res.status(500).json({ ok: false, error: 'Failed to fetch COT data' })
+  }
+})
+
+// ── OpenBB Fundamental: Company Profile ───────────────────────────────────────
+app.get('/api/openbb/profile', async (req, res) => {
+  try {
+    const symbol = req.query.symbol as string
+    if (!symbol) return res.status(400).json({ ok: false, error: 'symbol is required' })
+    const OPENBB_URL = process.env.OPENBB_API_URL || 'http://127.0.0.1:6900'
+    const resp = await fetch(`${OPENBB_URL}/api/v1/equity/profile?symbol=${encodeURIComponent(symbol)}&provider=yfinance`, { signal: AbortSignal.timeout(10000) })
+    if (!resp.ok) return res.status(resp.status).json({ ok: false, error: 'OpenBB profile fetch failed' })
+    const json = await resp.json() as { results?: any[] }
+    const r = json.results?.[0]
+    if (!r) return res.json({ ok: true, data: null })
+    res.json({
+      ok: true,
+      data: {
+        name: r.name,
+        symbol: r.symbol,
+        sector: r.sector,
+        industry: r.industry,
+        exchange: r.stock_exchange,
+        description: r.long_description?.slice(0, 300) || r.description?.slice(0, 300) || null,
+        website: r.website,
+        country: r.hq_country || r.country,
+        employees: r.full_time_employees,
+        currency: r.currency,
+      }
+    })
+  } catch (err) {
+    console.error('[OpenBB Profile Error]', err)
+    res.status(500).json({ ok: false, error: 'Failed to fetch company profile' })
+  }
+})
+
+// ── OpenBB Fundamental: Analyst Consensus ─────────────────────────────────────
+app.get('/api/openbb/consensus', async (req, res) => {
+  try {
+    const symbol = req.query.symbol as string
+    if (!symbol) return res.status(400).json({ ok: false, error: 'symbol is required' })
+    const OPENBB_URL = process.env.OPENBB_API_URL || 'http://127.0.0.1:6900'
+    const resp = await fetch(`${OPENBB_URL}/api/v1/equity/estimates/consensus?symbol=${encodeURIComponent(symbol)}&provider=yfinance`, { signal: AbortSignal.timeout(10000) })
+    if (!resp.ok) return res.status(resp.status).json({ ok: false, error: 'OpenBB consensus fetch failed' })
+    const json = await resp.json() as { results?: any[] }
+    const r = json.results?.[0]
+    if (!r) return res.json({ ok: true, data: null })
+    res.json({
+      ok: true,
+      data: {
+        symbol: r.symbol,
+        targetHigh: r.target_high,
+        targetLow: r.target_low,
+        targetConsensus: r.target_consensus,
+        targetMedian: r.target_median,
+        recommendation: r.recommendation,  // 'buy' | 'hold' | 'sell'
+        recommendationMean: r.recommendation_mean,
+        numberOfAnalysts: r.number_of_analysts,
+        currentPrice: r.current_price,
+        currency: r.currency,
+      }
+    })
+  } catch (err) {
+    console.error('[OpenBB Consensus Error]', err)
+    res.status(500).json({ ok: false, error: 'Failed to fetch analyst consensus' })
+  }
+})
+
+// ── OpenBB Fundamental: Key Metrics ───────────────────────────────────────────
+app.get('/api/openbb/metrics', async (req, res) => {
+  try {
+    const symbol = req.query.symbol as string
+    if (!symbol) return res.status(400).json({ ok: false, error: 'symbol is required' })
+    const OPENBB_URL = process.env.OPENBB_API_URL || 'http://127.0.0.1:6900'
+    const resp = await fetch(`${OPENBB_URL}/api/v1/equity/fundamental/metrics?symbol=${encodeURIComponent(symbol)}&provider=yfinance`, { signal: AbortSignal.timeout(10000) })
+    if (!resp.ok) return res.status(resp.status).json({ ok: false, error: 'OpenBB metrics fetch failed' })
+    const json = await resp.json() as { results?: any[] }
+    const r = json.results?.[0]
+    if (!r) return res.json({ ok: true, data: null })
+    res.json({
+      ok: true,
+      data: {
+        peRatio: r.pe_ratio,
+        marketCap: r.market_cap,
+        dividendYield: r.dividend_yield,
+        beta: r.beta,
+        revenuePerShare: r.revenue_per_share,
+        priceToBook: r.price_to_book,
+        priceToSales: r.price_to_sales,
+      }
+    })
+  } catch (err) {
+    console.error('[OpenBB Metrics Error]', err)
+    res.status(500).json({ ok: false, error: 'Failed to fetch key metrics' })
+  }
+})
+
+// ── OpenBB Fundamental: ETF Info ──────────────────────────────────────────────
+app.get('/api/openbb/etf_info', async (req, res) => {
+  try {
+    const symbol = req.query.symbol as string
+    if (!symbol) return res.status(400).json({ ok: false, error: 'symbol is required' })
+    const OPENBB_URL = process.env.OPENBB_API_URL || 'http://127.0.0.1:6900'
+    const resp = await fetch(`${OPENBB_URL}/api/v1/etf/info?symbol=${encodeURIComponent(symbol)}&provider=yfinance`, { signal: AbortSignal.timeout(10000) })
+    if (!resp.ok) return res.status(resp.status).json({ ok: false, error: 'OpenBB ETF info fetch failed' })
+    const json = await resp.json() as { results?: any[] }
+    const r = json.results?.[0]
+    if (!r) return res.json({ ok: true, data: null })
+    res.json({
+      ok: true,
+      data: {
+        name: r.name,
+        description: r.description?.slice(0, 300),
+        fundFamily: r.fund_family,
+        category: r.category,
+        totalAssets: r.total_assets,
+        navPrice: r.nav_price,
+        trailingPe: r.trailing_pe,
+        dividendYield: r.dividend_yield,
+        yearHigh: r.year_high,
+        yearLow: r.year_low,
+        inceptionDate: r.inception_date,
+      }
+    })
+  } catch (err) {
+    console.error('[OpenBB ETF Info Error]', err)
+    res.status(500).json({ ok: false, error: 'Failed to fetch ETF info' })
+  }
+})
+
+
+// ── OpenBB Market Movers: Gainers / Losers / Active ──────────────────────────
+async function fetchDiscovery(endpoint: string, limit = 10) {
+  const OPENBB_URL = process.env.OPENBB_API_URL || 'http://127.0.0.1:6900'
+  const resp = await fetch(`${OPENBB_URL}/api/v1/equity/discovery/${endpoint}?provider=yfinance`, { signal: AbortSignal.timeout(10000) })
+  if (!resp.ok) throw new Error(`OpenBB ${endpoint} fetch failed: ${resp.status}`)
+  const json = await resp.json() as { results?: any[] }
+  return (json.results || []).slice(0, limit).map((r: any) => ({
+    symbol:        r.symbol,
+    name:          r.name,
+    price:         r.price,
+    change:        r.change,
+    changePercent: r.percent_change,
+    volume:        r.volume,
+    marketCap:     r.market_cap,
+    earningsDate:  r.earnings_date || null,
+  }))
+}
+
+app.get('/api/openbb/gainers', async (_req, res) => {
+  try { res.json({ ok: true, data: await fetchDiscovery('gainers') }) }
+  catch (err) { console.error('[Gainers Error]', err); res.status(500).json({ ok: false, error: String(err) }) }
+})
+
+app.get('/api/openbb/losers', async (_req, res) => {
+  try { res.json({ ok: true, data: await fetchDiscovery('losers') }) }
+  catch (err) { console.error('[Losers Error]', err); res.status(500).json({ ok: false, error: String(err) }) }
+})
+
+app.get('/api/openbb/active', async (_req, res) => {
+  try { res.json({ ok: true, data: await fetchDiscovery('active') }) }
+  catch (err) { console.error('[Active Error]', err); res.status(500).json({ ok: false, error: String(err) }) }
+})
+
+// Binance Proxy — bypass client ISP blocks and fetch deeper history for whales
+app.get('/api/binance/whale', async (req, res) => {
+  try {
+    const symbol = req.query.symbol as string
+    if (!symbol) {
+      return res.status(400).json({ ok: false, error: 'symbol is required' })
+    }
+    
+    let whales: any[] = []
+    let url = `https://data-api.binance.vision/api/v3/aggTrades?symbol=${encodeURIComponent(symbol)}&limit=1000`
+    
+    // Fetch first batch (latest 1000)
+    let resp = await fetch(url, { signal: AbortSignal.timeout(10000) })
+    if (!resp.ok) {
+      const txt = await resp.text()
+      return res.status(resp.status).json({ ok: false, error: txt })
+    }
+    let data = await resp.json() as any[]
+    
+    // Binance returns oldest first in the array. 
+    // data[0] is the oldest of this batch. data[data.length-1] is the newest.
+    let firstId = data.length > 0 ? data[0].a : null
+    
+    // Dynamic whale threshold based on asset size
+    let minSizeUsd = 100000 // Default 100k for altcoins
+    if (symbol.includes('BTC') || symbol.includes('ETH')) {
+      minSizeUsd = 500000 // 500k USD for BTC/ETH (balances frequency with size)
+    } else if (symbol.includes('SOL') || symbol.includes('BNB') || symbol.includes('XRP')) {
+      minSizeUsd = 200000 // 200k USD for large caps
+    }
+
+    // Helper to filter whales
+    const getWhales = (trades: any[]) => trades.filter(t => (parseFloat(t.p) * parseFloat(t.q)) >= minSizeUsd)
+    whales.push(...getWhales(data))
+    
+    // Fetch up to 10 more batches backwards in time if we don't have enough whales
+    let attempts = 0
+    while (whales.length < 15 && attempts < 10 && firstId != null) {
+      attempts++
+      firstId -= 1000
+      let backUrl = `https://data-api.binance.vision/api/v3/aggTrades?symbol=${encodeURIComponent(symbol)}&limit=1000&fromId=${firstId}`
+      try {
+        let backResp = await fetch(backUrl, { signal: AbortSignal.timeout(5000) })
+        if (backResp.ok) {
+          let backData = await backResp.json() as any[]
+          whales.push(...getWhales(backData))
+          if (backData.length > 0) {
+            firstId = backData[0].a
+          }
+        }
+      } catch (e) {
+        break // if timeout or error on pagination, just stop and return what we have
+      }
+    }
+    
+    res.json({ ok: true, data: whales })
+  } catch (err) {
+    console.error('[Binance Proxy Error]', err)
+    res.status(500).json({ ok: false, error: 'Failed to fetch Binance data' })
+  }
 })
 
 const port = Number(process.env.PORT || 3001)

@@ -1,0 +1,47 @@
+{
+  "name": "portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "dev:vite": "vite",
+    "build": "next build && node scripts/copy-next-out-to-dist.mjs",
+    "build:vite": "vite build",
+    "deploy": "npm run build && node scripts/deploy.mjs",
+    "deploy:demo": "npm run deploy",
+    "preview": "npx serve@latest dist",
+    "preview:vite": "vite preview"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@vitejs/plugin-react": "^4.2.1",
+    "framer-motion": "^12.38.0",
+    "lightweight-charts": "^4.2.2",
+    "lucide-react": "^1.14.0",
+    "next": "^15.5.15",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-markdown": "^10.1.0",
+    "react-router-dom": "^6.26.2",
+    "recharts": "^2.12.7",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^24.7.2",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "autoprefixer": "^10.4.19",
+    "jsdom": "^29.0.1",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.9.3",
+    "vite": "^5.1.0",
+    "vitest": "^4.1.2"
+  }
+}

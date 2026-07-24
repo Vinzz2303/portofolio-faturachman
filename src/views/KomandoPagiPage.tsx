@@ -44,15 +44,13 @@ export default function KomandoPagiPage() {
         }}
       />
 
-      <div className="max-w-2xl mx-auto px-4 pt-24 pb-10 space-y-6">
+      <div className="max-w-2xl mx-auto px-4 pt-28 pb-10 space-y-6">
 
         {/* Greeting */}
         <div className="space-y-0.5 animate-in fade-in duration-500">
           <p className="label-uppercase text-[10px]">{copy.subtitle}</p>
           <h1 className="text-2xl font-semibold tracking-tight">{greeting}</h1>
         </div>
-
-        <MulaiDariSiniCard />
 
         {/* Komando Pagi briefing */}
         <KomandoPagi userPlan={userPlan} />

@@ -85,15 +85,19 @@ export default function Signup() {
       const res = await fetch(`${API_URL}/api/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullname: fullname.trim(), email: email.trim(), password })
+        body: JSON.stringify({
+          fullname: fullname.trim(),
+          email: email.trim(),
+          password
+        })
       })
       if (!res.ok) {
-        const text = await res.text()
-        throw new Error(text || 'Signup gagal')
+        const errorData = (await res.json()) as { error?: string }
+        throw new Error(errorData.error || 'Pendaftaran gagal')
       }
-      navigate('/login?signup=success', { replace: true })
+      navigate('/login?signup=success')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Signup gagal')
+      setError(err instanceof Error ? err.message : 'Pendaftaran gagal')
     } finally {
       setLoading(false)
     }

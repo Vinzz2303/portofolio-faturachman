@@ -1,6 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useLanguagePreference } from '../utils/language'
+import { Rocket, CircleDollarSign, GraduationCap, Globe2, BookOpen } from 'lucide-react'
 
 interface TimelineItem {
   year: string
@@ -11,7 +12,7 @@ interface TimelineItem {
   type: 'work' | 'education' | 'opensource'
   color: string
   gradient: string
-  icon: string
+  icon: React.ReactNode
 }
 
 const experiences: TimelineItem[] = [
@@ -24,7 +25,7 @@ const experiences: TimelineItem[] = [
     type: "work",
     color: "#25d0c3",
     gradient: "from-[#25d0c3]/20 via-[#25d0c3]/5 to-transparent",
-    icon: "🚀"
+    icon: <Rocket size={22} />
   },
   {
     year: "Feb 2026 - Present",
@@ -35,7 +36,7 @@ const experiences: TimelineItem[] = [
     type: "work",
     color: "#4ea8de",
     gradient: "from-[#4ea8de]/20 via-[#4ea8de]/5 to-transparent",
-    icon: "💰"
+    icon: <CircleDollarSign size={22} />
   },
   {
     year: "2024 - 2025",
@@ -46,7 +47,7 @@ const experiences: TimelineItem[] = [
     type: "work",
     color: "#f59e0b",
     gradient: "from-[#f59e0b]/20 via-[#f59e0b]/5 to-transparent",
-    icon: "🎓"
+    icon: <GraduationCap size={22} />
   },
   {
     year: "2025 - Present",
@@ -57,7 +58,7 @@ const experiences: TimelineItem[] = [
     type: "opensource",
     color: "#a78bfa",
     gradient: "from-[#a78bfa]/20 via-[#a78bfa]/5 to-transparent",
-    icon: "🌐"
+    icon: <Globe2 size={22} />
   },
   {
     year: "2022 - 2026",
@@ -68,7 +69,7 @@ const experiences: TimelineItem[] = [
     type: "education",
     color: "#d6b15d",
     gradient: "from-[#d6b15d]/20 via-[#d6b15d]/5 to-transparent",
-    icon: "📚"
+    icon: <BookOpen size={22} />
   }
 ]
 
@@ -138,7 +139,8 @@ export default function Experience({ sectionId }: { sectionId?: string }) {
                   <div className="flex items-center md:flex-col md:items-center gap-3 md:gap-2 md:min-w-[100px] shrink-0">
                     <motion.div
                       whileHover={{ scale: 1.15, rotate: 5 }}
-                      className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm"
+                      className="w-12 h-12 rounded-2xl flex items-center justify-center border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm"
+                      style={{ color: exp.color }}
                     >
                       {exp.icon}
                     </motion.div>

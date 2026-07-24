@@ -1,5 +1,5 @@
 import React from 'react'
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import MobileBottomNav from './components/MobileBottomNav'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
@@ -19,9 +19,12 @@ import AdminPro from './views/AdminPro'
 import Portfolio from './views/Portfolio'
 import TingAi from './views/TingAi'
 import TingAiTwo from './views/TingAiTwo'
+import TingAiLanding from './views/TingAiLanding'
 import KomandoPagiPage from './views/KomandoPagiPage'
 import VerifyEmail from './views/VerifyEmail'
 import ExploreIntelligence from './views/ExploreIntelligence'
+import DecisionJournalPage from './views/DecisionJournalPage'
+import DecisionJournal from './components/DecisionJournal'
 import Founder from './components/Founder'
 import Experience from './components/Experience'
 import Contact from './components/Contact'
@@ -45,9 +48,7 @@ function HomePage() {
   }, [])
 
   return (
-    <main className="home-page overflow-x-hidden">
-      <div className="spotlight spotlight-1" />
-      <div className="spotlight spotlight-2" />
+    <main className="home-page overflow-x-hidden pt-16 md:pt-0">
       
       <Hero sectionId={sections[0]} />
       <SystemStack />
@@ -139,11 +140,11 @@ function RouteMetadata() {
         }
       case '/profile':
         return {
-          title: language === 'en' ? 'Profile | Ting AI' : 'Profil | Ting AI',
+          title: language === 'en' ? 'Personal Space | Ting AI' : 'Ruang Personal | Ting AI',
           description:
             language === 'en'
-              ? 'Validated account summary for the currently active Ting AI session.'
-              : 'Ringkasan akun tervalidasi untuk sesi Ting AI yang sedang aktif.',
+              ? 'Private Ting AI workspace that combines market brief, portfolio context, and personal operational metrics.'
+              : 'Workspace privat Ting AI yang menggabungkan ringkasan pasar, konteks portofolio, dan metrik operasional personal.',
           path: '/profile',
           robots: 'noindex, nofollow'
         }
@@ -180,11 +181,11 @@ function RouteMetadata() {
       case '/personal-space':
       case '/lifeos':
         return {
-          title: language === 'en' ? 'Personal Space | Ting AI' : 'Ruang Personal | Ting AI',
+          title: language === 'en' ? 'Profile | Ting AI' : 'Profil | Ting AI',
           description:
             language === 'en'
-              ? 'Private Ting AI workspace that combines market brief, portfolio context, and personal operational metrics.'
-              : 'Workspace privat Ting AI yang menggabungkan ringkasan pasar, konteks portofolio, dan metrik operasional personal.',
+              ? 'Validated account summary for the currently active Ting AI session.'
+              : 'Ringkasan akun tervalidasi untuk sesi Ting AI yang sedang aktif.',
           path: '/personal-space',
           robots: 'noindex, nofollow'
         }
@@ -213,9 +214,9 @@ function RouteMetadata() {
           }
         }
         return {
-          title: 'Faturachman Alkahfi | AI Product Builder & Full Stack Developer',
+          title: 'Faturachman Alkahfi | AI Specialist & Full-Stack Architect Indonesia',
           description:
-            'Personal portfolio of Faturachman Alkahfi, AI Product Builder and Full Stack Developer. Explore Ting AI, full stack product systems, and modern AI-driven interfaces.',
+            'Portfolio of Faturachman Alkahfi, an AI Specialist and Full-Stack Architect based in Indonesia. Specializing in real AI systems, LLM orchestration, and production-ready architectures, beyond just vibecoding.',
           path: '/'
         }
     }
@@ -261,7 +262,7 @@ function AppShell() {
           <Route path="/reset" element={<ResetPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/ting-ai" element={<TingAi />} />
-          {isTingAiRoot && <Route path="/" element={<TingAi />} />}
+          {isTingAiRoot && <Route path="/" element={<TingAiLanding />} />}
         </Routes>
         <MobileBottomNav />
       </>
@@ -330,6 +331,14 @@ function AppShell() {
           element={
             <ProtectedRoute>
               <ExploreIntelligence />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/decision-journal"
+          element={
+            <ProtectedRoute>
+              <DecisionJournalPage />
             </ProtectedRoute>
           }
         />

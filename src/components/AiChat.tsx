@@ -277,6 +277,7 @@ const renderStructuredResponse = (
   onStepClick: (step: AskTingAiStructuredResponse['suggested_next_step']) => void
 ) => {
   const getNextStepLabel = (step: string, isEnglish: boolean) => {
+
     const labels: Record<string, Record<string, string>> = {
       monitor: { en: 'Monitor', id: 'Pantau' },
       wait: { en: 'Wait', id: 'Tunggu' },
@@ -285,38 +286,43 @@ const renderStructuredResponse = (
     }
     return labels[step]?.[isEnglish ? 'en' : 'id'] || step
   }
-
   const isEnglish = language === 'en'
-
   return (
-    <div className="ask-ting-ai-response-card">
-      <div className="response-section direct-answer">
-        <p>{structured.direct_answer}</p>
+    <div className="flex flex-col gap-5 mt-2 mb-2 w-full">
+      <div className="px-5 py-4 bg-[#111111] border border-white/[0.08] rounded-[20px] rounded-bl-sm shadow-md">
+        <p className="text-[15px] leading-relaxed text-white/90 m-0 whitespace-pre-wrap">{structured.direct_answer}</p>
       </div>
 
-      <div className="response-section why-matters">
-        <div className="section-label">{isEnglish ? 'Why it matters' : 'Kenapa penting'}</div>
-        <ul className="reasons-list">
-          {structured.why_it_matters.map((reason, idx) => (
-            <li key={idx}>{reason}</li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="response-section risk-note">
-        <div className="section-label">{isEnglish ? 'Risk note' : 'Catatan risiko'}</div>
-        <p>{structured.risk_note}</p>
-      </div>
-
-      <div className="response-section suggested-step">
-        <div className="section-label">{isEnglish ? 'Suggested action' : 'Langkah yang bisa dipertimbangkan'}</div>
-        <button
-          type="button"
-          className="step-badge"
-          onClick={() => onStepClick(structured.suggested_next_step)}
-        >
-          {getNextStepLabel(structured.suggested_next_step, isEnglish)}
-        </button>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
+        <div className="p-5 bg-[#111111] border border-white/[0.08] rounded-[20px] shadow-sm">
+          <div className="text-[11px] font-mono uppercase tracking-[0.2em] text-white/50 mb-3">{isEnglish ? 'Why it matters' : 'Kenapa penting'}</div>
+          <ul className="space-y-3 m-0 p-0">
+            {structured.why_it_matters.map((reason, idx) => (
+              <li key={idx} className="flex items-start gap-3 text-sm text-white/70">
+                <span className="text-emerald-500/80 mt-1 text-[10px]">■</span>
+                <span className="leading-relaxed">{reason}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        
+        <div className="p-5 bg-[#111111] border border-white/[0.08] rounded-[20px] shadow-sm flex flex-col justify-between">
+          <div>
+            <div className="text-[11px] font-mono uppercase tracking-[0.2em] text-white/50 mb-3">{isEnglish ? 'Risk note' : 'Catatan risiko'}</div>
+            <p className="text-sm leading-relaxed text-white/70 m-0">{structured.risk_note}</p>
+          </div>
+          <div className="mt-5 pt-4 border-t border-white/[0.06]">
+            <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/40 mb-2">{isEnglish ? 'Suggested Next Step' : 'Langkah selanjutnya'}</div>
+            <button
+              type="button"
+              className="px-4 py-2 w-full text-left rounded-xl bg-white/[0.04] hover:bg-white/[0.08] active:scale-[0.98] transition-all text-xs font-medium border border-white/[0.05] text-white/80 hover:text-white flex items-center justify-between cursor-pointer"
+              onClick={() => onStepClick(structured.suggested_next_step)}
+            >
+              <span>{getNextStepLabel(structured.suggested_next_step, isEnglish)}</span>
+              <span className="text-emerald-500/70">→</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -366,51 +372,6 @@ export default function AiChat({
       [...messages].reverse().find((message) => message.role === 'user')?.content || input
     return getLoadingLabel(latestUserMessage, isDataChat, language)
   }, [input, isDataChat, language, messages])
-
-  const guidanceCards = useMemo(
-    () => isPortfolioPage
-      ? [
-          {
-            title: isEnglish ? 'Concentration' : 'Konsentrasi',
-            body: isEnglish
-              ? 'Which asset dominates this portfolio?'
-              : 'Aset mana yang paling dominan?'
-          },
-          {
-            title: isEnglish ? 'Sensitivity' : 'Sensitivitas',
-            body: isEnglish
-              ? 'Which part is most sensitive if the market weakens?'
-              : 'Kalau market melemah, bagian mana yang paling sensitif?'
-          },
-          {
-            title: isEnglish ? 'Monitoring' : 'Pantauan',
-            body: isEnglish
-              ? 'What should I monitor today?'
-              : 'Apa yang perlu saya pantau hari ini?'
-          }
-        ]
-      : [
-      {
-        title: isEnglish ? 'Market context' : 'Market hari ini',
-        body: isEnglish
-          ? 'Ask what is changing in the market right now and why it matters.'
-          : 'Apa yang sedang berubah di pasar hari ini?'
-      },
-      {
-        title: isEnglish ? 'Portfolio impact' : 'Efek ke posisi kamu',
-        body: isEnglish
-          ? 'Check how current conditions may affect your exposure and concentration.'
-          : 'Bagaimana kondisi ini memengaruhi portofolioku?'
-      },
-      {
-        title: isEnglish ? 'Trade-off' : 'Yang perlu kamu pikirkan',
-        body: isEnglish
-          ? 'Ask about entering now versus waiting and what options are worth considering.'
-          : 'Apa yang perlu saya pantau sebelum mengambil keputusan?'
-      }
-    ],
-    [isEnglish, isPortfolioPage]
-  )
 
   const beginnerPrompts = useMemo(
     () => {
@@ -661,7 +622,7 @@ export default function AiChat({
       const body: Record<string, unknown> = {
         messages: payloadMessages,
         summary,
-        meta: { ...(meta || {}), mode: 'chat' },
+        meta: { ...(meta || {}), mode: 'chat', copilot: true },
         portfolio,
         provider: activeProvider,
         mode: 'chat',
@@ -670,7 +631,6 @@ export default function AiChat({
         hasPortfolio: Boolean(portfolio?.holdings?.length),
         hasProfitLossData
       }
-      // Inject Insight Engine v1 context when available
       const decisionJournalContext = pageContext === 'portfolio'
         ? formatDecisionJournalForCopilot(readDecisionJournal(), language, userPlan === 'pro' ? 5 : 2)
         : ''
@@ -719,7 +679,6 @@ export default function AiChat({
       const nextMessages: AiMessage[] = [...localMessages, assistantMessage]
       setMessages(nextMessages)
     } catch (err) {
-      // Never show raw errors — always show calm safe message
       const safeMessage = isEnglish
         ? 'Response is taking longer than usual. Try again.'
         : 'Respons lagi butuh waktu sedikit lebih lama. Coba ulangi ya.'
@@ -753,142 +712,126 @@ export default function AiChat({
         </>
       )}
 
-      <div className={`ai-box ${variant === 'panel' ? 'ai-box-panel' : 'ai-box-section'}`}>
+      <div className={`flex flex-col bg-[#0b0d12] border border-white/[0.08] shadow-2xl rounded-3xl overflow-hidden ${variant === 'panel' ? 'h-full' : 'w-full max-w-4xl mx-auto'}`}>
         {variant === 'panel' && (
-          <div className="ai-panel-head">
-            <div>
-              <h3>{copy.panelTitle}</h3>
-              <p className="ai-panel-sub">{copy.panelSub}</p>
-              {analysisStatus ? (
-                <div className="ai-analysis-status" aria-label="Analysis status">
-                  <span className="ai-analysis-status-badge">{analysisStatus.label}</span>
-                  <p className="ai-analysis-status-detail">{analysisStatus.detail}</p>
-                </div>
-              ) : null}
+          <div className="px-6 py-5 border-b border-white/[0.08] bg-[#0A0A0A] shrink-0">
+            <div className="flex items-start justify-between gap-4 mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.6)] animate-pulse shrink-0" />
+                <h3 className="text-[11px] font-mono uppercase tracking-[0.2em] text-amber-500/90 font-bold m-0">{copy.panelTitle}</h3>
+              </div>
+              <button
+                type="button"
+                className="px-3 py-1.5 rounded-lg text-[10px] font-medium border border-white/[0.08] hover:bg-white/[0.05] active:scale-95 transition-all text-white/60 hover:text-white cursor-pointer bg-transparent shrink-0"
+                onClick={handleNewChat}
+                disabled={disabled || loading}
+              >
+                {copy.reset}
+              </button>
             </div>
-            <button
-              type="button"
-              className="ai-new-chat"
-              onClick={handleNewChat}
-              disabled={disabled || loading}
-            >
-              {copy.reset}
-            </button>
+            
+            <p className="text-sm text-white/50 leading-relaxed m-0 mb-4">{copy.panelSub}</p>
+            
+            {analysisStatus && (
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 bg-white/[0.02] sm:bg-transparent p-3 sm:p-0 rounded-xl sm:rounded-none border border-white/[0.05] sm:border-transparent">
+                <span className="shrink-0 whitespace-nowrap px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] uppercase tracking-[0.15em] font-semibold w-fit">{analysisStatus.label}</span>
+                <p className="text-xs text-white/40 m-0 leading-relaxed">{analysisStatus.detail}</p>
+              </div>
+            )}
           </div>
         )}
 
-        <div ref={messagesRef} className="ai-messages">
+        <div ref={messagesRef} className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth bg-[#0b0d12]">
           {messages.length ? (
             messages.map((message, index) => {
-              const normalizedContent =
-                typeof message.content === 'string' ? message.content : ''
+              const normalizedContent = typeof message.content === 'string' ? message.content : ''
               const structured = parseStructuredResponse(message.structured)
-
               return (
-                <div key={`${message.role}-${index}`} className={`ai-msg ${message.role}`}>
+                <div key={`${message.role}-${index}`} className={`flex w-full ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   {structured ? (
-                    renderStructuredResponse(structured, language, handleStepAction)
+                    <div className="w-full max-w-[95%]">
+                      {renderStructuredResponse(structured, language, handleStepAction)}
+                    </div>
                   ) : normalizedContent.trim() ? (
-                    <span className="ai-msg-content">{renderMessageContent(normalizedContent)}</span>
+                    <div className={`max-w-[85%] px-5 py-4 text-[15px] leading-relaxed shadow-sm ${
+                      message.role === 'user' 
+                        ? 'bg-[#1a1c23] border border-white/[0.08] text-white/90 rounded-[24px] rounded-br-sm' 
+                        : 'bg-transparent text-white/70'
+                    }`}>
+                      {renderMessageContent(normalizedContent)}
+                    </div>
                   ) : (
-                    <span className="ai-msg-content">
+                    <div className="max-w-[85%] px-5 py-3.5 text-[15px] text-white/40 italic">
                       {isEnglish ? 'No response content available yet.' : 'Belum ada isi jawaban yang tersedia.'}
-                    </span>
+                    </div>
                   )}
                 </div>
               )
             })
           ) : (
-            <div className="ai-msg assistant">
-              <span className="ai-msg-content">
+            <div className="flex w-full justify-start h-full items-center">
+              <div className="text-[14px] leading-relaxed text-white/40 max-w-md text-center mx-auto border border-white/[0.05] bg-white/[0.02] p-6 rounded-2xl">
                 {isEnglish
                   ? 'Ask about market context, portfolio impact, or timing trade-offs to start.'
                   : 'Tanyakan konteks pasar, dampak portofolio, atau trade-off timing untuk mulai.'}
-              </span>
+              </div>
             </div>
           )}
         </div>
 
-        <div className="ai-guidance">
-          <span className="ai-history-label">{copy.suggestedPrompts}</span>
-          <div className="ask-ting-ai-prompts">
-            {beginnerPrompts.map((prompt) => (
-              <button
-                key={prompt}
-                type="button"
-                className="ask-ting-ai-chip"
-                onClick={() => handleQuickPrompt(prompt)}
-                disabled={disabled || loading}
-              >
-                {prompt}
-              </button>
-            ))}
-          </div>
-          <div className="ai-reasoning-grid">
-            {guidanceCards.map((card) => (
-              <button
-                key={card.title}
-                type="button"
-                className="ai-reasoning-card"
-                onClick={() => handleQuickPrompt(card.body)}
-                disabled={disabled || loading}
-              >
-                <strong>{card.title}</strong>
-                <span>{card.body}</span>
-              </button>
-            ))}
-          </div>
-        </div>
+        <div className="px-6 pb-6 pt-0 bg-[#0b0d12] shrink-0">
+          {error && <div className="mb-4 text-sm text-red-400 bg-red-400/10 p-4 rounded-xl border border-red-400/20 shadow-sm">{error}</div>}
+          
+          {!messages.some(m => m.role === 'user') && beginnerPrompts.length > 0 && (
+            <div className="flex flex-nowrap overflow-x-auto gap-2 mb-4 pb-2 ml-1 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {beginnerPrompts.map((prompt) => (
+                <button
+                  key={prompt}
+                  type="button"
+                  className="px-4 py-2 rounded-full text-[11px] font-mono tracking-wide bg-[#111111] hover:bg-[#1a1c23] border border-white/[0.08] text-white/60 hover:text-white transition-all whitespace-nowrap cursor-pointer active:scale-[0.98] shrink-0"
+                  onClick={() => handleQuickPrompt(prompt)}
+                  disabled={disabled || loading}
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
+          )}
 
-        {error && <div className="ai-error">{error}</div>}
-        {error && (
-          <button
-            type="button"
-            className="ai-retry"
-            onClick={() => void sendMessage()}
-            disabled={disabled || loading}
-          >
-            {copy.retry}
-          </button>
-        )}
-        <div className="ai-summary-strip">
-          <div>
-            <span className="ai-history-label">{copy.howToUse}</span>
-            <strong>{copy.howToUseText}</strong>
+          <div className="relative flex items-center bg-[#111111] border border-white/[0.08] rounded-2xl shadow-sm transition-all focus-within:border-white/20 focus-within:ring-1 focus-within:ring-white/10">
+            <input
+              type="text"
+              className="w-full bg-transparent border-none px-5 py-4 text-[15px] text-white placeholder-white/30 focus:outline-none focus:ring-0 pr-24"
+              placeholder={copy.inputPlaceholder}
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  handleSend()
+                }
+              }}
+              disabled={disabled || loading}
+            />
+            <button 
+              type="button" 
+              className={`absolute right-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                input.trim() && !loading && !disabled 
+                  ? 'bg-white text-black hover:bg-gray-100 shadow-md active:scale-95 cursor-pointer' 
+                  : 'bg-white/5 text-white/30 cursor-not-allowed'
+              }`}
+              onClick={handleSend} 
+              disabled={disabled || loading}
+            >
+              {loading ? loadingLabel : copy.send}
+            </button>
           </div>
-          <div>
-            <span className="ai-history-label">{copy.scope}</span>
-            <strong>{copy.scopeText}</strong>
-          </div>
-        </div>
-        {isPortfolioPage && !isPro && (
-          <a className="ai-upgrade-cta" href="/upgrade">
-            {isEnglish ? 'View full analysis with Ting AI Pro' : 'Lihat analisis lengkap dengan Ting AI Pro'}
-          </a>
-        )}
-        <div className="ai-input">
-          <input
-            type="text"
-            placeholder={copy.inputPlaceholder}
-            value={input}
-            onChange={(event) => setInput(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                handleSend()
-              }
-            }}
-            disabled={disabled || loading}
-          />
-          <button type="button" onClick={handleSend} disabled={disabled || loading}>
-            {loading ? loadingLabel : copy.send}
-          </button>
         </div>
       </div>
     </>
   )
 
   if (variant === 'panel') {
-    return <div className="ai-panel">{content}</div>
+    return <div className="h-[800px] max-h-[85vh] w-full flex flex-col">{content}</div>
   }
 
   return (

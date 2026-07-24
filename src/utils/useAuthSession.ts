@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { AuthUserProfile } from '../types'
-import { authEventName, fetchAuthSession, getStoredToken } from './auth'
+import { authEventName, fetchAuthSession, getStoredToken, getStoredProfile } from './auth'
 
 type AuthSessionState = {
   loading: boolean
@@ -10,11 +10,12 @@ type AuthSessionState = {
 
 const initialState = (): AuthSessionState => {
   const token = getStoredToken()
+  const user = getStoredProfile()
 
   return {
-    loading: Boolean(token),
-    authenticated: false,
-    user: null
+    loading: Boolean(token) && !user,
+    authenticated: Boolean(user),
+    user
   }
 }
 
@@ -56,8 +57,9 @@ export const useAuthSession = () => {
           authenticated: Boolean(user),
           user
         })
-      } catch {
+      } catch (err: any) {
         if (!active) return
+        if (err?.name === 'AbortError') return
 
         setState({
           loading: false,

@@ -16,6 +16,7 @@ type Props = {
   isPro: boolean
   compact?: boolean
   onBudgetChange?: (budget: RiskBudgetConfig) => void
+  onAddAsset?: () => void
 }
 
 const fieldLabels: Record<keyof Omit<RiskBudgetConfig, 'updatedAt'>, Record<LanguageCode, string>> = {
@@ -71,7 +72,7 @@ const toneClass = {
   exceeded: 'border-red-500/20 bg-red-500/[0.04] text-red-300',
 }
 
-export default function RiskBudgetCard({ snapshot, language, isPro, compact = false, onBudgetChange }: Props) {
+export default function RiskBudgetCard({ snapshot, language, isPro, compact = false, onBudgetChange, onAddAsset }: Props) {
   const t = copy[language] || copy.id
   const [budget, setBudget] = useState<RiskBudgetConfig>(() => readRiskBudget())
   const [draft, setDraft] = useState<RiskBudgetConfig>(() => readRiskBudget())
@@ -131,9 +132,15 @@ export default function RiskBudgetCard({ snapshot, language, isPro, compact = fa
         <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.015] p-5">
           <p className="text-sm font-medium text-slate-300">{t.emptyTitle}</p>
           <p className="mt-1.5 text-xs text-slate-500 leading-relaxed max-w-md">{t.emptyBody}</p>
-          <Link to="/portfolio" className="mt-4 inline-flex text-xs font-semibold text-teal-400 hover:text-teal-300">
-            {t.emptyCta} →
-          </Link>
+          {onAddAsset ? (
+            <button type="button" onClick={onAddAsset} className="mt-4 inline-flex text-xs font-semibold text-teal-400 hover:text-teal-300">
+              {t.emptyCta} →
+            </button>
+          ) : (
+            <Link to="/portfolio" className="mt-4 inline-flex text-xs font-semibold text-teal-400 hover:text-teal-300">
+              {t.emptyCta} →
+            </Link>
+          )}
         </div>
       ) : (
         <div className={`rounded-2xl border p-4 md:p-5 space-y-4 ${toneClass[evaluation.status]}`}>

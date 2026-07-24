@@ -1,0 +1,187 @@
+/**
+ * PM2 Ecosystem Config - Ting AI v1.9
+ * 
+ * Usage:
+ *   1. Copy this file to: C:\apps\ting-ai-backend\ecosystem.config.js
+ *   2. Customize values below (PORT, instances, etc)
+ *   3. Run: pm2 start ecosystem.config.js --name "ting-ai-backend"
+ *   4. Save: pm2 save
+ *   5. Auto-start on boot: pm2 startup && pm2-windows-startup install
+ * 
+ * Documentation: https://pm2.keymetrics.io/docs/usage/ecosystem-file/
+ */
+
+module.exports = {
+  apps: [
+    {
+      // ========== BACKEND CONFIGURATION ==========
+      name: "ting-ai-backend",
+      description: "Ting AI v1.9 Backend API",
+      script: "server/index.js",  // Update if entry point is different
+      
+      // ========== PROCESS & CLUSTERING ==========
+      instances: "max",           // Use all CPU cores, or set to 2-4 for stability
+      exec_mode: "cluster",       // "cluster" for multi-process, "fork" for single
+      watch: false,               // Don't auto-restart on file changes in production
+      watch_delay: 500,           // If watch enabled, delay between checks
+      ignore_watch: [
+        "logs",
+        "node_modules",
+        ".git",
+        "*.log"
+      ],
+      
+      // ========== ENVIRONMENT VARIABLES ==========
+      env: {
+        NODE_ENV: "production",
+        PORT: 3001,
+        LOG_LEVEL: "info"
+      },
+      
+      // ========== LOGGING ==========
+      error_file: "logs/error.log",      // Stderr output
+      out_file: "logs/out.log",          // Stdout output
+      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+      combine_logs: true,                // Combine logs from all instances
+      max_size: "10M",                   // Rotate log if size exceeds 10MB
+      
+      // ========== MEMORY & RESTART POLICIES ==========
+      max_memory_restart: "500M",        // Restart if process exceeds 500MB RAM
+      autorestart: true,                 // Auto-restart if process dies
+      max_restarts: 10,                  // Max restart attempts before failure
+      min_uptime: "10s",                 // Must run 10s before next restart counts
+      listen_timeout: 10000,             // Cluster timeout (ms)
+      kill_timeout: 5000,                // Grace period before force kill (ms)
+      wait_ready: false,                 // Wait for app to send ready signal
+      
+      // ========== DEVELOPMENT FEATURES (disabled in prod) ==========
+      exp_backoff_restart_delay: 100,    // Exponential backoff on restart failures
+      
+      // ========== ADVANCED OPTIONS ==========
+      cwd: null,                         // Set working directory (null = where PM2 starts from)
+      args: "",                          // Command line arguments to pass to script
+      interpreter: "node",               // Interpreter (node, python, ruby, etc)
+      interpreter_args: "",              // Interpreter arguments (e.g., --max-old-space-size=4096)
+      
+      // ========== PROCESS MONITORING ==========
+      monit: {
+        memory: 500,                     // Memory monitoring (MB)
+        cpu: 100                         // CPU monitoring (%)
+      },
+      
+      // ========== GIT INTEGRATION (optional) ==========
+      git_repo: null,                    // e.g., "https://github.com/your/repo.git"
+      git_branch: null,                  // e.g., "main"
+      git_check_interval: 3600000,       // Check for updates every hour
+      git_pull_on_boot: false,           // Pull on startup
+      git_reset_on_pull: false,          // Reset local changes before pull
+      
+      // ========== GRACEFUL RELOAD ==========
+      kill_timeout: 5000,                // Wait 5s for graceful shutdown
+      autorestart: true,
+      max_restarts: 10,
+      min_uptime: "10s",
+      
+      // ========== CUSTOM ERROR HANDLING ==========
+      error_file: "logs/error.log",
+      out_file: "logs/out.log",
+      log_file: "logs/combined.log",
+      time: true
+    }
+  ],
+
+  // ========== PM2 DEPLOY CONFIGURATION (OPTIONAL) ==========
+  deploy: {
+    production: {
+      user: "Administrator",  // Windows user that runs PM2
+      host: "your-vps-ip",   // Your VPS IP or domain
+      ref: "origin/main",
+      repo: "your-git-repo-url.git",
+      path: "C:/apps/ting-ai-backend",  // Use forward slashes on Windows
+      ssh_options: "StrictHostKeyChecking=no",
+      post-deploy: [
+        "npm install --production",
+        "npm run build",
+        "pm2 reload ecosystem.config.js --env production"
+      ].join(" && "),
+      env: {
+        NODE_ENV: "production",
+        PORT: 3001
+      }
+    },
+    development: {
+      user: "Administrator",
+      host: "localhost",
+      ref: "origin/develop",
+      repo: "your-git-repo-url.git",
+      path: "C:/apps/ting-ai-backend-dev",
+      post-deploy: "npm install && npm run build",
+      env: {
+        NODE_ENV: "development",
+        PORT: 3001
+      }
+    }
+  }
+};
+
+/**
+ * ===== COMMON PM2 COMMANDS =====
+ * 
+ * Start with this config:
+ *   pm2 start ecosystem.config.js --name "ting-ai-backend"
+ * 
+ * Reload gracefully (no downtime, for updates):
+ *   pm2 reload ting-ai-backend
+ * 
+ * Restart (stop + start, brief downtime):
+ *   pm2 restart ting-ai-backend
+ * 
+ * View all processes:
+ *   pm2 list
+ * 
+ * View real-time stats:
+ *   pm2 monit
+ * 
+ * View logs (last 100 lines):
+ *   pm2 logs ting-ai-backend
+ *   pm2 logs ting-ai-backend --lines 200
+ *   pm2 logs ting-ai-backend --err  (errors only)
+ * 
+ * Save PM2 state (for auto-restart on reboot):
+ *   pm2 save
+ *   pm2 startup
+ *   pm2-windows-startup install
+ * 
+ * Delete app from PM2:
+ *   pm2 delete ting-ai-backend
+ * 
+ * Display detailed process info:
+ *   pm2 describe ting-ai-backend
+ * 
+ * Kill all PM2 processes:
+ *   pm2 kill
+ * 
+ * ===== DEPLOYMENT TIPS =====
+ * 
+ * 1. Create logs directory:
+ *    md C:\apps\ting-ai-backend\logs
+ * 
+ * 2. Test locally before deploying:
+ *    npm run build && pm2 start ecosystem.config.js --name "ting-ai-backend"
+ * 
+ * 3. Monitor memory usage:
+ *    pm2 monit
+ * 
+ * 4. Set max_memory_restart to prevent OOM:
+ *    If your app uses 200-300MB, set max_memory_restart to 500M
+ * 
+ * 5. Use cluster mode for multi-core systems:
+ *    instances: "max" or instances: 4
+ * 
+ * 6. Disable watch in production:
+ *    watch: false (default)
+ * 
+ * 7. For graceful shutdown, your app should listen for SIGTERM:
+ *    process.on('SIGTERM', () => { /* cleanup code */ })
+ * 
+ */

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import { getInsiderTradingDeclaration, getInsiderTrading } from './openbbAgentTools'
 
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant'
@@ -20,8 +21,8 @@ export interface ChatProviderResult {
   fallbackUsed: boolean
 }
 
-const GEMINI_TIMEOUT_MS = Number(process.env.GEMINI_TIMEOUT_MS || 6500)
-const GROQ_TIMEOUT_MS = Number(process.env.GROQ_TIMEOUT_MS || 5500)
+const GEMINI_TIMEOUT_MS = Number(process.env.GEMINI_TIMEOUT_MS || 30000)
+const GROQ_TIMEOUT_MS = Number(process.env.GROQ_TIMEOUT_MS || 12000)
 
 const SAFE_MESSAGE: Record<'id' | 'en', string> = {
   id: 'Respons lagi butuh waktu sedikit lebih lama. Coba ulangi ya.',
@@ -72,8 +73,8 @@ export function buildInsightAwareChatPrompt(
     lines.push('')
     lines.push(
       lang === 'id'
-        ? 'Gunakan insight di atas untuk membimbing percakapan. Jangan ulangi verbatim; jadikan sebagai landasan untuk merefleksikan konteks portofolio pengguna.'
-        : "Use the insight above to guide the conversation. Do not repeat it verbatim; use it as a foundation to reflect the user's portfolio context."
+        ? 'Gunakan insight di atas HANYA sebagai konteks latar belakang. Jika pengguna bertanya tentang aset atau topik spesifik (misal: "data apple", "bagaimana dengan saham tsla", dll), JAWAB LANGSUNG menggunakan tool yang tersedia atau pengetahuanmu, dan JANGAN MEMAKSAKAN untuk mengaitkannya kembali dengan portofolio mereka kecuali jika benar-benar relevan dengan pertanyaannya.'
+        : "Use the insight above ONLY as background context. If the user asks about a specific asset or topic (e.g., 'data apple', 'how about tsla stock', etc), ANSWER DIRECTLY using available tools or your knowledge, and DO NOT force a connection back to their portfolio unless it is highly relevant to their question."
     )
   }
 
@@ -133,11 +134,36 @@ async function callGeminiChat(messages: ChatMessage[]): Promise<string | null> {
   const genAI = new GoogleGenerativeAI(apiKey)
   const model = genAI.getGenerativeModel({
     model: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
-    systemInstruction: systemParts || undefined
+    systemInstruction: systemParts || undefined,
+    tools: [
+      {
+        functionDeclarations: [getInsiderTradingDeclaration]
+      }
+    ]
   })
 
   const chat = model.startChat({ history })
-  const result = await chat.sendMessage(prompt.parts)
+  let result = await chat.sendMessage(prompt.parts)
+  
+  // Handle function calls
+  const functionCalls = result.response.functionCalls()
+  if (functionCalls && functionCalls.length > 0) {
+    const call = functionCalls[0]
+    if (call.name === 'getInsiderTrading') {
+      const args = call.args as { symbol: string }
+      console.log('[AGENT] Calling getInsiderTrading for', args.symbol)
+      const data = await getInsiderTrading(args.symbol)
+      
+      // Send the tool response back to the model
+      result = await chat.sendMessage([{
+        functionResponse: {
+          name: 'getInsiderTrading',
+          response: { data }
+        }
+      }])
+    }
+  }
+
   const text = result.response.text().trim()
   return text || null
 }

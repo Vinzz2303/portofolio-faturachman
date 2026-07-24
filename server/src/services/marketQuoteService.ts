@@ -45,19 +45,44 @@ const IDX_NAMES: Record<string, string> = {
   'UNVR.JK': 'Unilever Indonesia',
 }
 
+const FRONTEND_TO_YAHOO_MAP: Record<string, string> = {
+  'IHSG': '^JKSE',
+  'BTC': 'BTC-USD',
+  'XAUUSD': 'GC=F',
+  'SP500': '^GSPC',
+  'USDIDR': 'USDIDR=X'
+}
+
+const YAHOO_TO_FRONTEND_MAP: Record<string, string> = Object.entries(FRONTEND_TO_YAHOO_MAP).reduce((acc, [key, val]) => {
+  acc[val] = key;
+  return acc;
+}, {} as Record<string, string>);
+
 const quoteCache = new Map<string, { quote: ResolvedMarketQuote; cachedAt: number }>()
 
 const normalizeMarketSymbol = (raw: string) => {
   const symbol = raw.trim().toUpperCase()
   if (!symbol) return ''
+  
+  // Use exact map if available
+  if (FRONTEND_TO_YAHOO_MAP[symbol]) {
+    return FRONTEND_TO_YAHOO_MAP[symbol]
+  }
+
   if (symbol.endsWith('.JK')) return symbol
   if (/^[A-Z]{4}$/.test(symbol)) return `${symbol}.JK`
   return symbol
 }
 
-const getDisplaySymbol = (symbol: string) => symbol.replace(/\.JK$/i, '')
+const getDisplaySymbol = (symbol: string) => {
+  if (YAHOO_TO_FRONTEND_MAP[symbol]) return YAHOO_TO_FRONTEND_MAP[symbol]
+  return symbol.replace(/\.JK$/i, '')
+}
 
-const getQuoteName = (symbol: string) => IDX_NAMES[symbol] || getDisplaySymbol(symbol)
+const getQuoteName = (symbol: string) => {
+  if (YAHOO_TO_FRONTEND_MAP[symbol]) return YAHOO_TO_FRONTEND_MAP[symbol]
+  return IDX_NAMES[symbol] || getDisplaySymbol(symbol)
+}
 
 const getCurrency = (symbol: string, providerCurrency?: string | null) => {
   if (/\.JK$/i.test(symbol)) return 'IDR'
@@ -75,8 +100,8 @@ const isIdxMarketHours = (now = new Date()) => {
 
 const getCacheTtlMs = () => (isIdxMarketHours() ? 5 : 15) * 60 * 1000
 
-const unavailableQuote = (symbol: string): ResolvedMarketQuote => ({
-  symbol,
+const unavailableQuote = (symbol: string, requestedSymbol?: string): ResolvedMarketQuote => ({
+  symbol: requestedSymbol || symbol,
   displaySymbol: getDisplaySymbol(symbol),
   name: getQuoteName(symbol),
   price: null,
@@ -126,7 +151,7 @@ const fetchYahooChart = async (symbol: string, interval: '1m' | '1d') => {
   const lastUpdated = new Date((latest?.timestamp || meta?.regularMarketTime || Date.now() / 1000) * 1000).toISOString()
 
   return {
-    symbol,
+    symbol: YAHOO_TO_FRONTEND_MAP[symbol] || symbol,
     displaySymbol: getDisplaySymbol(symbol),
     name: getQuoteName(symbol),
     price,
@@ -148,7 +173,7 @@ const fetchProviderQuote = async (symbol: string) => {
 
 export const resolveMarketQuote = async (rawSymbol: string): Promise<ResolvedMarketQuote> => {
   const symbol = normalizeMarketSymbol(rawSymbol)
-  if (!symbol) return unavailableQuote('')
+  if (!symbol) return unavailableQuote('', rawSymbol)
 
   const cached = quoteCache.get(symbol)
   const ttlMs = getCacheTtlMs()
@@ -164,7 +189,7 @@ export const resolveMarketQuote = async (rawSymbol: string): Promise<ResolvedMar
     if (cached) {
       return { ...cached.quote, dataStatus: 'cached' }
     }
-    return unavailableQuote(symbol)
+    return unavailableQuote(symbol, rawSymbol)
   }
 }
 

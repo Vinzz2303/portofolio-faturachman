@@ -169,9 +169,9 @@ export async function getMarketNewsResponse(
     const joined = symbols.join(',')
     const params = new URLSearchParams({
       symbols: joined,
-      country: options.country || 'ID',
       limit: String(options.limit || 6),
     })
+    if (options.country) params.set('country', options.country)
     if (options.pro) params.set('pro', 'true')
     const res = await fetch(`${API_URL}/api/market/news?${params.toString()}`, { signal: controller.signal })
     if (!res.ok) {

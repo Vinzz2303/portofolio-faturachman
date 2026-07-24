@@ -1,34 +1,35 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useLanguagePreference } from '../utils/language'
+import { Mail, Briefcase, Code2, Globe } from 'lucide-react'
 
 const contactItems = [
   {
     label: "Email",
     value: "faturachmanalkahfi7@gmail.com",
     href: "mailto:faturachmanalkahfi7@gmail.com",
-    icon: "✉️",
+    icon: <Mail size={28} strokeWidth={1.5} />,
     color: "#25d0c3"
   },
   {
     label: "LinkedIn",
     value: "faturachman-al-kahfi-662283304",
     href: "https://www.linkedin.com/in/faturachman-al-kahfi-662283304/",
-    icon: "💼",
+    icon: <Briefcase size={28} strokeWidth={1.5} />,
     color: "#4ea8de"
   },
   {
     label: "GitHub",
     value: "@Vinzz2303",
     href: "https://github.com/Vinzz2303",
-    icon: "🐙",
+    icon: <Code2 size={28} strokeWidth={1.5} />,
     color: "#a78bfa"
   },
   {
     label: "Portfolio",
     value: "faturachman.my.id",
     href: "https://faturachman.my.id",
-    icon: "🌐",
+    icon: <Globe size={28} strokeWidth={1.5} />,
     color: "#d6b15d"
   }
 ]
@@ -95,8 +96,8 @@ export default function Contact({ sectionId }: { sectionId: string }) {
 
                 <div className="relative z-10 flex flex-col items-center text-center gap-3">
                   <motion.div
-                    whileHover={{ scale: 1.2, rotate: 10 }}
-                    className="text-2xl"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    style={{ color: item.color }}
                   >
                     {item.icon}
                   </motion.div>

@@ -1,6 +1,8 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Home, PieChart, MessageSquare, Zap } from 'lucide-react'
+import { useAuthSession } from '../utils/useAuthSession'
+import { hasProAccess } from '../utils/entitlements'
 
 export default function MobileBottomNav() {
   const location = useLocation()
@@ -11,11 +13,14 @@ export default function MobileBottomNav() {
     return null
   }
 
+  const { user } = useAuthSession()
+  const isPro = hasProAccess(user)
+
   const navItems = [
     { label: 'Hari Ini', path: '/komando-pagi', icon: <Home className="w-5 h-5" /> },
     { label: 'Portfolio', path: '/portfolio', icon: <PieChart className="w-5 h-5" /> },
     { label: 'Tanya AI', path: '/ting-ai', icon: <MessageSquare className="w-5 h-5" /> },
-    { label: 'Pro', path: '/upgrade', icon: <Zap className="w-5 h-5" /> }
+    ...(!isPro ? [{ label: 'Pro', path: '/upgrade', icon: <Zap className="w-5 h-5" /> }] : [])
   ]
 
   return (

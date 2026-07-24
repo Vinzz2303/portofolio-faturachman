@@ -1,39 +1,40 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useLanguagePreference } from '../utils/language'
+import { Target, Radio, BrainCircuit, BarChart3, Lightbulb } from 'lucide-react'
 
 const steps = [
   {
     num: "01",
-    icon: "🎯",
+    icon: <Target size={24} />,
     title: { en: "User Input", id: "Input Pengguna" },
     desc: { en: "Assets, portfolio data, and questions flow into the system.", id: "Aset, data portofolio, dan pertanyaan mengalir ke dalam sistem." },
     color: "#25d0c3"
   },
   {
     num: "02",
-    icon: "📡",
+    icon: <Radio size={24} />,
     title: { en: "Data Layer", id: "Lapisan Data" },
     desc: { en: "Multi-source feeds: Polygon, FRED, FMP, market sentiment.", id: "Feed multi-sumber: Polygon, FRED, FMP, sentimen pasar." },
     color: "#4ea8de"
   },
   {
     num: "03",
-    icon: "🧠",
+    icon: <BrainCircuit size={24} />,
     title: { en: "AI Reasoning", id: "Penalaran AI" },
     desc: { en: "Gemini Pro + Groq process context with structured prompts.", id: "Gemini Pro + Groq memproses konteks dengan prompt terstruktur." },
     color: "#a78bfa"
   },
   {
     num: "04",
-    icon: "📊",
+    icon: <BarChart3 size={24} />,
     title: { en: "Risk Analysis", id: "Analisis Risiko" },
     desc: { en: "Concentration, exposure, correlation — mapped and scored.", id: "Konsentrasi, eksposur, korelasi — dipetakan dan dinilai." },
     color: "#f59e0b"
   },
   {
     num: "05",
-    icon: "💡",
+    icon: <Lightbulb size={24} />,
     title: { en: "Your Clarity", id: "Kejelasan Anda" },
     desc: { en: "Actionable insights delivered — not signals, but understanding.", id: "Wawasan yang dapat ditindaklanjuti — bukan sinyal, tapi pemahaman." },
     color: "#25d0c3"
@@ -89,8 +90,8 @@ export default function SystemThinking() {
                   <div className="flex flex-col items-center shrink-0">
                     <motion.div
                       whileHover={{ scale: 1.2, rotate: 10 }}
-                      className="w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-xl md:text-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm relative z-10 shrink-0"
-                      style={{ boxShadow: `0 0 20px ${step.color}10` }}
+                      className="w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm relative z-10 shrink-0"
+                      style={{ boxShadow: `0 0 20px ${step.color}10`, color: step.color }}
                     >
                       {step.icon}
                     </motion.div>

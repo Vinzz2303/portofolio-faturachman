@@ -18,14 +18,17 @@ interface RelevanceInput {
   portfolioPositions: Array<StoredPosition | NormalizedPortfolioHolding>
   language: LanguageCode
   userPlan: string
+  selectedTicker: string
 }
 
 function pct(n: number): string {
   return n.toFixed(1) + '%'
 }
 
-export function getPortfolioRelevance({ portfolioPositions, language, userPlan }: RelevanceInput): RelevanceItem[] {
+export function getPortfolioRelevance({ portfolioPositions, language, userPlan, selectedTicker }: RelevanceInput): RelevanceItem[] {
   if (!portfolioPositions.length) return []
+  if (!selectedTicker) return []
+  
   const isEn = language === 'en'
   const isFree = userPlan === 'free'
 
@@ -54,59 +57,106 @@ export function getPortfolioRelevance({ portfolioPositions, language, userPlan }
     return { ...p, rawWeight, weight }
   }).sort((a, b) => b.weight - a.weight)
 
-  const topHolding = weighted[0]
   const results: RelevanceItem[] = []
 
-  for (let i = 0; i < Math.min(weighted.length, 3); i++) {
-    const pos = weighted[i]
-    const isTop = i === 0
-    const isConcentrated = pos.weight > 40
+  // Check if selected ticker is in portfolio
+  // We do a loose match because selectedTicker might be 'BTC-USD' and portfolio might have 'BTC'
+  const normalizedSelected = selectedTicker.replace('-USD', '').replace('^', '').toUpperCase()
+  
+  const exactMatch = weighted.find(p => p.symbol.toUpperCase() === normalizedSelected)
 
-    let title: string
-    let description: string
-    let relevanceLevel: 'high' | 'medium' | 'low'
-
-    if (isTop && isConcentrated) {
+  if (exactMatch) {
+    const isConcentrated = exactMatch.weight > 40
+    let relevanceLevel: 'high' | 'medium' | 'low' = 'low'
+    
+    if (isConcentrated) {
       relevanceLevel = 'high'
-      title = isEn
-        ? `${pos.symbol} is your largest holding`
-        : `${pos.symbol} adalah holding terbesar kamu`
-      description = isEn
-        ? `Because it makes up ${pct(pos.weight)} of your portfolio, movement in this asset may have a larger impact on your total value.`
-        : `Karena porsinya ${pct(pos.weight)}, perubahan di aset ini dapat memberi dampak besar ke nilai portofolio.`
-    } else if (isTop) {
-      relevanceLevel = 'high'
-      title = isEn
-        ? `${pos.symbol} is your top position`
-        : `${pos.symbol} adalah posisi utama kamu`
-      description = isEn
-        ? `It represents ${pct(pos.weight)} of your portfolio. Monitor closely for significant moves.`
-        : `Aset ini mewakili ${pct(pos.weight)} portofolio. Pantau pergerakan signifikannya.`
-    } else if (pos.weight > 20) {
+      results.push({
+        symbol: exactMatch.symbol,
+        relevanceLevel,
+        title: isEn ? `High Exposure to ${exactMatch.symbol}` : `Eksposur Tinggi ke ${exactMatch.symbol}`,
+        description: isEn
+          ? `You hold ${pct(exactMatch.weight)} of your portfolio in this asset. News and movements here will significantly impact your total wealth.`
+          : `Aset ini mendominasi ${pct(exactMatch.weight)} portofolio Anda. Pergerakan berita dan harga di sini akan sangat berdampak pada total kekayaan Anda.`
+      })
+    } else if (exactMatch.weight > 15) {
       relevanceLevel = 'medium'
-      title = isEn
-        ? `${pos.symbol} — significant position`
-        : `${pos.symbol} — posisi signifikan`
-      description = isEn
-        ? `At ${pct(pos.weight)} of your portfolio, changes here can meaningfully affect your overall returns.`
-        : `Dengan porsi ${pct(pos.weight)}, perubahan aset ini cukup berpengaruh ke eksposur portofolio.`
+      results.push({
+        symbol: exactMatch.symbol,
+        relevanceLevel,
+        title: isEn ? `Moderate Exposure to ${exactMatch.symbol}` : `Eksposur Moderat ke ${exactMatch.symbol}`,
+        description: isEn
+          ? `You hold ${pct(exactMatch.weight)} in this asset. It is a meaningful part of your strategy.`
+          : `Anda memiliki porsi ${pct(exactMatch.weight)} di aset ini. Ini adalah bagian yang cukup signifikan dari strategi Anda.`
+      })
     } else {
       relevanceLevel = 'low'
-      title = isEn
-        ? `${pos.symbol} — minor exposure`
-        : `${pos.symbol} — eksposur kecil`
-      description = isEn
-        ? `Makes up ${pct(pos.weight)} of your portfolio. Limited impact on overall value.`
-        : `Porsi ${pct(pos.weight)} dari portofolio. Dampak terbatas ke nilai keseluruhan.`
+      results.push({
+        symbol: exactMatch.symbol,
+        relevanceLevel,
+        title: isEn ? `Minor Exposure to ${exactMatch.symbol}` : `Eksposur Kecil ke ${exactMatch.symbol}`,
+        description: isEn
+          ? `You only hold ${pct(exactMatch.weight)} in this asset. Its direct impact is limited.`
+          : `Anda hanya memegang ${pct(exactMatch.weight)} di aset ini. Dampak langsungnya cukup terbatas.`
+      })
     }
+  } else {
+    // Ticker is not in portfolio. Let's do asset class correlation.
+    const isCrypto = ['BTC', 'ETH', 'SOL', 'BNB', 'XRP'].includes(normalizedSelected)
+    const isUS = ['SPY', 'QQQ'].includes(normalizedSelected)
+    const isID = ['JKSE'].includes(normalizedSelected)
 
-    // For free users, lock detailed description after first item
-    if (isFree && i > 0) {
-      results.push({ symbol: pos.symbol, relevanceLevel, title, description, proLocked: true })
+    // Check what the user holds
+    const userHoldsCrypto = weighted.some(p => ['BTC', 'ETH', 'SOL', 'BNB', 'XRP'].includes(p.symbol.toUpperCase()))
+    const userHoldsUS = weighted.some(p => ['AAPL', 'MSFT', 'NVDA', 'TSLA', 'GOOGL', 'AMZN', 'META'].includes(p.symbol.toUpperCase()))
+    const userHoldsID = weighted.some(p => ['BBCA', 'BMRI', 'BBRI', 'TLKM', 'ASII', 'GOTO'].includes(p.symbol.toUpperCase()))
+
+    if (isCrypto && userHoldsCrypto) {
+      results.push({
+        symbol: normalizedSelected,
+        relevanceLevel: 'medium',
+        title: isEn ? `Crypto Market Correlation` : `Korelasi Pasar Crypto`,
+        description: isEn
+          ? `You don't hold ${normalizedSelected} directly, but you hold other crypto assets. Crypto markets are highly correlated, so this chart's trend will likely pull your crypto holdings with it.`
+          : `Anda tidak memegang ${normalizedSelected} secara langsung, tetapi Anda memiliki aset crypto lain. Pasar crypto sangat berkorelasi, pergerakan tren di sini kemungkinan besar akan menarik aset Anda.`
+      })
+    } else if (isUS && userHoldsUS) {
+      results.push({
+        symbol: normalizedSelected,
+        relevanceLevel: 'high',
+        title: isEn ? `US Market Beta` : `Beta Pasar AS`,
+        description: isEn
+          ? `You hold US tech/blue-chip stocks. This index (${normalizedSelected}) represents the broader market sentiment that will dictate the direction of your individual US stock holdings.`
+          : `Anda memiliki saham teknologi/blue-chip AS. Indeks ini (${normalizedSelected}) mewakili sentimen pasar makro yang akan mendikte arah pergerakan saham AS Anda.`
+      })
+    } else if (isID && userHoldsID) {
+      results.push({
+        symbol: normalizedSelected,
+        relevanceLevel: 'high',
+        title: isEn ? `Domestic Market Beta` : `Beta Pasar Domestik`,
+        description: isEn
+          ? `You hold Indonesian equities. The IDX Composite (${normalizedSelected}) reflects foreign flow and domestic liquidity that will impact your local portfolio.`
+          : `Anda memiliki saham Indonesia. IHSG (${normalizedSelected}) mencerminkan arus dana asing dan likuiditas domestik yang akan berdampak pada portofolio lokal Anda.`
+      })
     } else {
-      results.push({ symbol: pos.symbol, relevanceLevel, title, description })
+      // No direct correlation found
+      results.push({
+        symbol: normalizedSelected,
+        relevanceLevel: 'low',
+        title: isEn ? `Diversification Opportunity` : `Peluang Diversifikasi`,
+        description: isEn
+          ? `You currently have no exposure to this asset class. Monitoring ${normalizedSelected} can help you spot opportunities to diversify your portfolio.`
+          : `Anda saat ini tidak memiliki eksposur ke kelas aset ini. Memantau ${normalizedSelected} bisa membantu Anda mencari peluang untuk mendiversifikasi portofolio.`
+      })
     }
   }
 
-  return results
+  // Handle Pro lock logic if multiple results are added in the future
+  return results.map((item, i) => {
+    if (isFree && i > 0) {
+      return { ...item, proLocked: true }
+    }
+    return item
+  })
 }
+

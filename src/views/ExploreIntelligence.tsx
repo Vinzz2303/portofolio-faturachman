@@ -24,6 +24,10 @@ import { readPortfolioSnapshot } from '../utils/portfolioSnapshot'
 import { getExploreI18n } from '../utils/exploreIntelligenceI18n'
 import { useLanguagePreference } from '../utils/language'
 import MulaiDariSiniCard from '../components/MulaiDariSiniCard'
+import FundamentalPanel from '../components/FundamentalPanel'
+import AIForecastPanel from '../components/AIForecastPanel'
+import MarketRadarSection from '../components/MarketRadarSection'
+import MacroDashboard from '../components/MacroDashboard'
 
 // ── Market assets ─────────────────────────────────────────────────────────────
 const PULSE_ASSETS = [
@@ -674,18 +678,19 @@ function ScreenerSection({ i18n, userPlan, language }: { i18n: ReturnType<typeof
 
 // ── Portfolio Relation ────────────────────────────────────────────────────────
 function PortfolioRelation({
-  i18n, userPlan, language,
+  i18n, userPlan, language, selectedTicker
 }: {
   i18n: ReturnType<typeof getExploreI18n>
   userPlan: string
   language: 'en' | 'id'
+  selectedTicker: string
 }) {
   const snapshot = useMemo(() => readPortfolioSnapshot(), [])
   const positions = snapshot.holdings
 
   const relevanceItems = useMemo(
-    () => getPortfolioRelevance({ portfolioPositions: positions, language, userPlan }),
-    [positions, language, userPlan]
+    () => getPortfolioRelevance({ portfolioPositions: positions, language, userPlan, selectedTicker }),
+    [positions, language, userPlan, selectedTicker]
   )
 
   if (!positions.length) {
@@ -922,6 +927,26 @@ export default function ExploreIntelligence() {
           />
         </section>
 
+        {/* 2b. Fundamental Panel */}
+        <section>
+          <FundamentalPanel ticker={selectedTicker} language={language} />
+        </section>
+
+        {/* 2c. AI Forecast */}
+        <section>
+          <AIForecastPanel ticker={selectedTicker} language={language} currentPrice={quotes[selectedTicker]?.price} />
+        </section>
+
+        {/* 2d. Market Radar */}
+        <section>
+          <MarketRadarSection ticker={selectedTicker} i18n={i18n} onSelectTicker={setSelectedTicker} />
+        </section>
+
+        {/* 2e. Macro Dashboard */}
+        <section>
+          <MacroDashboard i18n={i18n} />
+        </section>
+
         {/* 3. News Intelligence */}
         <section>
           <NewsSectionV2 i18n={i18n} symbols={NEWS_SYMBOLS} userPlan={userPlan} />
@@ -934,7 +959,7 @@ export default function ExploreIntelligence() {
 
         {/* 5. Portfolio Relation */}
         <section>
-          <PortfolioRelation i18n={i18n} userPlan={userPlan} language={language} />
+          <PortfolioRelation i18n={i18n} userPlan={userPlan} language={language} selectedTicker={selectedTicker} />
         </section>
 
       </div>

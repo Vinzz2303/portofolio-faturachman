@@ -6,7 +6,15 @@ type RuntimeEnv = {
 }
 
 function getViteEnv(): RuntimeEnv {
-  return ((import.meta as unknown as { env?: RuntimeEnv }).env ?? {})
+  try {
+    // Safely check for import.meta to avoid Webpack/Next.js undefined errors
+    if (typeof import.meta !== 'undefined' && 'env' in (import.meta as any)) {
+      return (import.meta as unknown as { env?: RuntimeEnv }).env ?? {}
+    }
+  } catch (error) {
+    // Ignore ReferenceError if import.meta is fully undefined
+  }
+  return {}
 }
 
 function getProcessEnv(): RuntimeEnv {

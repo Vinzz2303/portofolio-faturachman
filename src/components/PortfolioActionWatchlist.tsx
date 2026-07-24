@@ -8,6 +8,7 @@ type Props = {
   language: LanguageCode
   isPro: boolean
   compact?: boolean
+  onAddAsset?: () => void
 }
 
 const copy = {
@@ -39,7 +40,7 @@ const badgeClass = (badge: string) => {
   return 'border-white/10 bg-white/[0.04] text-slate-300'
 }
 
-export default function PortfolioActionWatchlist({ items, language, isPro, compact = false }: Props) {
+export default function PortfolioActionWatchlist({ items, language, isPro, compact = false, onAddAsset }: Props) {
   const t = copy[language] || copy.id
   const visibleItems = items.slice(0, isPro ? 5 : 2)
   const hasLockedItems = !isPro && items.length > visibleItems.length
@@ -55,9 +56,15 @@ export default function PortfolioActionWatchlist({ items, language, isPro, compa
         <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.015] p-5">
           <p className="text-sm font-medium text-slate-300">{t.emptyTitle}</p>
           <p className="mt-1.5 text-xs text-slate-500 leading-relaxed max-w-md">{t.emptyBody}</p>
-          <Link to="/portfolio" className="mt-4 inline-flex text-xs font-semibold text-teal-400 hover:text-teal-300">
-            {t.emptyCta} →
-          </Link>
+          {onAddAsset ? (
+            <button onClick={onAddAsset} className="mt-4 inline-flex text-xs font-semibold text-teal-400 hover:text-teal-300">
+              {t.emptyCta} →
+            </button>
+          ) : (
+            <Link to="/portfolio" className="mt-4 inline-flex text-xs font-semibold text-teal-400 hover:text-teal-300">
+              {t.emptyCta} →
+            </Link>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

@@ -21,6 +21,14 @@ type ExploreI18n = {
   portfolioRelation: string
   opportunityContext: string
 
+  // Market Radar
+  marketRadar: string
+  radarScanning: string
+  radarNoActivity: string
+  radarWhaleAlert: string
+  radarRapidAccumulation: string
+  radarActionTaken: string
+
   // Market Pulse
   liveLabel: string
   delayedLabel: string
@@ -121,6 +129,13 @@ const id: ExploreI18n = {
   portfolioRelation: 'Relevansi ke Portofolio',
   opportunityContext: 'Konteks Peluang',
 
+  marketRadar: 'Ting AI Market Radar',
+  radarScanning: 'Memindai data tick institusional...',
+  radarNoActivity: 'Tidak ada aktivitas masif terdeteksi saat ini.',
+  radarWhaleAlert: 'WHALE ALERT',
+  radarRapidAccumulation: 'RAPID ACCUMULATION',
+  radarActionTaken: 'Sedang membangun posisi institusional',
+
   liveLabel: 'Live',
   delayedLabel: 'Tunda',
   unavailableLabel: 'Tidak tersedia',
@@ -211,6 +226,13 @@ const en: ExploreI18n = {
   newsIntelligence: 'News Intelligence',
   portfolioRelation: 'Portfolio Relevance',
   opportunityContext: 'Opportunity Context',
+
+  marketRadar: 'Ting AI Market Radar',
+  radarScanning: 'Scanning institutional tick data...',
+  radarNoActivity: 'No massive activity detected currently.',
+  radarWhaleAlert: 'WHALE ALERT',
+  radarRapidAccumulation: 'RAPID ACCUMULATION',
+  radarActionTaken: 'Building institutional position',
 
   liveLabel: 'Live',
   delayedLabel: 'Delayed',

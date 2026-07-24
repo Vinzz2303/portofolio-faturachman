@@ -1167,7 +1167,33 @@ export default function Portfolio() {
           return null;
         })()}
 
-        <section className="space-y-12 animate-in fade-in duration-700">
+        {enrichedHoldings.length === 0 ? (
+          <div className="text-center py-16 md:py-24 space-y-6 animate-in fade-in duration-700">
+            <div className="w-20 h-20 bg-teal-500/10 border border-teal-500/20 rounded-3xl flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+              </svg>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white">
+              {language === 'id' ? 'Mulai Bangun Portofolio Cerdasmu' : 'Start Building Your Smart Portfolio'}
+            </h1>
+            <p className="text-slate-400 max-w-lg mx-auto text-base md:text-lg leading-relaxed">
+              {language === 'id'
+                ? 'Tambahkan aset pertamamu untuk mengaktifkan analisis risiko, simulasi pasar, dan wawasan AI secara real-time.'
+                : 'Add your first asset to unlock risk analysis, market simulation, and real-time AI insights.'}
+            </p>
+            <div className="pt-4">
+              <button
+                className="px-6 py-3 bg-white/5 border border-white/10 rounded-2xl text-slate-300 text-sm hover:bg-white/10 transition-colors font-medium"
+                onClick={restoreDefaultPositions}
+              >
+                {language === 'id' ? 'Atau muat portofolio contoh (Demo)' : 'Or load demo portfolio'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <section className="space-y-12 animate-in fade-in duration-700">
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
             <div className="space-y-5 max-w-2xl w-full">
               <div className="flex items-center gap-3">
@@ -1384,12 +1410,14 @@ export default function Portfolio() {
           language={language}
           isPro={isPro}
           onBudgetChange={setRiskBudget}
+          onAddAsset={() => document.getElementById('portfolio-form-section')?.scrollIntoView({ behavior: 'smooth' })}
         />
 
         <PortfolioActionWatchlist
           items={actionWatchlist}
           language={language}
           isPro={isPro}
+          onAddAsset={() => document.getElementById('portfolio-form-section')?.scrollIntoView({ behavior: 'smooth' })}
         />
 
         <DecisionJournal
@@ -1556,6 +1584,7 @@ export default function Portfolio() {
             <UpgradeSection />
           </div>
         )}
+        </>)}
 
         <section id="portfolio-form-section" className="max-w-3xl mx-auto animate-in fade-in duration-1000">
            <div className="premium-card p-8 md:p-12 space-y-10 bg-white/[0.03]">

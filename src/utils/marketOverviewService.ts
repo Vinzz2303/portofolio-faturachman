@@ -9,6 +9,8 @@
  * - Never show hardcoded dummy prices (IHSG 7500, BTC 42K, etc.)
  */
 
+import { API_URL } from './api'
+
 export type MarketQuote = {
   symbol: string
   name: string
@@ -36,7 +38,6 @@ export type MarketOverview = {
  */
 async function fetchMarketQuotes(): Promise<Record<string, MarketQuote | null>> {
   try {
-    const API_URL = import.meta.env.VITE_API_URL || ''
     const response = await fetch(`${API_URL}/api/market/quotes?symbols=IHSG,BTC,XAUUSD,SP500,USDIDR`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
@@ -47,8 +48,27 @@ async function fetchMarketQuotes(): Promise<Record<string, MarketQuote | null>> 
       throw new Error(`Market API returned ${response.status}`)
     }
 
-    const data = await response.json() as Record<string, MarketQuote>
-    return data
+    const data = await response.json()
+    if (!data.ok) {
+      throw new Error(data.error || `Market API returned ${response.status}`)
+    }
+
+    const record: Record<string, MarketQuote> = {}
+    if (Array.isArray(data.quotes)) {
+      data.quotes.forEach((q: any) => {
+        const sym = q.symbol || q.displaySymbol
+        record[sym] = {
+          symbol: sym,
+          name: q.name || sym,
+          price: q.price,
+          change: null, // Note: backend only returns changePercent
+          changePercent: q.changePercent,
+          timestamp: q.lastUpdated ? new Date(q.lastUpdated).getTime() : Date.now(),
+          source: q.dataStatus === 'cached' ? 'cache' : 'live'
+        }
+      })
+    }
+    return record
   } catch (error) {
     console.warn('Market quote fetch failed (no fallback dummy data):', error)
     // Return empty quotes (null values) - NOT fake data
