@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TING AI - INTERNAL GAMEPLAN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E5E5E5;
+            color: #111;
+        }
+        .mono {
+            font-family: 'Space Mono', monospace;
+        }
+        .brutalist-card {
+            background-color: #fff;
+            border: 3px solid #111;
+            box-shadow: 6px 6px 0px 0px #111;
+            transition: all 0.2s ease-in-out;
+        }
+        .brutalist-card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px 0px #111;
+        }
+        .brutalist-border {
+            border: 3px solid #111;
+        }
+        .bg-accent {
+            background-color: #FF3B30; /* Brutalist Red */
+            color: #fff;
+        }
+        .header-line {
+            border-bottom: 3px solid #111;
+        }
+
+        /* PRINT STYLES TO FIX CUT OFF CONTENT */
+        @media print {
+            body {
+                background-color: #fff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            nav.fixed {
+                position: static !important;
+                border-bottom: none !important;
+                padding-top: 0 !important;
+                padding-bottom: 20px !important;
+            }
+            main {
+                padding-top: 0 !important;
+            }
+            .brutalist-card, section, .brutalist-border, .flex {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            /* Remove box shadows for cleaner printing if desired, but we keep them for brutalist feel */
+            @page {
+                margin: 1.5cm;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased font-medium leading-relaxed selection:bg-black selection:text-white pb-20">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full bg-[#E5E5E5] header-line z-50">
+        <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="/ting-ai-logo-icon-only-dark.png" alt="Ting AI Logo" class="h-10 w-10 border-2 border-black object-contain bg-white p-1" onerror="this.style.display='none'">
+                <span class="font-bold tracking-tighter text-2xl uppercase">TING AI</span>
+            </div>
+            <div class="text-sm font-bold uppercase tracking-widest mono bg-black text-white px-3 py-1">
+                ANGEL INVESTOR MEMO
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-6 pt-32 space-y-16">
+        
+        <!-- Hero Section -->
+        <section class="mb-20">
+            <div class="inline-block px-3 py-1 bg-accent brutalist-border font-bold uppercase tracking-widest text-xs mb-6 mono">
+                [ STATUS: CONFIDENTIAL GAMEPLAN ]
+            </div>
+            <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-8 uppercase">
+                AI Financial <br> Intelligence Layer.
+            </h1>
+            <p class="text-xl max-w-3xl font-medium text-gray-700 leading-snug mb-4">
+                Melepaskan identitas proyek riset menuju B2C Startup Swasta yang sepenuhnya independen. 
+                Membangun asisten AI yang merangkum miliaran data makroekonomi menjadi panduan investasi logis untuk masyarakat awam.
+                <strong class="text-black bg-yellow-300 px-1">Tanpa API Asing, Tanpa Birokrasi.</strong>
+            </p>
+        </section>
+
+        <!-- Filosofi & Realita -->
+        <section class="grid md:grid-cols-2 gap-6">
+            <div class="brutalist-card p-8 bg-black text-white">
+                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4 mono">01 / REALITA PASAR</h3>
+                <h2 class="text-3xl font-bold mb-4">90% Investor Ritel Selalu Rugi.</h2>
+                <p class="text-gray-300 leading-relaxed mb-4">
+                    Terdapat <strong>12.1 Juta investor ritel</strong> di Indonesia (Data 2024). Mayoritas dari mereka berakhir rugi karena dua hal utama:
+                </p>
+                <ul class="list-disc pl-5 text-gray-300 space-y-2 text-sm">
+                    <li>UI Broker dirancang layaknya kasino untuk memicu <em>impulse trading</em> (FOMO).</li>
+                    <li>Laporan analis dan berita ekonomi menggunakan jargon berat ("Hawkish", "Consumer Discretionary") yang tidak bisa dicerna oleh orang biasa.</li>
+                </ul>
+            </div>
+            <div class="brutalist-card p-8 bg-white">
+                <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 mono">02 / SOLUSI TING AI</h3>
+                <h2 class="text-3xl font-bold mb-4">Proactive Thinking Partner.</h2>
+                <p class="text-gray-700 leading-relaxed mb-4">
+                    Kami hadir bukan sebagai "Dukun Sinyal Trading". Ting AI adalah teman berpikir yang rasional.
+                </p>
+                <ul class="list-disc pl-5 text-gray-700 space-y-2 text-sm font-medium">
+                    <li><strong>"Awam" Friendly:</strong> AI secara ketat dilarang memuntahkan tabel kaku, dan diwajibkan menggunakan bahasa analogi ("bahasa tongkrongan").</li>
+                    <li><strong>Konteks Makro Instan:</strong> Mengolah data Bloomberg/The Fed dalam hitungan detik untuk mencegah investor mengambil keputusan saat market sedang berdarah.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Competitive Advantage -->
+        <section class="brutalist-card p-8 md:p-12 bg-white">
+            <h3 class="text-3xl font-black uppercase mb-8">Kenapa Ting AI Akan Menang? (Our Moat)</h3>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="p-6 border-l-4 border-black bg-gray-50">
+                    <h4 class="font-bold text-lg mb-2">1. Nol Konflik Kepentingan</h4>
+                    <p class="text-sm text-gray-600">Aplikasi broker mendapat untung (fee) jika *user* sering trading (walau rugi). Kami menggunakan model berlangganan (SaaS), sehingga kami hanya untung jika *user* benar-benar terbantu dan logis.</p>
+                </div>
+                <div class="p-6 border-l-4 border-black bg-gray-50">
+                    <h4 class="font-bold text-lg mb-2">2. Decision Journal Engine</h4>
+                    <p class="text-sm text-gray-600">Aplikasi kami memaksa *user* untuk mencatat tesis logis mereka sebelum membeli saham. Fitur ini menciptakan keterikatan jangka panjang (*high retention DAU*).</p>
+                </div>
+                <div class="p-6 border-l-4 border-accent bg-gray-50">
+                    <h4 class="font-bold text-lg mb-2">3. Local AI Inference</h4>
+                    <p class="text-sm text-gray-600">Startup AI lain akan bangkrut karena tagihan token API Google/OpenAI. Kami membangun AI yang berjalan di *Hardware Lokal*, membuat biaya OPEX menjadi nol rupiah selamanya.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Roadmap Eksekusi 12 Bulan -->
+        <section class="brutalist-card p-8 md:p-12 bg-[#F3F4F6]">
+            <h3 class="text-3xl font-black uppercase mb-8">Roadmap Eksekusi (12 Bulan ke Depan)</h3>
+            <div class="space-y-6 relative before:absolute before:inset-0 before:ml-4 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-1 before:bg-black">
+                
+                <!-- Q1 -->
+                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-black text-white font-bold mono shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">Q1</div>
+                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] brutalist-border bg-white p-4">
+                        <h4 class="font-bold mb-1 uppercase">Validasi Tertutup (100 Beta Testers)</h4>
+                        <p class="text-sm text-gray-600">Fokus mencari 100 *early adopters* dari komunitas trading tertutup. Membuktikan bahwa AI ini dipakai harian (DAU tinggi) dan mengatasi kelemahan *UI bugs*.</p>
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-black text-white font-bold mono shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">Q2</div>
+                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] brutalist-border bg-white p-4">
+                        <h4 class="font-bold mb-1 uppercase">Infrastruktur Local AI & Swastanisasi</h4>
+                        <p class="text-sm text-gray-600">Pengadaan Mac Mini Server (Apple Silicon) untuk migrasi model LLM lokal. Mendirikan PT Perorangan dan mengunci legalitas hak paten serta privasi data.</p>
+                    </div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-black text-white font-bold mono shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">Q3</div>
+                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] brutalist-border bg-white p-4">
+                        <h4 class="font-bold mb-1 uppercase">SaaS Monetization (Freemium Launch)</h4>
+                        <p class="text-sm text-gray-600">Membuka *paywall* langganan Rp 99.000/bulan. Konversi dari 100 Beta Tester menjadi pelanggan berbayar pertama sebagai studi kasus sukses (Traction).</p>
+                    </div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-accent text-white font-bold mono shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">Q4</div>
+                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] brutalist-border bg-accent text-white p-4">
+                        <h4 class="font-bold mb-1 uppercase">Batu Loncatan (B2B2C Expansion)</h4>
+                        <p class="text-sm text-white/90">Menggunakan metrik finansial riil dari Q3 untuk melakukan presentasi (pitching) kolaborasi API dengan Raksasa Sekuritas (Bibit/Ajaib) atau mengajukan *Seed Funding* lebih besar ke VC.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Ask & Alokasi Bensin -->
+        <section class="bg-black text-white brutalist-card p-8 md:p-12">
+            <h2 class="text-4xl font-black mb-6 uppercase text-yellow-300">Amunisi Survival: Rp 95 Juta <span class="text-xl text-gray-400">(Runway 12 Bulan)</span></h2>
+            <p class="text-gray-300 text-lg mb-8 max-w-3xl">
+                Proposal ini ditujukan khusus untuk <strong>Angel Investor Awal</strong>. Rp 95 Juta bukanlah *budget* membakar uang ala Silicon Valley, melainkan <em>Bootstrapping Budget</em> yang dihitung secara matematis agar *startup* ini hidup selama 12 bulan (Mencapai target Q4 di atas). 
+            </p>
+
+            <div class="space-y-6">
+                <!-- Point 1 -->
+                <div class="flex flex-col md:flex-row gap-4 border-b border-gray-800 pb-6">
+                    <div class="md:w-1/4 font-bold text-xl mono text-accent">40%</div>
+                    <div class="md:w-3/4">
+                        <h4 class="font-bold text-lg mb-1">Pengadaan Aset: Local AI Server (Mac Mini M-Series)</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            <strong>[Rp 38.000.000]</strong> Sebagian besar investasi tidak akan dibakar untuk iklan, melainkan menjadi "Aset Fisik Perusahaan". Pembelian Mac Mini mutlak diperlukan sebagai server kecerdasan buatan (*On-Premise Inference*). Strategi ini memastikan data pengguna aman 100% dari kebocoran luar negeri, serta menekan tagihan operasional AI bulanan (Opex) hingga menjadi <strong>Nol Rupiah</strong> selamanya.
+                        </p>
+                    </div>
+                </div>
+                <!-- Point 2 -->
+                <div class="flex flex-col md:flex-row gap-4 border-b border-gray-800 pb-6">
+                    <div class="md:w-1/4 font-bold text-xl mono text-yellow-300">30%</div>
+                    <div class="md:w-3/4">
+                        <h4 class="font-bold text-lg mb-1">Legalitas Korporasi & Infrastruktur Swasta</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            <strong>[Rp 28.500.000]</strong> Pendirian entitas berbadan hukum resmi (PT Perorangan/Kecil), pendaftaran PSE Kominfo, pengurusan domain, SSL, serta kepatuhan hukum (*Compliance*). Ini adalah syarat wajib agar proyek ini diakui secara nasional dan memiliki posisi tawar kuat saat bernegosiasi dengan mitra besar di Q4.
+                        </p>
+                    </div>
+                </div>
+                <!-- Point 3 -->
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="md:w-1/4 font-bold text-xl mono text-white">30%</div>
+                    <div class="md:w-3/4">
+                        <h4 class="font-bold text-lg mb-1">Operasional Dasar & Validasi 100 User Pertama</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            <strong>[Rp 28.500.000]</strong> Biaya langganan API data pasar finansial riil (Terminal OpenBB/FMP), pemeliharaan *server web* (*Routing*), serta *budget* akuisisi *micro-marketing* untuk mengamankan 100 *Early Adopters* dari komunitas *trading* independen.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-20 py-8 border-t-[3px] border-black bg-white text-center">
+        <p class="text-sm font-bold mono text-black uppercase tracking-widest">© 2026 TING AI. CONFIDENTIAL MEMO BY FATURACHMAN ALKAHFI.</p>
+    </footer>
+
+</body>
+</html>

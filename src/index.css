@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --color-ink: #0a0a0a;
+  --color-paper: #f4f3ef;
+  --color-signal: #c84b15;
+  --color-signal-hover: #df561b;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  scroll-behavior: auto !important;
+  font-family: var(--font-sans);
+}
+
+/* Fullscreen Three.js Canvas at Z-Index 18:
+   Above "Selected work" giant heading (Z-10), below floating project cards (Z-25) */
+#webgl-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 18;
+}
+
+/* Giant Name Cutout in Hero */
+.giant-name {
+  font-size: clamp(3.8rem, 15.2vw, 21rem);
+  line-height: 0.78;
+  letter-spacing: -0.055em;
+  font-weight: 800;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* Floating Project Cards in Pinned Theatre */
+.work-floating-card {
+  will-change: transform;
+  transition: box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+
+.work-floating-card:hover {
+  box-shadow: 0 40px 90px -15px rgba(0, 0, 0, 0.35);
+}
+
+/* Underline link animation for Visit Project / Explore Case Study */
+.visit-link {
+  position: relative;
+  display: inline-flex;
+  border-bottom: 2px solid #0a0a0a;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.visit-link:hover {
+  opacity: 0.75;
+  transform: translateX(3px);
+}
+

@@ -1,0 +1,78 @@
+# Faturachman Alkahfi (Faturachman Al Kahfi)
+
+Faturachman Alkahfi (also known as Faturachman Al Kahfi or Alvin, handle Vinzz2303) is a Full-Stack Systems Engineer, AI Product Builder, and Open Source Contributor based in Jakarta, Indonesia.
+
+## Profile Summary
+- **Name**: Faturachman Alkahfi
+- **Alternate Names**: Faturachman Al Kahfi, Alvin, Vinzz2303
+- **Primary Roles**: Full-Stack Systems Engineer, Founding Engineer @ Ting AI, Lead Web Developer @ Universitas Primagraha
+- **Location**: Jakarta, Indonesia (GMT+7)
+- **Education**: S1 Informatics, Universitas Multimedia Nusantara (UMN)
+- **Primary Technical Stack**: React 19, Next.js (App Router), TypeScript, Tailwind CSS, Python, FastAPI, Supabase, PostgreSQL, Prisma ORM, Redis, Three.js, GSAP, PM2, Windows IIS, Linux Nginx, SLiMS Library Automation.
+- **Core Competencies**: High-throughput web architectures, distributed systems, applied LLM reasoning systems (Gemini Pro, structured schemas, hybrid RAG), campus institutional digital ecosystems, and high-performance WebGL/3D user interfaces.
+- **Website**: https://faturachman.my.id
+- **LinkedIn**: https://www.linkedin.com/in/faturachman-al-kahfi-662283304/
+- **GitHub**: https://github.com/Vinzz2303
+- **Email**: faturachmanalkahfi7@gmail.com
+
+---
+
+## Shipped Production Systems & Portfolios
+
+1. **Ting AI** (https://app.tingsai.my.id)
+   - Role: Founding Engineer & Full-Stack Architect
+   - Description: AI thinking partner & portfolio risk engine for retail stock investors. Deterministic portfolio math in TypeScript paired with Gemini Pro structured reasoning schemas for macro/risk analysis.
+   - Stack: React, TypeScript, Gemini Pro, Supabase PostgreSQL, Edge Functions.
+
+2. **Universitas Primagraha Main Portal & PMB** (https://primagraha.ac.id)
+   - Role: Lead Web Developer
+   - Description: Official university institutional portal and student admission ecosystem serving 10,000+ monthly visitors with Next.js ISR and sub-second page delivery.
+   - Stack: Next.js, React, Prisma ORM, PostgreSQL, SIAKAD Integration.
+
+3. **OPAC Perpustakaan Universitas Primagraha** (https://opac.upg.ac.id)
+   - Role: Full-Stack Developer & System Owner
+   - Description: Online Public Access Catalog indexing 3,070 book titles and 5,751 physical copies with 51,200+ digital visits.
+   - Stack: PHP, SLiMS, MySQL, Windows IIS, PM2.
+
+4. **LPM Universitas Primagraha** (https://lpm.primagraha.ac.id)
+   - Role: Full-Stack Developer & System Owner
+   - Description: Quality Assurance Institute portal uniting SPMI, SPME, Accreditation, AMI, and campus satisfaction surveys.
+   - Stack: Node.js, Web Portal, Windows IIS.
+
+5. **LPPM Universitas Primagraha** (https://lppm.primagraha.ac.id)
+   - Role: Full-Stack Developer & System Owner
+   - Description: Research and Community Service Institute portal with real-time research statistics, publication & HKI trackers.
+   - Stack: Next.js, React, TypeScript, Windows IIS.
+
+6. **Open Library Universitas Primagraha** (https://perpus.primagraha.ac.id)
+   - Role: Full-Stack Developer & System Owner
+   - Description: Central library gateway providing federated search across 128,450 physical & digital collections with SSO authentication.
+   - Stack: Next.js, React, SSO Authentication, OJS Integration.
+
+7. **Rajawali Prestige** (https://rajawaliprestige.my.id)
+   - Role: Independent Full-Stack Developer
+   - Description: Avian competition and national community arena portal with interactive schedules and catalog.
+   - Stack: Next.js, React, TypeScript, Tailwind CSS.
+
+8. **Central Jual Emas** (https://central-jual-emas.netlify.app)
+   - Role: Frontend Architect
+   - Description: Zero-dependency luxury digital storefront with real-time gold appraisal calculator and WhatsApp consultation bridge.
+   - Stack: HTML5, Modern CSS, Vanilla JS ES6+.
+
+---
+
+## Open Source Contributions & Bounties
+Active open source contributor on GitHub (@Vinzz2303) across 23+ repositories with pull requests in:
+- twentyhq/twenty (#20755 - merged)
+- qtop/qtop (#364 - merged)
+- tscircuit (schematic-trace-solver, matchpack, schematic-viewer, prompt-benchmarks)
+- outerbase/starbasedb
+- highlight/highlight
+- typeorm/typeorm
+
+---
+
+## Contact & Hire
+- Email: faturachmanalkahfi7@gmail.com
+- Portfolio: https://faturachman.my.id
+- LinkedIn: https://www.linkedin.com/in/faturachman-al-kahfi-662283304/
